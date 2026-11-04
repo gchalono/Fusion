@@ -1,0 +1,21 @@
+{
+  "provider": "<approved upstream provider>",
+  "model": "<exact physical model ID>",
+  "api_type": "openai-chat-completions",
+  "upstream_url": "https://<approved-host>/v1/chat/completions",
+  "approved_hosts": ["<approved-host>"],
+  "physical_model_verified": false,
+  "credential_env_var": "<NAME_ONLY>",
+  "max_model_calls": null,
+  "max_interview_turns": null,
+  "spend_ceiling_usd": null,
+  "input_price_per_million": null,
+  "output_price_per_million": null,
+  "input_token_bound": null,
+  "output_token_bound": null,
+  "output_ceiling": null,
+  "token_bound_evidence_sha256": "<verified provider/model contract document hash>",
+  "pilot_goal": "<excluded from later corpus>",
+  "answerer": "<human or scripted from fixed client brief>",
+  "live_authorized": false
+}
