@@ -1,0 +1,24 @@
+{
+  "classification": "OFFLINE_TEST_INPUTS_NOT_CORPUS",
+  "objectives": [
+    {
+      "id": "idempotent-api",
+      "goal": "Add idempotency keys to an existing TypeScript payment API without changing client-visible success responses.",
+      "facts": {"stack": "TypeScript, Node.js, PostgreSQL", "compatibility": "Preserve existing success response shapes", "storage": "PostgreSQL", "verification": "Concurrent duplicate requests must create one payment"},
+      "answers_by_question_id": {"storage": "PostgreSQL", "compatibility": "Preserve existing success response shapes", "stack": "TypeScript, Node.js, PostgreSQL"}
+    },
+    {
+      "id": "queue-observability",
+      "goal": "Add queue latency metrics and stalled-job alerts to a background worker service.",
+      "facts": {"stack": "Node.js workers", "metrics": "Queue age and processing latency", "privacy": "Exclude job payloads and customer identifiers from telemetry"},
+      "answers_by_question_id": {"stack": "Node.js workers", "privacy": "Exclude job payloads and customer identifiers from telemetry"}
+    },
+    {
+      "id": "accessible-settings",
+      "goal": "Make an existing account settings form keyboard accessible and resilient to validation errors.",
+      "facts": {"stack": "React and TypeScript", "scope": "Existing account settings form only", "verification": "Keyboard navigation and screen-reader error announcements"},
+      "answers_by_question_id": {"stack": "React and TypeScript", "scope": "Existing account settings form only"}
+    }
+  ],
+  "unknown_reply": "No preference; use your judgment."
+}

@@ -1,4 +1,4 @@
-# Fixed client-brief answer protocol, version 1
+# Fixed client-brief answer protocol, version 2
 
 This is evaluation input policy, not generated output. Commit this document and
 the selected brief and record their SHA-256 hashes before any inference request.
@@ -17,6 +17,13 @@ the selected brief and record their SHA-256 hashes before any inference request.
    five-starts-per-hour limit. The eventual supervisor also needs durable start
    accounting across process restarts; it must never vary identifiers/reset clocks.
 9. Pilot input and output are excluded from any later evaluation corpus.
+10. `briefs.json` contains representative engineering objectives and fixed
+    clarification answers for OFFLINE tests only. These are not genuine plans
+    or a proposed evaluation corpus. Unknown questions receive the fixed reply.
+11. For an unknown native confirm question, stop as incomplete: native formatting
+    would otherwise turn missing boolean input into `No`, inventing a preference.
+12. The offline supervisor maintains durable five-starts/hour accounting under
+    the same identifier across disposable namespaces, including failed starts.
 
 ## Blank brief template
 
