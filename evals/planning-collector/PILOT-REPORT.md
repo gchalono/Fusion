@@ -1,5 +1,8 @@
 # Phase 2A feasibility and offline implementation report
 
+Historical report for commit 98bf91c7a. Superseded by OFFLINE-REPORT.md and README.md
+for the completed offline native runner and integration evidence.
+
 ## Status
 
 **PILOT_BLOCKED.** Verified: no real model request, native interview, mission,

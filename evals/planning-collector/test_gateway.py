@@ -76,12 +76,13 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual((status, kind, raw), (200, "application/json", response()))
         self.assertEqual(self.sent[0][1], json.loads(body))
 
-    def test_ceiling_caps_same_field_and_does_not_raise_lower_limit(self):
+    def test_ceiling_refuses_reduction_and_preserves_lower_native_limit(self):
         g = self.gateway(output_ceiling=50)
-        g.handle(request(max_tokens=90))
+        with self.assertRaisesRegex(Blocked, "output_limit_intervention_forbidden"):
+            g.handle(request(max_tokens=90))
         g.handle(request(max_completion_tokens=20))
-        self.assertEqual(self.sent[0][1]["max_tokens"], 50)
-        self.assertEqual(self.sent[1][1]["max_completion_tokens"], 20)
+        self.assertEqual(len(self.sent), 1)
+        self.assertEqual(self.sent[0][1]["max_completion_tokens"], 20)
 
     def test_request_model_mismatch_no_forward(self):
         g = self.gateway()
@@ -189,6 +190,45 @@ class GatewayTests(unittest.TestCase):
         raw = b'data: {"model":"offline-test-model","choices":[]}\n\ndata: [DONE]\n\n'
         g.transport = lambda *_: (200, "text/event-stream", raw)
         self.assertEqual(g.handle(request(stream=True))[2], raw)
+
+    def test_missing_usage_keeps_full_reservation_and_records_length(self):
+        g = self.gateway()
+        raw = canonical({'model': 'offline-test-model', 'choices': [{'finish_reason': 'length'}]})
+        g.transport = lambda *_: (200, 'application/json', raw)
+        self.assertEqual(g.handle(request())[2], raw)
+        record = json.loads((self.root / 'result-0001.json').read_text())
+        self.assertFalse(record['usage_present'])
+        self.assertTrue(record['length_truncated'])
+        self.assertFalse(record['output_limit_intervention'])
+        self.assertEqual(g.budget.reserved, 4500)
+
+    def test_text_parts_supported_without_accepting_images(self):
+        g = self.gateway()
+        body = request(messages=[{'role': 'user', 'content': [{'type': 'text', 'text': 'offline'}]}])
+        g.handle(body)
+        self.assertEqual(self.sent[0][1], json.loads(body))
+
+    def test_nonstream_missing_usage_over_loopback_http(self):
+        g = self.gateway()
+        raw = canonical({'model': 'offline-test-model', 'choices': [{'message': {'role': 'assistant', 'content': 'offline acknowledgement'}, 'finish_reason': 'stop'}]})
+        g.transport = lambda *_: (200, 'application/json', raw)
+        server = offline_server(g, self.artifacts)
+        t = threading.Thread(target=server.serve_forever, daemon=True); t.start()
+        try:
+            c = http.client.HTTPConnection(*server.server_address, timeout=2)
+            c.request('POST', '/v1/chat/completions', request(stream=False))
+            r = c.getresponse(); self.assertEqual(r.status, 200); self.assertEqual(r.read(), raw); c.close()
+            self.assertEqual(g.budget.reserved, 4500)
+            self.assertFalse(json.loads((self.root/'result-0001.json').read_text())['usage_present'])
+        finally:
+            server.shutdown(); server.server_close(); t.join(timeout=2)
+
+    def test_stream_length_finish_recorded_without_rewriting_raw(self):
+        g = self.gateway()
+        raw = b'data: {"model":"offline-test-model","choices":[{"finish_reason":"length"}]}\n\ndata: [DONE]\n\n'
+        g.transport = lambda *_: (200, 'text/event-stream', raw)
+        self.assertEqual(g.handle(request(stream=True))[2], raw)
+        self.assertTrue(json.loads((self.root/'result-0001.json').read_text())['length_truncated'])
 
     def test_loopback_forwarding_and_repeated_sdk_attempts(self):
         g = self.gateway(max_model_calls=1)

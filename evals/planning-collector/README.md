@@ -1,147 +1,134 @@
-# Phase 2A: external request-budget boundary (offline implementation)
+# Phase 2A offline native interview collector
 
-**Status: PILOT_BLOCKED. No inference is authorized.**
+**Genuine pilot: PILOT_BLOCKED. Offline runner and gateway: tested.**
 
-This implements and tests the external gateway portion of an evaluation collector.
-It is **not** a complete/live-enabled collector. No native driver, credential
-loader, or live listener command is supplied. Do not interpret passing offline
-tests as proof of a genuine plan, actual provider billing, or deployment isolation.
+No paid inference, credential access, production edits or network-permission changes.
+Real Fusion interview code and the installed Pi SDK execute against local HTTP mock
+responses through the external budget gateway. All outputs are explicitly
+`OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS`. The original pilot report is historical;
+this README and OFFLINE-REPORT supersede it. Earlier feasibility text is retained
+in Git history.
 
-## Reproduce offline checks
+## Reproduce
 
-Requires Python 3.12+ and its standard library; no installation or credentials:
+Requires Linux bubblewrap with user/network/PID namespaces, Python 3.12+, Node 24,
+and the prepared `/workspace/Fusion` source/dependencies at
+`eb7eef49d5a0fe3e84e99be30e8ed9622a694e35`. No packages were installed.
+From `/workspace/Fusion-phase2a`, branch `eval/phase2a-collector`:
 
 ```bash
 python -m unittest discover -s evals/planning-collector -p 'test_*.py' -v
-python evals/planning-collector/preflight.py evals/planning-collector/config.example.json
-# Expected exit 2, PILOT_BLOCKED; no model calls.
-python evals/planning-collector/provenance.py eb7eef49d5a0fe3e84e99be30e8ed9622a694e35
-# Run provenance after committing, with a clean worktree.
+python evals/planning-collector/offline_runner.py --scenario normal
+python evals/planning-collector/offline_runner.py --scenario comprehensive
+python evals/planning-collector/offline_runner.py --scenario model-mismatch
+# Each prints a disposable evidence directory. Recheck without another start:
+python evals/planning-collector/verify_evidence.py /tmp/fusion-native-offline-<id>
 ```
 
-Offline doubles use a marked `TemporaryDirectory` under the OS temp root. They
-return transport acknowledgements, not plan-shaped data. They cannot use pilot
-or corpus output directories. The only socket is loopback on an ephemeral port.
+Use exactly `fusion-phase2a-pilot`. Supplemental durable accounting at
+`/workspace/phase2a-evidence/offline-starts.json` enforces five starts/hour across
+processes, including failures. Never delete/change the ledger to repeat tests.
+A sixth start fails before namespace launch. Unit-test ledgers are temporary and
+never start interviews. Three native debugging/normal starts preceded the final
+comprehensive and mismatch runs; their actual start markers were retained in the
+ledger. Two initial mount failures occurred before native start.
 
-## Verified feasibility
+## Isolation and native path
 
-Fusion supports a custom provider's `baseUrl` and registers it into Pi. The SDK's
-OpenAI chat-completions client uses `model.baseUrl`. A future isolated custom
-provider can point to `http://127.0.0.1:<ephemeral-port>/v1` with a non-secret
-placeholder API key, while the supervisor alone holds upstream authentication.
-Do not write these settings into the user's actual home or start a dashboard.
+The sandbox mounts source/dependencies read-only, a fresh empty home at the same
+`/home/agent` path, and disposable project/settings/PostgreSQL/temp directories.
+Child environment credentials are absent. Network and PID namespaces contain only
+the supervisor, native child, mock/gateway HTTP servers and bundled PostgreSQL.
+There is no external route. No global home or platform egress permission changes.
+The mock requires a local capability held by the gateway transport: direct access
+without it returns 403. No real credential loader or paid-run CLI exists.
 
-Source citations at `eb7eef49d5a0fe3e84e99be30e8ed9622a694e35`:
+`native-runner.mts` imports the real backend factory, AiSessionStore, MCP resolver,
+and native start/respond/summary functions. It does not construct a dashboard,
+scheduler, heartbeat service or autopilot. Effective MCP servers/errors must be
+empty before start. Native AI sessions persist in the disposable PostgreSQL DB.
+All services stop after evidence capture; state is retained under the printed
+`/tmp` directory for review. Specific evidence directories can be deleted later;
+the durable rate ledger must not be reset.
 
-- `packages/core/src/types/workflow/workflow-steps.ts:227`: CustomProvider fields.
-- `packages/engine/src/auth/custom-provider-registry.ts:123`: baseUrl registration.
-- `packages/engine/src/auth/custom-provider-registry.ts:98`: current custom models
-  use 128k context / 16,384 output defaults and zero catalog costs. Those defaults
-  are NOT verified billing/token bounds; the gateway never trusts them as prices.
-- Installed Pi `dist/api/openai-completions.js:558`: SDK baseURL.
-- Installed Pi `dist/api/openai-completions.js:582`: usage in streams; `:588`:
-  max_tokens/max_completion_tokens serialization.
+## Frozen deterministic protocol
 
-## Existing retry, compaction, and fallback configuration
+`protocol.md` and `briefs.json` were committed together before the comprehensive
+run; hashes are captured before start. Objectives cover idempotent APIs, worker
+observability and accessible forms. The runner uses the API brief: storage gets
+its PostgreSQL fact; unknown clarification gets exactly `No preference; use your
+judgment.` No answerer model is used. Unknown confirm questions stop incomplete,
+because native boolean formatting would otherwise invent a `No`. Turn cap: three.
+Inputs are offline fixtures, not a proposed genuine evaluation corpus.
 
-Verified: Pi's settings schema supports `retry` and `compaction`, but Fusion's
-session constructor supplies an in-memory settings manager with compaction enabled
-and three retries (`packages/engine/src/pi.ts:2705`). The interview API does not
-expose a retries-off switch. Native malformed-output reformat retry remains at
-one (`packages/dashboard/src/mission-interview.ts:104`, `:1234`). Context and
-reasoning-effort retries also remain intact (`packages/engine/src/pi.ts:3376`).
-Nothing here disables or edits any of those paths. Each forwarded retry receives
-a new reservation; rejected attempts can be retried locally by native code but
-cannot be forwarded beyond the shared budget. This gateway itself never retries.
-Transport failures preserve reservations and permit later native attempts within
-the remaining budget; they are not retried inside the gateway. Unsafe model or
-artifact failures are terminal. Upstream error status/body are retained so native
-retry classification can still operate. Retry-related response headers are not
-yet forwarded by the harness; that live-transport integration remains required.
+## Verified native HTTP integration
 
-Verified: configured primary/fallback pairs can select a fallback; without a
-fallback pair a primary resolution error is thrown (`pi.ts:2715`). Explicit custom
-provider/model selection and no fallback configuration are needed. A request for
-any different model is rejected before forwarding. Provider-returned physical
-model identity can only be checked after dispatch; a response mismatch ends the
-run, not an imaginary retroactive cancellation of billing.
+The comprehensive mock sequence returns 503, then malformed assistant content,
+then two questions and a mock summary. Native manual SDK compaction makes two
+additional requests. All seven go through gateway -> local mock HTTP. The actual
+native SDK retry and JSON format-retry paths are unchanged. Compaction provider
+routing was tested manually through native SDK compaction; the automatic
+context-threshold trigger was not independently forced.
 
-Verified: installed Pi `dist/core/agent-session.js:249` resolves summarization auth
-from the selected model, and `:2144` passes that model into compaction. Inferred:
-for a verified non-virtual custom model, these requests should reach the same
-proxy. A native SDK/interview-to-proxy integration test is still required before
-live use; label-only offline requests do not prove routing coverage.
+Wrong-model selection was passed through native resolution and rejected before
+mock dispatch. No alternative model was dispatched. This is fail-closed selection,
+not a test of successful switching to an authorized fallback provider. Relevant
+existing fallback/compaction tests run separately with offline doubles.
 
-## Enforcement implemented
+Streaming SSE was verified through two local HTTP hops. The gateway buffers
+bounded responses and returns unchanged bytes, so live first-byte latency
+equivalence is not claimed. Non-streaming JSON, missing usage and length finish
+flags are separately tested over loopback/unit tests. Native Pi always requests
+streaming; no native non-streaming interview is claimed.
 
-- One shared lock-protected budget for all HTTP attempts, including any interview,
-  answerer, format-retry, fallback, or compaction request that reaches this boundary.
-- Exact destination and model authorization, no redirects, HTTPS upstream only,
-  standard TLS verification and inherited environment proxy routing.
-- Text-only OpenAI chat completions, one completion, function tools only, strict
-  payload shape. Other dialects/modalities/billable extensions fail closed.
-- Optional output ceiling preserves an existing lower cap; absent controls do not
-  change the request object or returned bytes. Body canonicalization may change
-  insignificant request JSON whitespace. Responses are buffered (bounded), so
-  time-to-first-byte differs; this is not identical streaming latency behavior.
-- Before each forward, reserve the **full independently verified model input-token
-  bound** plus bounded output at supplied maximum prices, rounded upward to integer
-  microdollars. This is more conservative than estimating input from bytes. Full
-  reservations are never refunded, even on failed/disconnected/ambiguous requests
-  or lower reported usage. Reservations are persisted before dispatch. A new Budget
-  cannot reopen/reset the same run directory.
-- Raw artifacts are created exclusively and hashed. Known sensitive raw content
-  is refused rather than silently redacted into purportedly unmodified raw output.
-  Failures expose fixed codes, never upstream exception text/headers/credentials.
+## Accounting and output limits
 
-Model-specific bounds must cover all billable input/output/reasoning/cache charges.
-The example's evidence hash is only a declaration: code does not authenticate that
-document. **No live supervisor may proceed based merely on a boolean/hash provided
-in config.** Unsupported or unverifiable billing contracts remain blocked. Usage
-is captured as `provider_reported_usage_unverified`; reservations are explicitly
-`estimated_upper_bound`, not measured invoices.
+Each forwarded HTTP attempt reserves the full declared input/output bounds at
+maximum prices before dispatch. Retries and compaction share call/money caps.
+Reservations are never refunded for errors, missing/zero usage or cache discounts.
+Usage remains unverified provider data; reservations are estimated upper bounds.
 
-## Mandatory prerequisites before the first genuine interview
+The gateway NEVER lowers native output limits. A configured ceiling requiring a
+reduction (or inventing a missing limit) rejects before dispatch. Forwarded
+artifacts record `output_limit_intervention:false` and parsed
+`finish_reason:length`. Fusion emitted caps 16,384, 13,107 and 8,192; raw request
+hashes show they were unchanged. Read PRICING.md before any future paid deployment.
 
-1. Complete authorization: provider, physical model, credential variable NAME,
-   call cap, spending ceiling, input/output prices, exact approved hosts, pilot
-   goal, answerer, and turn cap. Paid inference is still expressly withheld.
-2. Independently verify the provider's hard token limits, maximum billing rates,
-   reasoning/cache accounting and token-ceiling semantics. Restrict routing/aliases
-   to a fixed physical model; fail closed otherwise.
-3. Build an isolated native supervisor: per-run temp project/settings/database;
-   no dashboard, scheduler, autopilot, durable agents, heartbeat service or MCP.
-   Verify resolved MCP is empty before session creation. Freeze/hash the brief and
-   committed protocol first. The native start calls the model asynchronously, so
-   the proxy and all safeguards must already be armed.
-4. Prove exclusive model egress. A custom base URL alone does not prevent another
-   provider/tool/runtime from bypassing it. The child must not inherit real auth
-   files or upstream credentials. Enforce the approved destination boundary in a
-   supported sandbox/network arrangement, not by weakening the platform allowlist.
-   No network configuration or home-directory change has been performed here.
-5. Wire a real HTTPS transport/credential boundary and model-accurate SDK-to-proxy
-   tests, including format retry and automatic compaction. Respect inherited TLS
-   trust/proxy credential injection; never expose raw credentials to the child.
-6. Add baseline/after snapshots, outbound-host evidence, native transcript/summary
-   capture, turn limits, and durable start accounting. Use exactly
-   `fusion-phase2a-pilot`; no identifier variation or limiter resets. Native limit
-   is inside `createMissionInterviewSession` (`mission-interview.ts:1343`).
-7. Record `source_commit`, `collector_commit`, exact binary-diff `patch_sha256`,
-   `protocol_sha256`, native/actual upstream model, UTC timestamps and per-request
-   latency. `provenance.py` computes the full committed diff hash relative to the
-   supplied source commit; it refuses a dirty worktree. No self-referential hash
-   is embedded in the commit it hashes.
+Text strings/text-part arrays and function tools are supported. Images, hosted
+paid tools, multiple completions, redirects, unknown extensions and model mismatch
+fail closed. The HTTPS adapter preserves TLS/proxy trust but has not contacted a
+real provider. No native retries, format retries or compaction settings changed.
 
-Until these are satisfied the supported executable behavior is **PILOT_BLOCKED**.
-No before/after pilot diff or measured cost/runtime exists. Unmeasured reservation
-formula is `calls * (input_bound * input_price + output_cap * output_price) / 1e6`.
-Runtime is unmeasured; buffered responses must complete inside native turn guards.
+## Snapshots, artifacts and provenance
 
-## Why no native patch
+Before/after DB snapshots cover all base-table row counts and sorted row hashes
+in project/central/public schemas. Only `project.ai_sessions` may change;
+same-count mutations are detected. Filesystem snapshots contain hashes/sizes,
+symlink targets and, in final tooling, directory/mode metadata. An explicit
+allowlist permits disposable DB, results/logs, gateway artifacts, module caches and
+the isolated model catalog. New non-PostgreSQL processes are flagged. A lazy PG
+connection backend is not an agent. Injected forbidden changes fail helper tests.
 
-Inferred: the external boundary can enforce request count/reservations without
-changing native retry/compaction policy, for the supported contract and exclusive
-routing deployment. A native production extension is therefore not yet justified.
-If the remaining routing/contract proof fails for the selected provider, re-evaluate
-an additive SDK-level authorization hook; do not replace native inference or
-represent this offline prototype as production-ready.
+Comprehensive/mismatch evidence used hashes/sizes; directory/mode capture and extra
+provenance/teardown fields were added afterward and checked at helper/syntax level
+without taking a sixth native start. Read-only mounts prevent real-source/home
+writes independently of snapshots. The model catalog and module cache are explicit
+isolated session-support writes, not unexplained changes to user data.
+
+Raw artifacts are write-once/hashed; partial failures remain. Sensitive raw data
+is refused rather than silently edited. `verify_evidence.py` rechecks evidence
+without running inference. `provenance.py` records exact source/collector commits,
+full binary patch SHA-256 and protocol hash after a clean commit. Run inputs record
+protocol/brief hashes before start. Final runner startup additionally captures
+source/collector identity and runner/gateway executable hashes.
+
+## Remaining genuine-pilot blockers
+
+Complete explicit authorization, independently verified physical model/token/
+pricing contracts, live TLS/credential-injection verification and an exclusive
+paid-egress deployment are still needed. The offline namespace cannot contact
+an upstream by design and is not silently repurposed into a live launcher.
+Provider-reported model identity is checked only after dispatch: a trusted fixed
+physical-model contract is required to rule out opaque server-side routing.
+Provider-specific retry headers/streaming latency also need live integration
+validation when authorized. No paid plan quality, price or runtime is verified.

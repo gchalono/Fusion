@@ -120,6 +120,9 @@ class Artifacts:
             f.flush()
             import os
             os.fsync(f.fileno())
+        directory = os.open(self.root, os.O_DIRECTORY)
+        try: os.fsync(directory)
+        finally: os.close(directory)
         return {"file": name, "sha256": digest(data), "bytes": len(data)}
 
 
@@ -188,15 +191,21 @@ def prepare_request(raw, policy):
             raise Blocked("unsupported_message")
         content = message.get("content")
         if content is not None and not isinstance(content, str):
-            raise Blocked("unsupported_modality")
+            if not isinstance(content, list) or any(
+                    not isinstance(part, dict) or set(part) != {"type", "text"}
+                    or part["type"] != "text" or not isinstance(part["text"], str)
+                    for part in content):
+                raise Blocked("unsupported_modality")
     fields = [k for k in ("max_tokens", "max_completion_tokens") if k in body]
     if len(fields) > 1:
         raise Blocked("ambiguous_output_limit")
     if fields:
         positive_int(body[fields[0]])
     if policy.output_ceiling is not None:
-        field = fields[0] if fields else "max_completion_tokens"
-        body[field] = min(body.get(field, policy.output_ceiling), policy.output_ceiling)
+        # Evaluation must not lower Fusion's native token allowance. A tighter
+        # budget rejects the request instead of silently degrading the output.
+        if not fields or body[fields[0]] > policy.output_ceiling:
+            raise Blocked("output_limit_intervention_forbidden")
     elif fields and body[fields[0]] > policy.output_token_bound:
         raise Blocked("output_bound_exceeded")
     return body
@@ -218,6 +227,15 @@ def validate_response(raw, content_type, model):
         raise Blocked("unsupported_response") from None
 
 
+def length_truncated(raw, content_type):
+    if 'text/event-stream' in content_type:
+        payloads = [json.loads(line[5:].strip()) for line in raw.decode().splitlines()
+                    if line.startswith('data:') and line[5:].strip() != '[DONE]']
+    else:
+        payloads = [json.loads(raw)]
+    return any(choice.get('finish_reason') == 'length' for p in payloads for choice in p.get('choices', []))
+
+
 class Gateway:
     """Transport injected by a supervisor; this gateway itself never retries.
 
@@ -229,6 +247,7 @@ class Gateway:
         self.policy, self.artifacts, self.transport = policy, artifacts, transport
         self.budget = Budget(policy, artifacts)
         self.serial = threading.Lock()
+        self.blocked_attempts = []
 
     def handle(self, raw):
         with self.serial:
@@ -252,6 +271,9 @@ class Gateway:
                     "provider_reported_usage_unverified": usage,
                     "latency_ms": round((time.monotonic() - start) * 1000),
                     "reserved_micro_usd": self.budget.reserved,
+                    "usage_present": bool(usage), "cost_accounting": "estimated_upper_bound",
+                    "output_limit_intervention": False,
+                    "length_truncated": length_truncated(response, content_type) if status == 200 else None,
                 }))
                 return status, content_type, response
             except Exception:
@@ -318,7 +340,11 @@ def offline_server(gateway, artifacts):
                     raise Blocked("invalid_content_length")
                 raw = self.rfile.read(int(lengths[0]))
                 status, content_type, response = gateway.handle(raw)
-            except (Blocked, ValueError):
+            except (Blocked, ValueError) as error:
+                gateway.blocked_attempts.append(str(error) if isinstance(error, Blocked) else 'invalid_value')
+                # Offline diagnostics contain body only, never HTTP auth headers.
+                if 'raw' in locals():
+                    artifacts.write(f"blocked-{len(gateway.blocked_attempts):04}.json", raw)
                 status, content_type, response = 403, "application/json", b'{"error":"evaluation_request_blocked"}'
             self.send_response(status)
             self.send_header("Content-Type", content_type)

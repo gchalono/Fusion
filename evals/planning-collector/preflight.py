@@ -45,9 +45,9 @@ def inspect(c):
             policy_status = "invalid_or_unsupported"
     return {"status": "PILOT_BLOCKED", "missing_authorization": missing,
             "credential_presence": credential_status, "policy": policy_status,
-            "remaining_engineering": ["isolated_native_driver_and_snapshots",
+            "remaining_engineering": ["authorized_live_transport_and_routing",
                                       "independently_verified_model_token_pricing_contract",
-                                      "exclusive_model_egress_and_transport_credential_boundary"],
+                                      "provider_live_compatibility_validation"],
             "model_calls": 0}
 
 
