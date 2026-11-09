@@ -1,3 +1,6 @@
+> Historical findings: GitHub reconnection resolved the write-access blocker.
+> See REMOTE_RECOVERY.md for current verified backup and recovery status.
+
 # Persistence and recovery report
 
 Overall status: **PERSISTENCE_FAILED** — the attempted native recovery did not

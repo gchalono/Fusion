@@ -38,3 +38,16 @@ Implementation: `463bf2a3d1538f3a5c141df474993cee835fa40e`; branch `eval/phase2n
 Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
 Environment: Python 3.12.14; Git git version 2.52.0.
 Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
+
+## GitHub backup and fresh remote recovery — 2026-11-08 Pacific
+
+Independently verified remote checkpoint:
+`2d5e2577b822e72bc1abc99d9a6db5fa9544af7a`, eval/phase2n on gchalono/Fusion.
+Validated implementation: `463bf2a3d1538f3a5c141df474993cee835fa40e`.
+GitHub reconnection resolved the prior 403. Fresh GitHub clone: preflight, manifest,
+frozen checks and all 56 unit tests passed (14 coding, 33 collector, 9 persistence).
+Native dependency install/core+engine builds and PostgreSQL/initdb loader checks
+passed with genuine ICU 60; full native interview awaits the retained rate window.
+Environment: Python 3.12.14, Git 2.52.0, Node 24.22.1, pinned pnpm 10.33.0.
+Manifest: evals/artifact-manifest.json. Evidence: persistence/REMOTE_RECOVERY.md.
+Raw sensitive artifacts remain VM-local; Phase 2M remains missing.

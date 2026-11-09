@@ -2,42 +2,38 @@
 
 Latest validated implementation: `463bf2a3d1538f3a5c141df474993cee835fa40e`
 
-Branch: `eval/phase2n`. Minimum independent Phase 2N baseline is the SHA above.
-The independently verified authorized fork branch tip is the recovery authority;
-do not infer the latest SHA solely from this file in an old checkout.
+Branch: `eval/phase2n`. Independent minimum Phase 2N baseline:
+`9736d67e40c8656b56206eafd6b7bc615c1c5c3f`.
+Always obtain the expected full baseline independently, then verify the current
+fork branch tip. Do not infer the newest checkpoint from a stale local document.
 
-Completed: Phase 2A offline native planning collector; Phase 2N frozen three-task
-scaffold, independent acceptance tests and aggregate SQLite reservation ledger.
-Historical validation: 14 Phase 2N tests, 33 collector tests, comprehensive native
-mock integration passed. No paid API requests or live coding arms were executed.
-Persistence hardening adds preflight, explicit checkpoints, artifact verification
-and secret review. See CHECKPOINTS.md for validated persistence implementation.
+Remote code backup VERIFIED at `2d5e2577b822e72bc1abc99d9a6db5fa9544af7a`:
+Git push succeeded after GitHub reconnection; git ls-remote independently matched.
+A fresh clone from gchalono/Fusion passed recovery preflight, required artifact
+hashes, frozen fixtures and all 56 unit tests (14 coding, 33 collector, 9 persistence).
+See persistence/REMOTE_RECOVERY.md. Later documentation-only tips are verified
+separately; the independently observed remote tip remains authoritative.
 
-Remote backup: INCOMPLETE. The authorized fork push was denied HTTP 403.
-No remote Phase 2N branch was advertised during inspection. A same-VM bundle is
-available locally, but it is not durable backup. Fix fork write permission and
-independently verify the pushed tip before claiming remote protection.
+Completed: Phase 2A offline planning collector; Phase 2N three frozen task fixtures,
+independent acceptance tests, shared SQLite reservation ledger; persistence
+preflight, explicit checkpoints, manifests and secret review. No paid API requests,
+live coding arms, missions or autopilot execution were performed.
+
+Native recovery: genuine ICU 60 libraries load when the explicit dependency path
+is supplied. Full native interview revalidation is pending the preserved five-start
+limit; a binary loader check is not a full integration pass. Raw mock evidence and
+private artifact inventories remain VM-local; their sensitive backup is unverified.
+Code backup does not imply all artifacts or native behavior are protected.
 
 Phase 2M remains missing: implementation/supervisor, original objective/baseline,
-native plan, eight explicit human approvals, full transcript, nine raw provider
+native plan, eight explicit human approvals and transcript, nine raw provider
 request/response records, accounting and audit/provenance evidence. Do not rebuild
-or repeat the prior exhaustive search without a plausible new recovery location.
+or repeat the exhaustive search without a plausible new recovery location.
 
-Live blockers: sole gateway egress/bypass prevention unresolved; no recovered
-supervisor; no verified plan/approval binding for new tasks; coding token/time
-limits and measured end-to-end results integration incomplete. Preserve hard $2
-aggregate new-spend cap. Missing Phase 2M does not block preserving Phase 2N.
-
-Exact next task: restore write access to gchalono/Fusion, scan and push eval/phase2n
-without force, confirm tip with git ls-remote, then run fresh remote recovery.
-Fresh local bundle recovery: 56 unit tests and artifact hashes passed. Native
-recovery remains incomplete; genuine ICU 60 now loads with an explicit dependency
-library path, but full native revalidation awaits the existing start window. The
-shared five-starts/hour limit is preserved. See persistence/PERSISTENCE_REPORT.md.
-After persistence is durable, obtain the Phase 2M bundle/evidence and integrate
-the ledger with its supervisor before considering any separately approved live run.
-
-GitHub diagnosis: user metadata says push/admin, but both shell Git and connected
-Git blob writes return 403. Reconnect the fork with Contents read/write; see
-persistence/BLOCKER_RESOLUTION.md. A sanitized incremental recovery bundle is
-prepared locally; off-VM export has not been verified.
+Exact next task: when the existing shared start ledger permits, run the existing
+native offline comprehensive integration using the verified ICU library directory,
+then independently verify its evidence. Obtain the Phase 2M bundle/evidence and
+integrate the shared ledger with its supervisor. Prove gateway-only egress with
+negative bypass tests before any separately approved live experiment. Coding
+token/time limits and measured end-to-end reporting remain incomplete. Preserve
+the hard $2 aggregate new-spend cap; paid inference is not authorized.
