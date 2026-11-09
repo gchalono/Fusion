@@ -37,7 +37,9 @@ for unit tests; no network installation is needed. The native offline integratio
 additionally needs Linux bubblewrap, Node and pinned pnpm dependencies/builds:
 
 ```sh
-pnpm install --frozen-lockfile  # pinned pnpm 10.33.0; requires registry access
+pnpm install --frozen-lockfile --ignore-scripts  # pinned pnpm 10.33.0; registry access
+pnpm --filter @fusion/core build
+pnpm --filter @fusion/engine build
 python evals/planning-collector/offline_runner.py --scenario comprehensive \
   --rate-ledger /path/to/reused-private-offline-starts.json
 python evals/planning-collector/verify_evidence.py NEW_EVIDENCE_DIRECTORY
@@ -50,3 +52,12 @@ or restricted namespaces are environment limitations, not passing native tests.
 Do not install dependencies with unreviewed lifecycle scripts or start services
 outside the existing explicitly offline harness. See the persistence report for
 what was actually reproduced; installation instructions alone are not evidence.
+
+Recovered native runtime findings: installation and both package builds succeeded.
+Before entering the read-only namespace, installed embedded-postgres native/bin
+executables need their read/execute mode bits (a+rx). The recovered host then
+failed loading libicui18n.so.60. Supply compatible ICU 60 runtime libraries
+through supported environment/package setup; do not substitute incompatible ABI
+symlinks or relax namespace isolation. Retest only after the existing shared
+five-starts/hour ledger permits another start. These are recorded environment
+requirements, not evidence of a passing native recovery.
