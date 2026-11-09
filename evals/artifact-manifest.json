@@ -164,8 +164,8 @@
     },
     {
       "path": "evals/persistence/checkpoint.sh",
-      "size_bytes": 257,
-      "sha256": "4434181591a77992469136b403fb9171c0071cc14e98c1c78d31242caa8bf035",
+      "size_bytes": 260,
+      "sha256": "e447da6f79a527a4bf8767f503f221263738fb9a4b6d03e23bf86265426b8ab1",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
       "backup_status": "local_only_pending_verified_push",
@@ -174,8 +174,8 @@
     },
     {
       "path": "evals/persistence/preflight.sh",
-      "size_bytes": 247,
-      "sha256": "c1c5629957f8445b9176466707591f8bd467419d6af6c31958bc0de88c889af9",
+      "size_bytes": 250,
+      "sha256": "f2ebb799c1a69eccdc264cb704fad465744e8684143e0d2637bc70db33f066e9",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
       "backup_status": "local_only_pending_verified_push",
@@ -214,8 +214,8 @@
     },
     {
       "path": "evals/persistence/tooling.py",
-      "size_bytes": 9088,
-      "sha256": "7d0fed8a0c60411f69ee2673c104c626f909ca98daa2e78835afcdadcfeaa774",
+      "size_bytes": 9116,
+      "sha256": "1374b5972becebffe4e29b29e4d92e65c4af077096eb297438fb54d89db730bf",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
       "backup_status": "local_only_pending_verified_push",

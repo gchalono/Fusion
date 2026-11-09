@@ -3,4 +3,4 @@
 set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$script_dir/../.."
-exec python3 "$script_dir/tooling.py" checkpoint "$@"
+exec python3 -B "$script_dir/tooling.py" checkpoint "$@"

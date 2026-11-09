@@ -61,8 +61,9 @@ def artifact_check():
     data=json.loads((base/'evals/artifact-manifest.json').read_text())
     for item in data['artifacts']:
         if not item.get('required_for_phase2n_persistence',False): continue
-        path=(base/item['path']).resolve()
-        if not path.is_relative_to(base) or path.is_symlink() or not path.is_file():
+        original=base/item['path']
+        path=original.resolve()
+        if not path.is_relative_to(base) or original.is_symlink() or not path.is_file():
             missing.append(item['path']); continue
         raw=path.read_bytes()
         if len(raw)!=item['size_bytes'] or hashlib.sha256(raw).hexdigest()!=item['sha256']:
