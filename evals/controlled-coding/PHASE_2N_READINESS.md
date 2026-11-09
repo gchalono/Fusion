@@ -1,6 +1,6 @@
 # Phase 2N offline readiness
 
-**PHASE_2N_BLOCKED** (milestone: native validation waiting for the shared rate window).
+**PHASE_2N_PARTIALLY_READY** — native fixture and current validations pass; live gates remain outstanding.
 
 VERIFIED: authorization is $0.00 provider spend, identifier fusion-phase2a-pilot,
 maximum three native starts/hour, and reviewed pushes to eval/phase2n. Limited
@@ -13,16 +13,16 @@ no host-wide configuration, firewall or package changes are authorized/performed
 |---|---|---|
 | External baseline 993af2bdf7a5fa223ca16bf233be399bc6fd9a86 matched GitHub and is an ancestor; initial tree clean | VERIFIED | preflight.json hash in readiness-evidence.json |
 | Re-run baseline: 14 coding + 33 collector + 9 persistence = 56 passed, no discrepancy | VERIFIED | baseline logs indexed in readiness-evidence.json |
-| Current suites: 20 coding + 35 collector + 9 persistence = 64 passed | VERIFIED | current test logs, readiness-evidence.json |
+| Current suites: 20 coding + 37 collector + 9 persistence = 66 passed | VERIFIED | current test logs, readiness-evidence.json |
 | Inner unshare/bwrap denied uid-map writes; approved outer unprivileged probes passed; rootless Docker available, host firewall not usable | VERIFIED | capability-probe.json and outer-probe.json hashes |
 | Reference sandbox has user/net/PID/mount/IPC/UTS isolation, UID 65534, dropped capabilities, scrubbed environment and allowlisted read-only runtime files; only writable workspace/home/tmp and one inference Unix socket | VERIFIED | isolation.py:22; 20-case namespace summary |
 | Direct Python/Node/curl, raw ICMP, DNS, IPv6, metadata, host loopback and proxy-tampering probes denied; each has a successful gateway HTTP control | VERIFIED | isolation.py:103; namespace results |
 | All protocol-specific positive controls are identical to their negative protocols | UNVERIFIED | Raw ICMP/DNS/IPv6/metadata use Python HTTP gateway controls; not a full Step 4 matrix |
-| Canary absent from observed environment values, process arguments, regular inherited FDs and mounted writable/home/eval surfaces; known host credential directories hidden | VERIFIED | namespace credential case; fixture canary never persisted |
+| Canary absent from observed environment values, process arguments, regular FDs and mounted writable/home/eval surfaces; positive controls plant it in gateway initial environment and an inheritable FD | VERIFIED | namespace credential case; fixture canary never persisted |
 | No real provider credential exists anywhere outside a future gateway, or all possible files/FD types are proven secret-free | UNVERIFIED | Only fixture canary and declared surfaces tested; no real credential was loaded |
 | Gateway token is local, revocable, bound to trusted run/caps; clients cannot select a new run/policy; policy hash is immutable per run | VERIFIED | isolation.py:68; budget.py:66; namespace revocation/cap cases |
 | Protected files cannot be written through the granted namespace view; no admin interface exists | VERIFIED | filesystem and endpoint cases; isolation.py:22,68 |
-| Each guarded request reserves and fsyncs before transport; observed usage, estimated charge and measured charge remain separate | VERIFIED | budget.py:75,113,141; lifecycle/crash tests |
+| Each guarded request reserves and fsyncs before transport; observed usage, estimated charge and measured charge remain separate | VERIFIED | budget.py:160,113,141; lifecycle/crash tests |
 | Missing/truncated/failed/interrupted requests retain worst-case exposure; restart marks unreconciled requests UNCERTAIN without refund | VERIFIED | budget.py:95,105; test_lifecycle.py; test_gateway_crash.py |
 | Aggregate $2 / coding $0.15 / four-call limits serialize across processes; settlement never adds the same request a second time or releases exposure | VERIFIED | test_budget.py; test_lifecycle.py |
 | Client auth cannot become upstream auth, output tokens clamp and are logged; unknown endpoint/host/model/client denied | VERIFIED | inference_socket and local stub controls; fixture auth only |
@@ -30,8 +30,10 @@ no host-wide configuration, firewall or package changes are authorized/performed
 | A combined in-namespace mid-request kill, restart and authorized resume protocol is fully tested | UNVERIFIED | Host-side HTTP kill/recovery and namespace shutdown are separate tests |
 | Fixture upstream contacts are exclusively local; real-host contact counter is zero | VERIFIED | namespace summary: local stub only; no real provider URL used |
 | Host-wide packet capture or provider invoice establishes zero charges | UNVERIFIED | No packet capture/provider billing query; real transport never invoked, measured charge remains null |
-| Genuine native PostgreSQL/ICU interview/session integration passes on this revision | UNVERIFIED | Pending existing three-start window; no counter reset |
+| Genuine native PostgreSQL/ICU interview/session integration passed at source 465151ee280c39a90e61b27fcd2a2de1f093700f | VERIFIED | native-verified.json; seven local attempts, only project.ai_sessions changed |
 | Production/live coding execution is forced through this reference boundary | UNVERIFIED | Reference namespace is not integrated into a live coding runner |
+| Every future planning/coding run must reuse one fixed experiment ledger | UNVERIFIED | Atomicity proved for a selected shared DB; fixture DBs are not a paid supervisor |
+| The initial verifier SQLite-variable shadowing failure was corrected and capture replay now passes | VERIFIED | native-verifier-infrastructure-error.log; test_verify_evidence.py, same immutable native capture |
 | Historical Phase 2M plans, approvals, requests, costs or reported numbers are available/validated | UNVERIFIED | Fixed-location assessment only; no historical measurements reused |
 
 ## Scope and limits
@@ -110,10 +112,20 @@ no canary, local token, raw provider records or credential values are committed.
 The initial verified remote anchor is 993af2bdf7a5fa223ca16bf233be399bc6fd9a86;
 subsequent milestone tips are independently verified outside their own commits.
 
-INFERRED: exact next step is the existing native comprehensive fixture after the
-same ledger permits a start, with --max-starts 3 and the verified ICU directory.
-Then independently verify its native/session/gateway accounting artifacts, update
-this report, push the reviewed checkpoint and run fresh-clone preflight.
+VERIFIED: the permitted native comprehensive fixture passed with --max-starts 3,
+the same unchanged ledger and verified ICU directory. Independent replay verifies
+its session/gateway accounting artifacts. The initial verifier failed because a
+SQLite connection shadowed the DB-diff dictionary (infrastructure verification
+bug, not a native application failure). Corrected it under evals, added two
+regression tests, and replayed the same capture successfully; no test was skipped.
+The native file is labeled native-test-double.json; it is not a genuine plan.
+
+INFERRED: next engineering task is one integrated command-runner boundary and
+combined interruption/restart test, complete protocol-appropriate positive
+controls, and a fixed experiment-level ledger plus verified model pricing/input
+bounds before proposing any paid pilot. The thin human approval adapter must
+reject every unanswered/unapproved question; no missing Phase 2M component needs
+to be reconstructed beyond these interfaces.
 
 UNVERIFIED: no live approval is requested. Before the first live pilot: finish the
 missing strict security controls and live-runner integration, verify pricing/input

@@ -209,8 +209,18 @@ def main():
     parser.add_argument('--native-library-dir', type=Path, help='Verified native library directory inside this checkout (offline only)')
     parser.add_argument('--max-starts', type=int, default=3, help='Operator start cap per hour, never above native five-start limit')
     parser.add_argument('--security-probe', type=Path, help='Run deterministic Unix-gateway namespace probes; no native interview start')
+    parser.add_argument('--security-child',action='store_true',help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.security_probe is not None:
+        # FNXC:NativeIsolation 2026-11-09-05:12: Fixture gateway receives only a
+        # generated initial canary; no provider credential variables are inherited.
+        if not args.security_child:
+            env={'PATH':os.environ['PATH'],'HOME':tempfile.gettempdir(),
+                 'PYTHONDONTWRITEBYTECODE':'1','CANARY_GATEWAY_CREDENTIAL':secrets.token_hex(32)}
+            child=subprocess.run([sys.executable,str(Path(__file__).resolve()),'--security-probe',str(args.security_probe),'--security-child'],env=env)
+            raise SystemExit(child.returncode)
+        if set(os.environ)-{'PATH','HOME','PYTHONDONTWRITEBYTECODE','CANARY_GATEWAY_CREDENTIAL','LC_CTYPE'}:
+            raise RuntimeError('unexpected_security_gateway_environment')
         sys.path.insert(0,str(HERE.parent/'controlled-coding'))
         from isolation import exercise
         summary=exercise(args.security_probe)

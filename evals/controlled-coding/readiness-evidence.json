@@ -2,7 +2,7 @@
   "classification": "REVIEWED_OFFLINE_TEST_DOUBLE_SUMMARY_NOT_PROVIDER_MEASUREMENTS",
   "unit_test_counts": {
     "coding": 20,
-    "collector": 35,
+    "collector": 37,
     "persistence": 9
   },
   "namespace": {
@@ -251,6 +251,8 @@
       "untrusted_stub_contacts": 0,
       "real_host_contacts": 0
     },
+    "gateway_initial_canary_verified": true,
+    "inheritable_canary_fd_positive_control": true,
     "scope": "deterministic clients in reference namespace; privileged host/kernel attacks excluded",
     "limitations": [
       "Not integrated with a live coding runner",
@@ -258,44 +260,75 @@
       "Namespace gateway shutdown and token revocation tested; mid-request kill recovery tested independently; combined restart/resume protocol not yet exercised"
     ]
   },
+  "native_verification": {
+    "classification": "OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS",
+    "scenario": "comprehensive",
+    "verified": true,
+    "model_http_attempts": 7,
+    "database_changed_tables": [
+      "project.ai_sessions"
+    ],
+    "reserved_micro_usd_estimated": 1127
+  },
+  "native_source_commit": "465151ee280c39a90e61b27fcd2a2de1f093700f",
   "private_artifact_hashes": {
-    "preflight.json": {
-      "size_bytes": 9190,
-      "sha256": "6b971628cb558f202be6e721a1d3cab4b0c37edde07d4f78ec1905ed8e80a2e4"
-    },
     "capability-probe.json": {
       "size_bytes": 789,
       "sha256": "370a73518338cfe8028afdeb62ef463c12b34c60b487b5617066c375ecea0384"
     },
-    "outer-probe.json": {
-      "size_bytes": 454,
-      "sha256": "af5c3aa198945a3b15ac695e6dd24a6af1b5151dcd41dab6f3a88894081ecccc"
-    },
-    "rate-window.json": {
-      "size_bytes": 135,
-      "sha256": "1919cb35dae514c0d768233a87dd40e728e1691ce108a795be6f1dd9ca57088d"
-    },
-    "coding-tests.log": {
-      "size_bytes": 1601,
-      "sha256": "aa83528eac90d07d361bcd2064e0ca5e379da59b85813873fca2297b8ae0146d"
-    },
-    "collector-tests.log": {
-      "size_bytes": 4513,
-      "sha256": "f33fe5d74f3b73e981f294eab7a68d7a72d9dbc967be9452c1240b24167892e1"
-    },
-    "persistence-tests.log": {
-      "size_bytes": 1153,
-      "sha256": "92d9d5fb137574bc2dec955cfd4e2407d5f1e7e70995282ea528acbfc4004bbf"
+    "checkpoint-milestone.log": {
+      "size_bytes": 8648,
+      "sha256": "4ef550449424838c7725d8c4b7bef904c9082cf51f56c7e47dee706f48ec5cf6"
     },
     "coding-final.log": {
       "size_bytes": 2370,
       "sha256": "c235bde533e8659a3cdc6e09e3455477272b15ff8c1ef8bd0abbe071bc34ecc7"
     },
+    "coding-tests-expanded.log": {
+      "size_bytes": 2370,
+      "sha256": "020e589d00be3f756bdbd98e4512dcfc02e223cedece58e9e633fc217faff4d7"
+    },
+    "coding-tests.log": {
+      "size_bytes": 1601,
+      "sha256": "aa83528eac90d07d361bcd2064e0ca5e379da59b85813873fca2297b8ae0146d"
+    },
     "collector-final.log": {
-      "size_bytes": 4723,
-      "sha256": "a283f21910a4797b52b43f013cfd81e133fc61d7c86ef60bfb2887b4750330b2"
+      "size_bytes": 4953,
+      "sha256": "449bf2a1b40fb5a945769ff33b1d3125024b45a4440ac07cd47d5f864bd4df33"
+    },
+    "collector-tests.log": {
+      "size_bytes": 4513,
+      "sha256": "f33fe5d74f3b73e981f294eab7a68d7a72d9dbc967be9452c1240b24167892e1"
+    },
+    "ledger-state-tests.log": {
+      "size_bytes": 1601,
+      "sha256": "9acf2c46a568a9faa14ab2fc4adad071f7d6aba527089432d1bf89b578df3f9b"
+    },
+    "milestone-clone.log": {
+      "size_bytes": 61,
+      "sha256": "1732c83b9d4acb15286e842de760e4d058dc7c82d5655d9cdb793a9f4a55a51c"
+    },
+    "native-integration.log": {
+      "size_bytes": 135,
+      "sha256": "4703974cc92ff16c4cdd8c50233d4dd232f1ed4b2e850605c85428d9aa9043cc"
+    },
+    "native-verified.json": {
+      "size_bytes": 243,
+      "sha256": "1ab0f1be8b88c05f5c4f56ecb04d9a9b6e3689d1ef7f961a0d24200493c7daa5"
+    },
+    "native-verifier-infrastructure-error.log": {
+      "size_bytes": 559,
+      "sha256": "c59dbbeba065af0015f5a45c7cb4b7b64db3812e819f72f38ac43746bbb42c71"
+    },
+    "outer-probe.json": {
+      "size_bytes": 454,
+      "sha256": "af5c3aa198945a3b15ac695e6dd24a6af1b5151dcd41dab6f3a88894081ecccc"
     },
     "persistence-final.log": {
+      "size_bytes": 1153,
+      "sha256": "92d9d5fb137574bc2dec955cfd4e2407d5f1e7e70995282ea528acbfc4004bbf"
+    },
+    "persistence-tests.log": {
       "size_bytes": 1153,
       "sha256": "92d9d5fb137574bc2dec955cfd4e2407d5f1e7e70995282ea528acbfc4004bbf"
     },
@@ -303,9 +336,13 @@
       "size_bytes": 862,
       "sha256": "2bf84abb7b82e8cfb5bcc20af5f800a05f2451ed2357a03bdb1611b21f97be1a"
     },
-    "security-probe-4/summary.json": {
-      "size_bytes": 7971,
-      "sha256": "e5bea41b4fe42f05e06cf844d9da23e8f9b7f394f10481d03eda843da77501dc"
+    "preflight.json": {
+      "size_bytes": 9190,
+      "sha256": "6b971628cb558f202be6e721a1d3cab4b0c37edde07d4f78ec1905ed8e80a2e4"
+    },
+    "rate-window.json": {
+      "size_bytes": 135,
+      "sha256": "1919cb35dae514c0d768233a87dd40e728e1691ce108a795be6f1dd9ca57088d"
     }
   }
 }

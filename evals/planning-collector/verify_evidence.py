@@ -35,15 +35,15 @@ def verify(root):
     assert total == v['reserved_micro_usd_estimated']
     if (r/'shared-budget.db').exists():
         import sqlite3
-        with sqlite3.connect(f"file:{r/'shared-budget.db'}?mode=ro",uri=True) as db:
-            shared=db.execute('SELECT COALESCE(SUM(upper_micro),0),COUNT(*) FROM reservations').fetchone()
+        with sqlite3.connect(f"file:{r/'shared-budget.db'}?mode=ro",uri=True) as ledger_db:
+            shared=ledger_db.execute('SELECT COALESCE(SUM(upper_micro),0),COUNT(*) FROM reservations').fetchone()
             assert shared[0]==total and shared[1]==v['gateway_forwarded_attempts']
             assert shared[0]<=2000000
             expected=hashlib.sha256(canonical(read('gateway-policy.json'))).hexdigest()
-            assert db.execute('SELECT policy_sha256 FROM run_policies').fetchone()[0]==expected
-            for ident,state in db.execute("SELECT r.id,(SELECT state FROM transitions t WHERE t.reservation_id=r.id ORDER BY t.id DESC LIMIT 1) FROM reservations r"):
+            assert ledger_db.execute('SELECT policy_sha256 FROM run_policies').fetchone()[0]==expected
+            for ident,state in ledger_db.execute("SELECT r.id,(SELECT state FROM transitions t WHERE t.reservation_id=r.id ORDER BY t.id DESC LIMIT 1) FROM reservations r"):
                 assert state in ('UNCERTAIN','SETTLED')
-            assert db.execute('SELECT COUNT(*) FROM observations WHERE measured_charge_micro IS NOT NULL').fetchone()[0]==0
+            assert ledger_db.execute('SELECT COUNT(*) FROM observations WHERE measured_charge_micro IS NOT NULL').fetchone()[0]==0
 
     if v['scenario'] == 'model-mismatch':
         assert v['native_failure'] and v['gateway_forwarded_attempts'] == 0

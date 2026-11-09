@@ -41,3 +41,8 @@ the hard $2 aggregate new-spend cap; paid inference is not authorized.
 VERIFIED: Current native/isolation milestone: 64 unit tests and 20 reference
 namespace probes passed. Isolation overall PARTIAL; full native validation awaits
 the unchanged three-start window. See controlled-coding/PHASE_2N_READINESS.md.
+
+VERIFIED: Latest readiness milestone: 66 unit tests, 20 namespace probes and
+genuine native comprehensive fixture passed. Native uses only a local test-double
+upstream; seven shared-ledger requests retained worst-case exposure. Isolation
+overall PARTIAL. See controlled-coding/PHASE_2N_READINESS.md for current gates.

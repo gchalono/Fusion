@@ -244,8 +244,8 @@
     },
     {
       "path": "evals/planning-collector/offline_runner.py",
-      "size_bytes": 16250,
-      "sha256": "d86e99974d21c71d6355fcc981fcdde12190dc4a381748b1f005214f382928a0",
+      "size_bytes": 17091,
+      "sha256": "681e810a17118b78db7b5e0c3b6912dc3b8230b8e9adeb9e25d27e52d6c73a88",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
       "backup_status": "local_only_pending_verified_push",
@@ -324,8 +324,8 @@
     },
     {
       "path": "evals/planning-collector/verify_evidence.py",
-      "size_bytes": 3971,
-      "sha256": "85338597cceae4ce8228d9d7317edbef61ef4b5687f31513cc90581988e67097",
+      "size_bytes": 4006,
+      "sha256": "f52e2a7fb63fbaa19078315f65cd30f44fee783d82e9abf7f3f270bb7009d555",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
       "backup_status": "local_only_pending_verified_push",
@@ -359,8 +359,8 @@
       "required_for_phase2n_persistence": true,
       "durable_location": null,
       "backup_status": "local_only_pending_verified_push",
-      "size_bytes": 20423,
-      "sha256": "ee880accf1a6a8489caeed5e4558caa8140e401385d0f770ed9ae2345ed778dd"
+      "size_bytes": 20975,
+      "sha256": "40edd3da283ad80622dca9433ef22d6002aa9ddc4ac482e715578663736790f3"
     },
     {
       "path": "evals/controlled-coding/test_lifecycle.py",
@@ -381,6 +381,36 @@
       "backup_status": "local_only_pending_verified_push",
       "size_bytes": 4178,
       "sha256": "c1ffa4c8c8fd1d38565abdd9b7847ba0cece9af8bc99915c9164bf4e18db00cd"
+    },
+    {
+      "path": "evals/planning-collector/test_verify_evidence.py",
+      "category": "offline_code_or_reviewed_summary",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "size_bytes": 3111,
+      "sha256": "c348efe2650d0030cd4b14b957f7c491f10db4b150fab97925575fe48701c2a2",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null
+    },
+    {
+      "path": "evals/controlled-coding/PHASE_2N_READINESS.md",
+      "category": "offline_code_or_reviewed_summary",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "size_bytes": 10937,
+      "sha256": "7db140f5fae748073b191fd5db75f0c04b613c4a0ec7bab773684a54c278a49e",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null
+    },
+    {
+      "path": "evals/controlled-coding/readiness-evidence.json",
+      "category": "offline_code_or_reviewed_summary",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "size_bytes": 11796,
+      "sha256": "08a82b8b2ad0dabc27cb2929ee56b5c8e609a42304591fe1a986dc4ad6287acf",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null
     }
   ]
 }
