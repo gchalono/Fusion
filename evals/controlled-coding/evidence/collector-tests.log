@@ -1,0 +1,38 @@
+test_absent_optional_ceiling_preserves_request_and_response (test_gateway.GatewayTests.test_absent_optional_ceiling_preserves_request_and_response) ... ok
+test_bad_hosts_urls_and_virtual_model_rejected (test_gateway.GatewayTests.test_bad_hosts_urls_and_virtual_model_rejected) ... ok
+test_call_cap_counts_all_clients_retries_and_compaction (test_gateway.GatewayTests.test_call_cap_counts_all_clients_retries_and_compaction) ... ok
+test_ceiling_refuses_reduction_and_preserves_lower_native_limit (test_gateway.GatewayTests.test_ceiling_refuses_reduction_and_preserves_lower_native_limit) ... ok
+test_concurrency_cannot_overspend (test_gateway.GatewayTests.test_concurrency_cannot_overspend) ... ok
+test_doubles_cannot_write_pilot_or_unmarked_paths (test_gateway.GatewayTests.test_doubles_cannot_write_pilot_or_unmarked_paths) ... ok
+test_forwarder_exact_destination_and_bounded_single_read (test_gateway.GatewayTests.test_forwarder_exact_destination_and_bounded_single_read) ... ok
+test_forwarder_preserves_http_error_status (test_gateway.GatewayTests.test_forwarder_preserves_http_error_status) ... ok
+test_immutability_hash_and_restart_refusal (test_gateway.GatewayTests.test_immutability_hash_and_restart_refusal) ... ok
+test_loopback_forwarding_and_repeated_sdk_attempts (test_gateway.GatewayTests.test_loopback_forwarding_and_repeated_sdk_attempts) ... ok
+test_missing_invalid_authorization (test_gateway.GatewayTests.test_missing_invalid_authorization) ... ok
+test_missing_usage_keeps_full_reservation_and_records_length (test_gateway.GatewayTests.test_missing_usage_keeps_full_reservation_and_records_length) ... ok
+test_no_fusion_execution_imports (test_gateway.GatewayTests.test_no_fusion_execution_imports) ... ok
+test_no_proxy_retry_native_retry_keeps_separate_reservations (test_gateway.GatewayTests.test_no_proxy_retry_native_retry_keeps_separate_reservations) ... ok
+test_nonstream_missing_usage_over_loopback_http (test_gateway.GatewayTests.test_nonstream_missing_usage_over_loopback_http) ... ok
+test_request_model_mismatch_no_forward (test_gateway.GatewayTests.test_request_model_mismatch_no_forward) ... ok
+test_response_model_mismatch_terminal_after_one_attempt (test_gateway.GatewayTests.test_response_model_mismatch_terminal_after_one_attempt) ... ok
+test_secret_in_raw_refused_without_forwarding_or_mutation (test_gateway.GatewayTests.test_secret_in_raw_refused_without_forwarding_or_mutation) ... ok
+test_spend_reservation_never_refunds_even_low_reported_usage (test_gateway.GatewayTests.test_spend_reservation_never_refunds_even_low_reported_usage) ... ok
+test_sse_raw_bytes_are_not_rewritten (test_gateway.GatewayTests.test_sse_raw_bytes_are_not_rewritten) ... ok
+test_stream_length_finish_recorded_without_rewriting_raw (test_gateway.GatewayTests.test_stream_length_finish_recorded_without_rewriting_raw) ... ok
+test_text_parts_supported_without_accepting_images (test_gateway.GatewayTests.test_text_parts_supported_without_accepting_images) ... ok
+test_unsupported_payloads_fail_before_dispatch (test_gateway.GatewayTests.test_unsupported_payloads_fail_before_dispatch) ... ok
+test_upstream_error_is_preserved_so_native_can_retry (test_gateway.GatewayTests.test_upstream_error_is_preserved_so_native_can_retry) ... ok
+test_complete_declaration_still_requires_engineering_proof (test_preflight.PreflightTests.test_complete_declaration_still_requires_engineering_proof) ... ok
+test_missing_config_never_runs (test_preflight.PreflightTests.test_missing_config_never_runs) ... ok
+test_durable_process_detected (test_snapshots.SnapshotTests.test_durable_process_detected) ... ok
+test_filesystem_detects_unapproved_path (test_snapshots.SnapshotTests.test_filesystem_detects_unapproved_path) ... ok
+test_native_runner_has_no_execution_entrypoints (test_snapshots.SnapshotTests.test_native_runner_has_no_execution_entrypoints) ... ok
+test_new_agent_or_mission_table_detected (test_snapshots.SnapshotTests.test_new_agent_or_mission_table_detected) ... ok
+test_row_mutation_detected_even_when_counts_match (test_snapshots.SnapshotTests.test_row_mutation_detected_even_when_counts_match) ... ok
+test_start_limit_survives_new_reader_and_identifier_fixed (test_snapshots.SnapshotTests.test_start_limit_survives_new_reader_and_identifier_fixed) ... ok
+test_tree_captures_empty_directories_modes_and_symlinks (test_snapshots.SnapshotTests.test_tree_captures_empty_directories_modes_and_symlinks) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 1.070s
+
+OK

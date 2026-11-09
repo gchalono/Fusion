@@ -1,0 +1,19 @@
+test_aggregate_restart (test_budget.BudgetTests.test_aggregate_restart) ... ok
+test_audit_failure_retains_reservation_and_blocks_transport (test_budget.BudgetTests.test_audit_failure_retains_reservation_and_blocks_transport) ... ok
+test_concurrent_and_per_run (test_budget.BudgetTests.test_concurrent_and_per_run) ... ok
+test_database_failure_is_terminal_before_transport (test_budget.BudgetTests.test_database_failure_is_terminal_before_transport) ... ok
+test_gateway_denies_before_transport (test_budget.BudgetTests.test_gateway_denies_before_transport) ... ok
+test_interruption_and_no_refund_from_usage (test_budget.BudgetTests.test_interruption_and_no_refund_from_usage) ... ok
+test_invalid (test_budget.BudgetTests.test_invalid) ... ok
+test_multiprocess_shared_cap (test_budget.BudgetTests.test_multiprocess_shared_cap) ... ok
+test_observations_do_not_authorize_spend (test_budget.BudgetTests.test_observations_do_not_authorize_spend) ... ok
+test_retry_and_uncertain_transport_keep_reservations (test_budget.BudgetTests.test_retry_and_uncertain_transport_keep_reservations) ... ok
+test_arm_information (test_harness.HarnessTests.test_arm_information) ... ok
+test_dry_run_no_fabricated_observations (test_harness.HarnessTests.test_dry_run_no_fabricated_observations) ... ok
+test_freeze_and_tamper (test_harness.HarnessTests.test_freeze_and_tamper) ... ok
+test_independent_tests_positive_and_negative_controls (test_harness.HarnessTests.test_independent_tests_positive_and_negative_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.576s
+
+OK

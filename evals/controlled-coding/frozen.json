@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "seed": 20261109,
+  "settings": {
+    "model": "gpt-4.1-mini-2025-04-14",
+    "temperature": 0,
+    "max_output_tokens": 4096,
+    "max_api_requests": 4,
+    "coding_token_limit": 16000,
+    "coding_spend_limit_usd": "0.15"
+  },
+  "aggregate_new_provider_spend_limit_usd": "2.00",
+  "files": {
+    "fixtures/merge-intervals/acceptance/test_acceptance.py": "a3f8ad73b23cadea8e5a196e720f7d0f621ea3240591636680b6b3610dcbb73c",
+    "fixtures/merge-intervals/initial/solution.py": "bebc624a42d606c9614702861d999c46f1359b7d4fedda0f0773bb5a6c061d93",
+    "fixtures/merge-intervals/objective.txt": "398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa",
+    "fixtures/parse-duration/acceptance/test_acceptance.py": "302530c570a1a3d3e6047c3dce6e053fb92c0f220387ed1730a1d9d7ecec57db",
+    "fixtures/parse-duration/initial/solution.py": "ab8ad4a3634c4b5a1c650dbd8259136a179a495d69df97a0823b9f127e4ec201",
+    "fixtures/parse-duration/objective.txt": "12cc69703ccc4f7755c9aae33591296f829263f20c8895f247fd073cde989d8a",
+    "fixtures/stable-toposort/acceptance/test_acceptance.py": "2251daef3f53015057616e956aa34f1f85b8f19f90aeaea3d750499a2c401537",
+    "fixtures/stable-toposort/initial/solution.py": "ccda99983c3842a2e14662a59d7f88046b07ab515e500e2ff9337e84fe571c3c",
+    "fixtures/stable-toposort/objective.txt": "fa41bddde00add3d946a7755e97f3e1af4608045637f9b3e82970ede937e9376"
+  },
+  "execution_order": [
+    {
+      "task_id": "stable-toposort",
+      "configuration": "B"
+    },
+    {
+      "task_id": "parse-duration",
+      "configuration": "C"
+    },
+    {
+      "task_id": "stable-toposort",
+      "configuration": "A"
+    },
+    {
+      "task_id": "merge-intervals",
+      "configuration": "B"
+    },
+    {
+      "task_id": "parse-duration",
+      "configuration": "B"
+    },
+    {
+      "task_id": "stable-toposort",
+      "configuration": "C"
+    },
+    {
+      "task_id": "parse-duration",
+      "configuration": "A"
+    },
+    {
+      "task_id": "merge-intervals",
+      "configuration": "A"
+    },
+    {
+      "task_id": "merge-intervals",
+      "configuration": "C"
+    }
+  ]
+}

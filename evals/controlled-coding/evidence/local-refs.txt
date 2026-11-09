@@ -1,0 +1,5 @@
+eb7eef49d5a0fe3e84e99be30e8ed9622a694e35 HEAD
+3d92a302853c32472d2420d3835200ecc469905f refs/heads/eval/phase2a-collector
+3d92a302853c32472d2420d3835200ecc469905f refs/heads/eval/phase2n
+eb7eef49d5a0fe3e84e99be30e8ed9622a694e35 refs/heads/work
+eb7eef49d5a0fe3e84e99be30e8ed9622a694e35 refs/remotes/origin/main

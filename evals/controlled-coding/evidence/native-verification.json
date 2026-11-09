@@ -1,0 +1,10 @@
+{
+  "classification": "OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS",
+  "scenario": "comprehensive",
+  "verified": true,
+  "model_http_attempts": 7,
+  "database_changed_tables": [
+    "project.ai_sessions"
+  ],
+  "reserved_micro_usd_estimated": 6128640
+}

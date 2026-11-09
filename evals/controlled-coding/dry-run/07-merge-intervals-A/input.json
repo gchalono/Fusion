@@ -1,0 +1,3 @@
+{
+  "objective": "Implement merge_intervals(intervals) in solution.py. Return sorted merged closed integer intervals as lists; touching endpoints overlap. Accept unsorted input, return [] for empty input, preserve the input, and raise ValueError for reversed endpoints.\n"
+}

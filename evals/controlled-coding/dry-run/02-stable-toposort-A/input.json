@@ -1,0 +1,3 @@
+{
+  "objective": "Implement stable_toposort(nodes, edges) in solution.py. Nodes are unique strings in priority order; edges are (before, after). Return a topological ordering, always choosing the earliest input node currently available. Duplicate edges count once. Raise ValueError for cycles or edges naming unknown nodes. Preserve inputs.\n"
+}

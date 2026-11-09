@@ -1,0 +1,44 @@
+{
+  "status": "LIVE_BLOCKED_PHASE2M_NOT_FOUND",
+  "local_branches": {
+    "work": "eb7eef49d5a0fe3e84e99be30e8ed9622a694e35",
+    "eval/phase2a-collector": "3d92a302853c32472d2420d3835200ecc469905f",
+    "eval/phase2n": "3d92a302853c32472d2420d3835200ecc469905f"
+  },
+  "remote_heads": {
+    "origin/main": "eb7eef49d5a0fe3e84e99be30e8ed9622a694e35"
+  },
+  "remote_tags": [],
+  "unreachable_commits": 0,
+  "unreachable_blobs": 7,
+  "phase2m_recovered": false,
+  "real_provider_requests_dispatched": 0,
+  "new_provider_spend_usd": "0.00",
+  "tests": {
+    "controlled_coding": {
+      "passed": 14,
+      "failed": 0
+    },
+    "existing_collector": {
+      "passed": 33,
+      "failed": 0
+    },
+    "native_comprehensive": {
+      "classification": "OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS",
+      "scenario": "comprehensive",
+      "verified": true,
+      "model_http_attempts": 7,
+      "database_changed_tables": [
+        "project.ai_sessions"
+      ],
+      "reserved_micro_usd_estimated": 6128640
+    }
+  },
+  "limitations": [
+    "Phase 2M code and artifacts unavailable",
+    "No recovered supervisor or live sole-egress proof",
+    "Native integration uses legacy gateway; shared ledger integration tested with fake transports only",
+    "New task plans and approvals missing",
+    "No live coding results"
+  ]
+}
