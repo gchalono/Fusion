@@ -82,17 +82,21 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "20a657611406395f202bf1bfa2868ce0088aff4a1fab9ed0228810d4a1155c1e",
+      "sha256": "8d85b8faf5155d29fce86f483adb2b222fc3d0ab295d32154abb76f6b3beb7ce",
       "source_blob": "bd4c658cb6dc16f0505570f0d930ee70242263e3",
       "mode": "100644",
-      "category": "evaluation source/test or reviewed metadata"
+      "category": "evaluation source/test or reviewed metadata",
+      "source_sha256": "20a657611406395f202bf1bfa2868ce0088aff4a1fab9ed0228810d4a1155c1e",
+      "transformation": "Append sanitized publication and recovery receipt; original checkpoint text preserved."
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "9139eb1c2f538e4c7d88df05c1235bfc7b021ef293e74086146facb9471ad12c",
+      "sha256": "2a12126e7541130076e1be8852137369a784a095b83ff607c87f82286f209de9",
       "source_blob": "3f7d864f3f186531bd91e2013a43870bd5464887",
       "mode": "100644",
-      "category": "evaluation source/test or reviewed metadata"
+      "category": "evaluation source/test or reviewed metadata",
+      "source_sha256": "9139eb1c2f538e4c7d88df05c1235bfc7b021ef293e74086146facb9471ad12c",
+      "transformation": "Append sanitized publication and recovery receipt; original checkpoint text preserved."
     },
     {
       "path": "evals/artifact-manifest.json",

@@ -13,14 +13,21 @@
     },
     {
       "source_commit": "4d96fd89186661e84dbd6725277414ecfc8df2c7",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "1c5404e19e42dc6ca1d65486c4fc591e5237bdf7",
       "previous_backup": "ba35658e50bc8182ecc1fb482cf02ff5199bc9b2",
       "event": "milestone",
       "milestone": "Verified offline token revision and native ABC; export test launcher checked",
-      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+      "remote_status": "INDEPENDENT_FETCH_AND_FRESH_CLONE_VERIFIED",
+      "fresh_clone_tests": {
+        "passed": 87,
+        "failed": 0,
+        "skipped_private_dependencies": 8
+      },
+      "history_commits_scanned": 4,
+      "reachable_blobs_scanned": 7813
     }
   ],
   "current_source": "b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c",
   "snapshot_identity": "resolve HEAD; source mapping also in commit trailer",
-  "remote_status": "PENDING"
+  "remote_status": "VERIFIED; full private experiment still requires external dependencies"
 }

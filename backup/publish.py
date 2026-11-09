@@ -85,6 +85,8 @@ def checkpoint_from(source,destination,event,milestone):
  # Explicitly stage all files, including removals from previous snapshot.
  subprocess.run(['git','read-tree','--empty'],cwd=destination,check=True)
  index=json.loads((destination/'backup/CHECKPOINT_INDEX.json').read_text()) if (destination/'backup/CHECKPOINT_INDEX.json').exists() else {'entries':[]}
+ for entry in index['entries']:
+  if entry.get('snapshot_commit','').startswith('SELF'):entry['snapshot_commit']=old
  index['entries'].append({'source_commit':source_sha,'snapshot_commit':'SELF (resolve commit Source-Commit trailer)','previous_backup':old,'event':event,'milestone':milestone,'remote_status':'PENDING_INDEPENDENT_VERIFICATION'})
  (destination/'backup/CHECKPOINT_INDEX.json').write_text(json.dumps(index,indent=2)+'\n')
  # A future checkpoint needs source-independent tests before any publication.
