@@ -58,3 +58,10 @@ Implementation: `ab571b9aa0115079a8866e3e9b0348c82253a881`; branch `eval/phase2n
 Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
 Environment: Python 3.12.14; Git git version 2.52.0.
 Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
+
+## Validated checkpoint 2026-11-09T05:22:42.141148+00:00
+
+Implementation: `1976dfbc9f5dd7aea85a7d6ce19e5029415b7691`; branch `eval/phase2n`.
+Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
+Environment: Python 3.12.14; Git git version 2.52.0.
+Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
