@@ -65,3 +65,18 @@ Implementation: `1976dfbc9f5dd7aea85a7d6ce19e5029415b7691`; branch `eval/phase2n
 Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
 Environment: Python 3.12.14; Git git version 2.52.0.
 Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
+
+## VERIFIED native/isolation readiness — 2026-11-08 Pacific
+
+VERIFIED: code checkpoint c8a302767001910b188d734b5f55f435319ea08b on eval/phase2n.
+VERIFIED: 66 unit tests pass (20 coding, 37 collector, 9 persistence); 20 scoped
+namespace cases pass with local controls. Genuine native comprehensive fixture
+and independent verifier pass: seven local model HTTP attempts, only
+project.ai_sessions changed, empty MCP, all exposure retained under missing usage.
+VERIFIED: immutable prior rate entries, same fusion-phase2a-pilot identifier,
+three starts/hour cap; no provider requests or paid inference. The earlier verifier
+shadowing bug was reproduced, fixed under evals and covered by two regression tests.
+VERIFIED: isolation overall PARTIAL; untested live wiring/protocol/resume/pricing
+controls remain UNVERIFIED. No original Phase 2M evidence or approvals recovered.
+VERIFIED: evidence hashes and full limitations are in controlled-coding/readiness-evidence.json
+and controlled-coding/PHASE_2N_READINESS.md. Raw artifacts remain private/local.

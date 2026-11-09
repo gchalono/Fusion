@@ -46,3 +46,10 @@ VERIFIED: Latest readiness milestone: 66 unit tests, 20 namespace probes and
 genuine native comprehensive fixture passed. Native uses only a local test-double
 upstream; seven shared-ledger requests retained worst-case exposure. Isolation
 overall PARTIAL. See controlled-coding/PHASE_2N_READINESS.md for current gates.
+
+VERIFIED: Final native fixture at c8a302767001910b188d734b5f55f435319ea08b
+and independent verification pass; rate ledger prior entries unchanged. Overall
+PHASE_2N_PARTIALLY_READY: strict protocol-positive controls, combined restart,
+fixed live experiment ledger/runner wiring, real pricing bounds and the human
+approval adapter remain gates. Next work is offline completion of these gates;
+no paid execution is authorized.

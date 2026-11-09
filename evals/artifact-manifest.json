@@ -397,8 +397,8 @@
       "category": "offline_code_or_reviewed_summary",
       "sensitivity": "reviewed_non_sensitive",
       "required_for_phase2n_persistence": true,
-      "size_bytes": 10937,
-      "sha256": "7db140f5fae748073b191fd5db75f0c04b613c4a0ec7bab773684a54c278a49e",
+      "size_bytes": 11857,
+      "sha256": "68dcd323088ffb14097ec0c264e7de31508c53888644e8d13a0de32ab72abbe7",
       "backup_status": "local_only_pending_verified_push",
       "durable_location": null
     },
@@ -407,8 +407,8 @@
       "category": "offline_code_or_reviewed_summary",
       "sensitivity": "reviewed_non_sensitive",
       "required_for_phase2n_persistence": true,
-      "size_bytes": 11796,
-      "sha256": "08a82b8b2ad0dabc27cb2929ee56b5c8e609a42304591fe1a986dc4ad6287acf",
+      "size_bytes": 12420,
+      "sha256": "41ad42761ca0dc06b7116c6f0fc8807e372a968217dd1858f9601ef331f64587",
       "backup_status": "local_only_pending_verified_push",
       "durable_location": null
     }

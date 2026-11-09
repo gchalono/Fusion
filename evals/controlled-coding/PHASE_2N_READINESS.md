@@ -22,7 +22,7 @@ no host-wide configuration, firewall or package changes are authorized/performed
 | No real provider credential exists anywhere outside a future gateway, or all possible files/FD types are proven secret-free | UNVERIFIED | Only fixture canary and declared surfaces tested; no real credential was loaded |
 | Gateway token is local, revocable, bound to trusted run/caps; clients cannot select a new run/policy; policy hash is immutable per run | VERIFIED | isolation.py:68; budget.py:66; namespace revocation/cap cases |
 | Protected files cannot be written through the granted namespace view; no admin interface exists | VERIFIED | filesystem and endpoint cases; isolation.py:22,68 |
-| Each guarded request reserves and fsyncs before transport; observed usage, estimated charge and measured charge remain separate | VERIFIED | budget.py:160,113,141; lifecycle/crash tests |
+| Each guarded request reserves and fsyncs before transport; observed usage, estimated charge and measured charge remain separate | VERIFIED | budget.py:75,113,141; lifecycle/crash tests |
 | Missing/truncated/failed/interrupted requests retain worst-case exposure; restart marks unreconciled requests UNCERTAIN without refund | VERIFIED | budget.py:95,105; test_lifecycle.py; test_gateway_crash.py |
 | Aggregate $2 / coding $0.15 / four-call limits serialize across processes; settlement never adds the same request a second time or releases exposure | VERIFIED | test_budget.py; test_lifecycle.py |
 | Client auth cannot become upstream auth, output tokens clamp and are logged; unknown endpoint/host/model/client denied | VERIFIED | inference_socket and local stub controls; fixture auth only |
@@ -30,7 +30,7 @@ no host-wide configuration, firewall or package changes are authorized/performed
 | A combined in-namespace mid-request kill, restart and authorized resume protocol is fully tested | UNVERIFIED | Host-side HTTP kill/recovery and namespace shutdown are separate tests |
 | Fixture upstream contacts are exclusively local; real-host contact counter is zero | VERIFIED | namespace summary: local stub only; no real provider URL used |
 | Host-wide packet capture or provider invoice establishes zero charges | UNVERIFIED | No packet capture/provider billing query; real transport never invoked, measured charge remains null |
-| Genuine native PostgreSQL/ICU interview/session integration passed at source 465151ee280c39a90e61b27fcd2a2de1f093700f | VERIFIED | native-verified.json; seven local attempts, only project.ai_sessions changed |
+| Genuine native PostgreSQL/ICU interview/session integration passed at source c8a302767001910b188d734b5f55f435319ea08b | VERIFIED | native-verified.json; seven local attempts, only project.ai_sessions changed |
 | Production/live coding execution is forced through this reference boundary | UNVERIFIED | Reference namespace is not integrated into a live coding runner |
 | Every future planning/coding run must reuse one fixed experiment ledger | UNVERIFIED | Atomicity proved for a selected shared DB; fixture DBs are not a paid supervisor |
 | The initial verifier SQLite-variable shadowing failure was corrected and capture replay now passes | VERIFIED | native-verifier-infrastructure-error.log; test_verify_evidence.py, same immutable native capture |
@@ -131,3 +131,17 @@ UNVERIFIED: no live approval is requested. Before the first live pilot: finish t
 missing strict security controls and live-runner integration, verify pricing/input
 bounds, specify human-approved fresh planning inputs and receive separate explicit
 paid authorization (at most $2 aggregate), model/settings and execution limits.
+
+VERIFIED: final code source c8a302767001910b188d734b5f55f435319ea08b also
+passed the genuine comprehensive native fixture and independent capture verifier.
+Seven local stub contacts matched seven gateway reservations; only
+project.ai_sessions changed. All seven requests are UNCERTAIN because fixture
+usage is deliberately absent, retaining 1,127 micro-USD of synthetic exposure,
+not a provider charge. Prior start-ledger entries were unchanged; one start was
+appended, leaving two active against the approved limit of three. No provider
+requests, real credentials, genuine plans or approved task answers were produced.
+
+VERIFIED: milestone 465151ee280c39a90e61b27fcd2a2de1f093700f passed fresh
+remote-clone preflight and its 64-test suite. Final documentation-only checkpoint
+preflight, fetch/ls-remote equality and 66-test recovery are recorded externally
+after publication, avoiding a circular self-SHA in this file.

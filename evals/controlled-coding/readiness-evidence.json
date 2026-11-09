@@ -270,7 +270,7 @@
     ],
     "reserved_micro_usd_estimated": 1127
   },
-  "native_source_commit": "465151ee280c39a90e61b27fcd2a2de1f093700f",
+  "native_source_commit": "c8a302767001910b188d734b5f55f435319ea08b",
   "private_artifact_hashes": {
     "capability-probe.json": {
       "size_bytes": 789,
@@ -343,6 +343,25 @@
     "rate-window.json": {
       "size_bytes": 135,
       "sha256": "1919cb35dae514c0d768233a87dd40e728e1691ce108a795be6f1dd9ca57088d"
+    },
+    "native-final.log": {
+      "size_bytes": 135,
+      "sha256": "644d34a74f4ae8f26b9b99da59e701539a2b078d0bfa6b22395a4a9c370ef733"
+    },
+    "native-final-verified.json": {
+      "size_bytes": 243,
+      "sha256": "1ab0f1be8b88c05f5c4f56ecb04d9a9b6e3689d1ef7f961a0d24200493c7daa5"
+    },
+    "native-rate-integrity.json": {
+      "size_bytes": 148,
+      "sha256": "ce89a56211fab38e436a313e3aec2f99ca8bfc36970198fc83544164019a7a6c"
     }
+  },
+  "rate_integrity": {
+    "prior_entries_unchanged": true,
+    "added_starts": 1,
+    "identifier": "fusion-phase2a-pilot",
+    "max_starts_per_hour": 3,
+    "active_after": 2
   }
 }
