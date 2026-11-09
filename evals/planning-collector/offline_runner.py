@@ -1,6 +1,9 @@
 """Disposable namespace supervisor: real Fusion -> gateway -> local mock HTTP.
 
 FNXC:PlanningEvaluation 2026-11-04-10:05:
+FNXC:Persistence 2026-11-09-04:02:
+Resolve source from this checkout and require an explicit persistent rate ledger
+so recovered clones never depend on an older worktree or reset start accounting.
 No paid transport or credentials. Mount a fresh home and temp tree, leave source
 read-only, and remove non-loopback networking in a child namespace only.
 """
@@ -24,7 +27,7 @@ from snapshots import database_diff, filesystem_diff, process_diff
 from rate_limit import reserve_start
 
 HERE = Path(__file__).resolve().parent
-SOURCE = Path('/workspace/Fusion')
+SOURCE = HERE.parents[1]
 ROOT = Path('/run/fusion-eval')
 
 
@@ -196,10 +199,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--scenario', choices=['normal','format-retry','upstream-retry','missing-usage','model-mismatch','length','comprehensive'], default='normal')
     parser.add_argument('--inside', action='store_true')
+    parser.add_argument('--rate-ledger', type=Path, help='Persistent offline start ledger outside disposable namespaces')
     args = parser.parse_args()
     if args.inside:
         inside(args.scenario); return
-    reserve_start('/workspace/phase2a-evidence/offline-starts.json')
+    if args.rate_ledger is None:
+        parser.error('--rate-ledger required; reuse one durable ledger across offline starts')
+    reserve_start(args.rate_ledger)
     root = Path(tempfile.mkdtemp(prefix='fusion-native-offline-'))
     for d in ('home','scratch','project','database','results'): (root/d).mkdir()
     (root/'.offline-test').touch()

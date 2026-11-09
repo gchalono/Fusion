@@ -1,0 +1,50 @@
+{
+  "evals/controlled-coding/evidence/artifact-path-search.txt": [
+    "6c830cab592b75a058bfcc17fe9f3a3204afde7e6dc025893e4a3befcd5ecfa6"
+  ],
+  "evals/controlled-coding/evidence/collector-tests.log": [
+    "f33fe5d74f3b73e981f294eab7a68d7a72d9dbc967be9452c1240b24167892e1"
+  ],
+  "evals/controlled-coding/evidence/controlled-tests.log": [
+    "6b696cbd55a4caa0f545b168b6791d37af6f2224030838ccd2455e2e0387279b"
+  ],
+  "evals/controlled-coding/evidence/eval-commits.txt": [
+    "138c2b07ce2ac7d3fdd9df54c4ba7da826e135c2b87efe66dac68322a9ff02bd"
+  ],
+  "evals/controlled-coding/evidence/git-fsck.txt": [
+    "9cb6717b3f84188964e3659d644fc43d68b5e22c71b8fea30939b492b06c9141"
+  ],
+  "evals/controlled-coding/evidence/local-refs.txt": [
+    "ce0b3fec1553e7d0cada2b031cc486c7e537f0419e8868d861821763cd170fb0"
+  ],
+  "evals/controlled-coding/evidence/native-offline-escalated.log": [
+    "d42f1f9b742707964f6346d477e5175f2c18d6d43542d92a3becbecab346e47f"
+  ],
+  "evals/controlled-coding/evidence/native-offline.log": [
+    "d877b59878804f1897c627ac3d0f8f3c3b7797e24bb02f616aa7a3dd162c2c79"
+  ],
+  "evals/controlled-coding/evidence/native-verification.json": [
+    "a8248d6a1f9a5dbe8421abeb51b92a0206350bdcb89649d92a83d7c268ed4599"
+  ],
+  "evals/controlled-coding/evidence/offline-status.json": [
+    "60593aa0bf85a9d621a6d411a63cc9318ae16e694068c2beebb8b1f2d8fa40b3"
+  ],
+  "evals/controlled-coding/evidence/reflogs.json": [
+    "1d7d49ff7d113619fe3dfe6589a05d48d312039bdc0f8b64cd58cba14f5bc53d"
+  ],
+  "evals/controlled-coding/evidence/remote-refs.txt": [
+    "f52f3039709c71ab48ccdd1aec06266785d8bb8ccabaa5417437b09ac8859710"
+  ],
+  "evals/controlled-coding/evidence/unreachable-scan.json": [
+    "b5c727f4267498d50d1267ac4a36d5f868bf28e23e9cdb696503aafaa3c79b76"
+  ],
+  "evals/controlled-coding/evidence/worktree-status.txt": [
+    "237983feee333030b6c8a6e68cdd254548a515f8fd6baef965b19963dc8ee087"
+  ],
+  "evals/planning-collector/briefs.json": [
+    "b80e4e85954188cc5ff2bf274ca661e00dc1d9b8a3d0b66112cba4712fb8dbfc"
+  ],
+  "evals/planning-collector/config.example.json": [
+    "5a279a4669f5cdcdd52e2e16e3365ec64637d324b80a92f3b0e7665bc1faf210"
+  ]
+}

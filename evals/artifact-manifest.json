@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "note": "Public manifest lists only non-sensitive paths. Restricted metadata stays local. Backup status is historical; independently verify the remote tip.",
+  "artifacts": [
+    {
+      "path": "evals/AGENTS.md",
+      "size_bytes": 2560,
+      "sha256": "ca529786ac3a1466352ba13ec6d8f77af8bfa8a2be36b59939819789aff1116f",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/acceptance.py",
+      "size_bytes": 1860,
+      "sha256": "fa88729d116259a615d97bf289eb7199c129de8c3bf54b8eb80c5273b250fc0c",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/budget.py",
+      "size_bytes": 6863,
+      "sha256": "3aecdf1d021e633e6286a5eccc18a978864a8c8e2eb51dba263fe8c6bcd816f5",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/merge-intervals/acceptance/test_acceptance.py",
+      "size_bytes": 802,
+      "sha256": "a3f8ad73b23cadea8e5a196e720f7d0f621ea3240591636680b6b3610dcbb73c",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/merge-intervals/initial/solution.py",
+      "size_bytes": 58,
+      "sha256": "bebc624a42d606c9614702861d999c46f1359b7d4fedda0f0773bb5a6c061d93",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/merge-intervals/objective.txt",
+      "size_bytes": 252,
+      "sha256": "398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/parse-duration/acceptance/test_acceptance.py",
+      "size_bytes": 1126,
+      "sha256": "302530c570a1a3d3e6047c3dce6e053fb92c0f220387ed1730a1d9d7ecec57db",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/parse-duration/initial/solution.py",
+      "size_bytes": 57,
+      "sha256": "ab8ad4a3634c4b5a1c650dbd8259136a179a495d69df97a0823b9f127e4ec201",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/parse-duration/objective.txt",
+      "size_bytes": 315,
+      "sha256": "12cc69703ccc4f7755c9aae33591296f829263f20c8895f247fd073cde989d8a",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/stable-toposort/acceptance/test_acceptance.py",
+      "size_bytes": 835,
+      "sha256": "2251daef3f53015057616e956aa34f1f85b8f19f90aeaea3d750499a2c401537",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/stable-toposort/initial/solution.py",
+      "size_bytes": 58,
+      "sha256": "ccda99983c3842a2e14662a59d7f88046b07ab515e500e2ff9337e84fe571c3c",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/stable-toposort/objective.txt",
+      "size_bytes": 323,
+      "sha256": "fa41bddde00add3d946a7755e97f3e1af4608045637f9b3e82970ede937e9376",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/frozen.json",
+      "size_bytes": 2123,
+      "sha256": "9d71a3317b9e0531af7c6dee66c8ba6ad70a36b6bd7be0ccc0ee8fb997b90c30",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/harness.py",
+      "size_bytes": 4546,
+      "sha256": "955bc765a62ed4ce478e0a5235aee52276a64dbd0e1b66e80f87fd01d19c689b",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/test_budget.py",
+      "size_bytes": 9760,
+      "sha256": "9d31c5ceee94d1fe3e0158c8421803fcc84a2098015985f2654ec53bfe92409e",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/controlled-coding/test_harness.py",
+      "size_bytes": 3099,
+      "sha256": "b630f0b929896903fc01343ab669cc88c5bcc671c82ef75f45c22bc0fdbb0e48",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/checkpoint.sh",
+      "size_bytes": 257,
+      "sha256": "4434181591a77992469136b403fb9171c0071cc14e98c1c78d31242caa8bf035",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/preflight.sh",
+      "size_bytes": 247,
+      "sha256": "c1c5629957f8445b9176466707591f8bd467419d6af6c31958bc0de88c889af9",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/reviewed-artifacts.json",
+      "size_bytes": 2150,
+      "sha256": "b390efdb75fa019df05cec4f630f8701ab6af1334a693f0a45345ed94afe2c17",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/scan.py",
+      "size_bytes": 4010,
+      "sha256": "f678b925de3fc4e4b2e0a584f610f36401ac3d76ab08d9ce2cba60796b480b49",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/test_persistence.py",
+      "size_bytes": 4742,
+      "sha256": "fcccdbc26f9f1e54d6e5ce182392ef979495e1648d33ec24a3d07962b866c51d",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/persistence/tooling.py",
+      "size_bytes": 9088,
+      "sha256": "7d0fed8a0c60411f69ee2673c104c626f909ca98daa2e78835afcdadcfeaa774",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/gateway.py",
+      "size_bytes": 17072,
+      "sha256": "8c15080a3ff7007098dba1265458da29335894d4a4ecdddb2c318a76a11264c8",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/native-runner.mts",
+      "size_bytes": 7732,
+      "sha256": "eae011b8417154dd6c21e9b0c825e57ed5b4d3856b9e44d48e67abdbc253623d",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/offline_runner.py",
+      "size_bytes": 14569,
+      "sha256": "95ba47228f8bc1f3ca1b5e2ef5efcd9072e0cdfafe507893a8b49ffebe3c502d",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/preflight.py",
+      "size_bytes": 2354,
+      "sha256": "231c25b59ac78772eb55e7a1b2da4584f8aac7fc45a821b437a1ff8d4a006887",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/provenance.py",
+      "size_bytes": 1031,
+      "sha256": "09611bbfc75506a728d9aa8c4719ae6e1a2aff95e1b8e9da0a10b5449be20d13",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/rate_limit.py",
+      "size_bytes": 1358,
+      "sha256": "baafcb7dddf89d21325528d8edc4227d4a96584ee22522f4199fa51b9e40586d",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/snapshots.py",
+      "size_bytes": 1505,
+      "sha256": "5afa960b15653cdf8feaa1d4530233500861e3b40aaf3d331ac0c1aa062a5d21",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/test_gateway.py",
+      "size_bytes": 14196,
+      "sha256": "6fd3665a3a0f364e69a7992c0d6dfa6d7318f496833c20d6aa77a73eefde82b1",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/test_preflight.py",
+      "size_bytes": 980,
+      "sha256": "c2d5032dc0aaf6423f99e20fe3634d227f469f3a6969ed11377cc1c6bb46b267",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/test_snapshots.py",
+      "size_bytes": 3540,
+      "sha256": "014e7d1efca7037c94c0c0c2cfdccaff340a8b17e3b74aae7e2b5225c8001b83",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "path": "evals/planning-collector/verify_evidence.py",
+      "size_bytes": 2990,
+      "sha256": "de2efb5294cc142fc8cc7210c3484a08a9c88e468e830ddb955ac1442c177538",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
+      "required_for_phase2n_persistence": true
+    },
+    {
+      "artifact_id": "phase2m-required-evidence",
+      "category": "planning_approvals_usage_audit",
+      "sensitivity": "potentially_sensitive",
+      "size_bytes": null,
+      "sha256": null,
+      "backup_status": "missing",
+      "durable_location": null,
+      "required_for_phase2n_persistence": false
+    },
+    {
+      "artifact_id": "local-native-mock-evidence",
+      "category": "raw_offline_test_evidence",
+      "sensitivity": "restricted_pending_review",
+      "size_bytes": null,
+      "sha256": null,
+      "backup_status": "local_only_not_uploaded",
+      "durable_location": null,
+      "required_for_phase2n_persistence": false
+    }
+  ]
+}
