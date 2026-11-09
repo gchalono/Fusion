@@ -33,12 +33,24 @@ def verify(root):
         assert record['output_limit_intervention'] is False
         total += reservation['reserved_micro_usd']
     assert total == v['reserved_micro_usd_estimated']
+    if (r/'shared-budget.db').exists():
+        import sqlite3
+        with sqlite3.connect(f"file:{r/'shared-budget.db'}?mode=ro",uri=True) as db:
+            shared=db.execute('SELECT COALESCE(SUM(upper_micro),0),COUNT(*) FROM reservations').fetchone()
+            assert shared[0]==total and shared[1]==v['gateway_forwarded_attempts']
+            assert shared[0]<=2000000
+            expected=hashlib.sha256(canonical(read('gateway-policy.json'))).hexdigest()
+            assert db.execute('SELECT policy_sha256 FROM run_policies').fetchone()[0]==expected
+            for ident,state in db.execute("SELECT r.id,(SELECT state FROM transitions t WHERE t.reservation_id=r.id ORDER BY t.id DESC LIMIT 1) FROM reservations r"):
+                assert state in ('UNCERTAIN','SETTLED')
+            assert db.execute('SELECT COUNT(*) FROM observations WHERE measured_charge_micro IS NOT NULL').fetchone()[0]==0
+
     if v['scenario'] == 'model-mismatch':
         assert v['native_failure'] and v['gateway_forwarded_attempts'] == 0
         assert 'model_mismatch' in v['gateway_blocked_reasons']
     else:
         assert not v['native_failure']
-        native = read('native-result.json')
+        native = read('native-test-double.json' if (r/'native-test-double.json').exists() else 'native-result.json')
         assert native['summary'] and native['classification'] == 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS'
         if v['scenario'] == 'comprehensive':
             assert v['gateway_forwarded_attempts'] == 7

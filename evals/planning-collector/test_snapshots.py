@@ -64,3 +64,20 @@ class SnapshotTests(unittest.TestCase):
             reserve_start(p, now=4601)
             entries = json.loads(p.read_text())
             self.assertEqual(len({e['identifier'] for e in entries}), 1)
+
+
+class StricterRateTests(unittest.TestCase):
+    def test_new_cap_preserves_old_starts(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'ledger.json'
+            for _ in range(4): reserve_start(p,now=1000)
+            before=p.read_bytes()
+            with self.assertRaisesRegex(Blocked,'native_start_self_limit'):
+                reserve_start(p,now=1001,max_starts=3)
+            self.assertEqual(p.read_bytes(),before)
+            reserve_start(p,now=4601,max_starts=3)
+
+    def test_cannot_raise_native_cap(self):
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(Blocked,'invalid_native_start_cap'):
+                reserve_start(Path(d)/'ledger.json',max_starts=6)

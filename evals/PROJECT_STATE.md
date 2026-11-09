@@ -37,3 +37,7 @@ integrate the shared ledger with its supervisor. Prove gateway-only egress with
 negative bypass tests before any separately approved live experiment. Coding
 token/time limits and measured end-to-end reporting remain incomplete. Preserve
 the hard $2 aggregate new-spend cap; paid inference is not authorized.
+
+VERIFIED: Current native/isolation milestone: 64 unit tests and 20 reference
+namespace probes passed. Isolation overall PARTIAL; full native validation awaits
+the unchanged three-start window. See controlled-coding/PHASE_2N_READINESS.md.

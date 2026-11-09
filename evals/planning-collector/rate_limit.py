@@ -6,7 +6,10 @@ from pathlib import Path
 from gateway import Blocked, RATE_LIMIT_IDENTIFIER
 
 
-def reserve_start(ledger, *, now=None):
+def reserve_start(ledger, *, now=None, max_starts=5):
+    # FNXC:NativeIsolation 2026-11-09-04:44: Apply stricter operator caps to the same ledger.
+    if type(max_starts) is not int or not 1 <= max_starts <= 5:
+        raise Blocked("invalid_native_start_cap")
     now = time.time() if now is None else now
     path = Path(ledger)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -17,7 +20,7 @@ def reserve_start(ledger, *, now=None):
         if any(e['identifier'] != RATE_LIMIT_IDENTIFIER for e in entries):
             raise Blocked('rate_limit_identifier_mismatch')
         active = [e for e in entries if now - e['timestamp'] < 3600]
-        if len(active) >= 5:
+        if len(active) >= max_starts:
             raise Blocked('native_start_self_limit')
         entries.append({'identifier': RATE_LIMIT_IDENTIFIER, 'timestamp': now})
         import os

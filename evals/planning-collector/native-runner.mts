@@ -103,7 +103,7 @@ try {
   const actual = s.agent?.session?.model;
   if (actual?.provider !== 'offline-evaluation' || actual?.id !== 'offline-physical-model') throw new Error('resolved_model_mismatch');
   // Raw assistant text remains native, unedited and explicitly non-genuine.
-  write('native-result.json', { classification: 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
+  write('native-test-double.json', { classification: 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
     transcript, summary: await native.getMissionInterviewSummary(sessionId),
     actual_model: { provider: actual.provider, id: actual.id },
     raw_assistant: s.agent.session.state.messages.filter((m: any) => m.role === 'assistant')

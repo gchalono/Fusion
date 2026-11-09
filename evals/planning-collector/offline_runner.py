@@ -119,8 +119,10 @@ def inside(scenario):
        upstream_url='https://offline.invalid/v1/chat/completions', approved_hosts=['offline.invalid'],
        api_type='openai-chat-completions', physical_model_verified=True,
        token_bound_evidence_sha256='0'*64, max_model_calls=8, spend_ceiling_usd='100',
-       input_price_per_million='3', output_price_per_million='15', input_token_bound=128000,
+       input_price_per_million='0.001', output_price_per_million='0.001', input_token_bound=128000,
        output_token_bound=32768, output_ceiling=None))
+    from dataclasses import asdict
+    save('gateway-policy.json',asdict(p))
     def transport(url, raw):
         if url != p.upstream_url: raise RuntimeError('unexpected_destination')
         c = http.client.HTTPConnection(*mock.server_address, timeout=10)
@@ -128,7 +130,11 @@ def inside(scenario):
             c.request('POST', '/v1/chat/completions', raw, {'Content-Type': 'application/json', 'X-Offline-Gateway': capability})
             r = c.getresponse(); return r.status, r.getheader('Content-Type', 'application/json'), r.read(8_000_001)
         finally: c.close()
-    gateway = Gateway(p, Artifacts(artifacts_dir, offline=True), transport)
+    sys.path.insert(0,str(HERE.parent/'controlled-coding'))
+    from budget import AggregateBudget, guard_gateway
+    shared_ledger=AggregateBudget(ROOT/'results'/'shared-budget.db')
+    gateway = guard_gateway(Gateway(p, Artifacts(artifacts_dir, offline=True), transport),
+                            shared_ledger,'planning','native-offline-'+scenario)
     proxy = offline_server(gateway, gateway.artifacts)
     threading.Thread(target=proxy.serve_forever, daemon=True).start()
     # Negative control: direct access to mock never generates a response fixture.
@@ -201,7 +207,15 @@ def main():
     parser.add_argument('--inside', action='store_true')
     parser.add_argument('--rate-ledger', type=Path, help='Persistent offline start ledger outside disposable namespaces')
     parser.add_argument('--native-library-dir', type=Path, help='Verified native library directory inside this checkout (offline only)')
+    parser.add_argument('--max-starts', type=int, default=3, help='Operator start cap per hour, never above native five-start limit')
+    parser.add_argument('--security-probe', type=Path, help='Run deterministic Unix-gateway namespace probes; no native interview start')
     args = parser.parse_args()
+    if args.security_probe is not None:
+        sys.path.insert(0,str(HERE.parent/'controlled-coding'))
+        from isolation import exercise
+        summary=exercise(args.security_probe)
+        print(json.dumps({'security_probes':len(summary['results']),'real_host_contacts':summary['counts']['real_host_contacts']}))
+        return
     if args.inside:
         inside(args.scenario); return
     if args.rate_ledger is None:
@@ -214,7 +228,7 @@ def main():
         if not library_dir.is_dir() or not library_dir.is_relative_to(SOURCE.resolve()):
             parser.error('--native-library-dir must be a directory inside this checkout')
         library_env = ['--setenv', 'LD_LIBRARY_PATH', str(library_dir)]
-    reserve_start(args.rate_ledger)
+    reserve_start(args.rate_ledger, max_starts=args.max_starts)
     root = Path(tempfile.mkdtemp(prefix='fusion-native-offline-'))
     for d in ('home','scratch','project','database','results'): (root/d).mkdir()
     (root/'.offline-test').touch()

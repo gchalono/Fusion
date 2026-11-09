@@ -24,12 +24,12 @@
     },
     {
       "path": "evals/controlled-coding/budget.py",
-      "size_bytes": 6863,
-      "sha256": "3aecdf1d021e633e6286a5eccc18a978864a8c8e2eb51dba263fe8c6bcd816f5",
+      "size_bytes": 12674,
+      "sha256": "6f1ba8370c699a2de37c04b2cd6c38a25e64e0c7499966a154ebc35791f43f1a",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/controlled-coding/budget.py",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
@@ -234,22 +234,22 @@
     },
     {
       "path": "evals/planning-collector/native-runner.mts",
-      "size_bytes": 7732,
-      "sha256": "eae011b8417154dd6c21e9b0c825e57ed5b4d3856b9e44d48e67abdbc253623d",
+      "size_bytes": 7737,
+      "sha256": "14026202147e484284176a207e25e62863dce8a8683972324c65d40dfa111175",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/planning-collector/native-runner.mts",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
       "path": "evals/planning-collector/offline_runner.py",
-      "size_bytes": 15251,
-      "sha256": "bfcbef853273beca0d07958e4d9d1bda9442ce57c68878c21331aa76bf3353fa",
+      "size_bytes": 16250,
+      "sha256": "d86e99974d21c71d6355fcc981fcdde12190dc4a381748b1f005214f382928a0",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/planning-collector/offline_runner.py",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
@@ -274,12 +274,12 @@
     },
     {
       "path": "evals/planning-collector/rate_limit.py",
-      "size_bytes": 1358,
-      "sha256": "baafcb7dddf89d21325528d8edc4227d4a96584ee22522f4199fa51b9e40586d",
+      "size_bytes": 1589,
+      "sha256": "30328a3ceedf2beb76cc63819d8748a1b28416b4b6f4b8268a87cb7fbd2c44c6",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/planning-collector/rate_limit.py",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
@@ -314,22 +314,22 @@
     },
     {
       "path": "evals/planning-collector/test_snapshots.py",
-      "size_bytes": 3540,
-      "sha256": "014e7d1efca7037c94c0c0c2cfdccaff340a8b17e3b74aae7e2b5225c8001b83",
+      "size_bytes": 4282,
+      "sha256": "d51b9721f434d3545d1ced682c70c56742d88d6380ecc48df0589938c7595d5b",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/planning-collector/test_snapshots.py",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
       "path": "evals/planning-collector/verify_evidence.py",
-      "size_bytes": 2990,
-      "sha256": "de2efb5294cc142fc8cc7210c3484a08a9c88e468e830ddb955ac1442c177538",
+      "size_bytes": 3971,
+      "sha256": "85338597cceae4ce8228d9d7317edbef61ef4b5687f31513cc90581988e67097",
       "category": "offline_code_or_fixture",
       "sensitivity": "reviewed_non_sensitive",
-      "backup_status": "verified_at_remote_checkpoint_2d5e2577b822e72bc1abc99d9a6db5fa9544af7a",
-      "durable_location": "https://github.com/gchalono/Fusion/blob/2d5e2577b822e72bc1abc99d9a6db5fa9544af7a/evals/planning-collector/verify_evidence.py",
+      "backup_status": "local_only_pending_verified_push",
+      "durable_location": null,
       "required_for_phase2n_persistence": true
     },
     {
@@ -351,6 +351,36 @@
       "backup_status": "local_only_not_uploaded",
       "durable_location": null,
       "required_for_phase2n_persistence": false
+    },
+    {
+      "path": "evals/controlled-coding/isolation.py",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "durable_location": null,
+      "backup_status": "local_only_pending_verified_push",
+      "size_bytes": 20423,
+      "sha256": "ee880accf1a6a8489caeed5e4558caa8140e401385d0f770ed9ae2345ed778dd"
+    },
+    {
+      "path": "evals/controlled-coding/test_lifecycle.py",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "durable_location": null,
+      "backup_status": "local_only_pending_verified_push",
+      "size_bytes": 5096,
+      "sha256": "ef3960e9d17d0015ea5f2c8bf31749896d82398078d81505091727ea4d2a5155"
+    },
+    {
+      "path": "evals/controlled-coding/test_gateway_crash.py",
+      "category": "offline_code_or_fixture",
+      "sensitivity": "reviewed_non_sensitive",
+      "required_for_phase2n_persistence": true,
+      "durable_location": null,
+      "backup_status": "local_only_pending_verified_push",
+      "size_bytes": 4178,
+      "sha256": "c1ffa4c8c8fd1d38565abdd9b7847ba0cece9af8bc99915c9164bf4e18db00cd"
     }
   ]
 }
