@@ -12,11 +12,18 @@ from offline_runner import tree
 class SnapshotTests(unittest.TestCase):
     def test_native_runner_has_no_execution_entrypoints(self):
         source = Path(__file__).with_name('native-runner.mts').read_text()
+        bridge=Path(__file__).parent.parent/'controlled-coding/planning-approval-bridge.mts'
+        bridge_source=bridge.read_text()
+        # FNXC:BlockerResolution 2026-11-09-18:27: Submission moved behind the
+        # approval bridge; retain the exact native API allowlist across both.
         calls = set(re.findall(r'native\.([A-Za-z]+)\(', source))
+        self.assertIn('submitApprovedNativeAnswer(context',source)
+        self.assertRegex(bridge_source,r'await submitMissionInterviewResponse\(')
+        calls |= {'submitMissionInterviewResponse'}
         self.assertEqual(calls, {'setAiSessionStore', 'getMissionInterviewSession',
             'createMissionInterviewSession', 'submitMissionInterviewResponse', 'getMissionInterviewSummary'})
         for symbol in ('createMission', 'activateSlice', 'startAutopilot', 'executeHeartbeat', 'createTask'):
-            self.assertIsNone(re.search(r'\b' + symbol + r'\s*\(', source))
+            self.assertIsNone(re.search(r'\b' + symbol + r'\s*\(', source+bridge_source))
         paths = re.findall(r'\$\{source\}(/packages/[^`]+)', source)
         self.assertEqual(set(paths), {'/packages/core/src/index.ts',
             '/packages/dashboard/src/mission-interview.ts', '/packages/dashboard/src/ai-session-store.ts',

@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const run = '/run/fusion-eval';
@@ -16,12 +17,17 @@ const source = process.env.FUSION_SOURCE_ROOT!;
 const endpoint = process.env.FUSION_OFFLINE_GATEWAY!;
 if (!endpoint?.startsWith('http://127.0.0.1:')) throw new Error('loopback_gateway_required');
 const scenario = process.env.FUSION_OFFLINE_SCENARIO!;
+const collector = process.env.FUSION_OFFLINE_COLLECTOR!;
+const {submitApprovedNativeAnswer}=await import(pathToFileURL(`${collector}/../controlled-coding/planning-approval-bridge.mts`).href);
+const approvalChecks: Record<string,boolean>={};
+const approvalRoot=`${run}/results/SYNTHETIC-approvals`;
+fs.mkdirSync(approvalRoot);fs.writeFileSync(`${approvalRoot}/.offline-test`,'SYNTHETIC');
 const sha = (s: string | Buffer) => crypto.createHash('sha256').update(s).digest('hex');
 const write = (name: string, data: unknown) => fs.writeFileSync(`${run}/results/${name}`, JSON.stringify(data, null, 2), { flag: 'wx' });
 const protocol = fs.readFileSync(process.env.FUSION_OFFLINE_PROTOCOL!);
 const briefsBytes = fs.readFileSync(process.env.FUSION_OFFLINE_BRIEFS!);
 const brief = JSON.parse(briefsBytes.toString()).objectives[0];
-write('input-provenance.json', { classification: 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
+write('input-provenance.json', { classification: 'SYNTHETIC_OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
   protocol_sha256: sha(protocol), briefs_sha256: sha(briefsBytes), brief, rate_limit_identifier: 'fusion-phase2a-pilot' });
 
 // Custom provider settings exist only in a freshly mounted, empty home. The key
@@ -32,7 +38,7 @@ fs.writeFileSync('/home/agent/.fusion/settings.json', JSON.stringify({
   mcpServers: { enabled: false, servers: [] }, customProviders: [{
     id: 'offline-provider', name: 'Offline Evaluation', apiType: 'openai-compatible',
     baseUrl: endpoint + '/v1', apiKey: 'offline-placeholder',
-    models: [{ id: 'gpt-4.1-mini-2025-04-14', name: 'Offline transport fixture' }],
+    models: [{ id: 'gpt-4.1-mini-2025-04-14', name: 'SYNTHETIC transport fixture', contextWindow:32000, maxTokens:4096 }],
   }],
 }), { flag: 'wx' });
 
@@ -98,14 +104,36 @@ try {
     const responses = q.type === 'text' || q.type === 'confirm'
       ? { [q.id]: value } : { _other: value };
     transcript.push({ question: q, response: responses, source: fact === undefined ? 'fixed-unknown' : `brief:${q.id}` });
-    await native.submitMissionInterviewResponse(sessionId, responses, `${run}/project`, store);
+    // FNXC:BlockerResolution 2026-11-09-18:27: Exercise the real native
+    // bridge through the existing SYNTHETIC approver; no TTY/human impersonation.
+    const context={sessionId,taskId:'merge-intervals',preregistrationHash:sha(protocol),projectRoot:`${run}/project`,store};
+    await submitApprovedNativeAnswer(context,async (question,binding,submit)=>{
+      const answer='  '+JSON.stringify(responses)+'\n';
+      const input={...binding,question,answer};
+      const fixture=(operation:string)=>spawnSync(process.env.FUSION_OFFLINE_PYTHON!,[`${collector}/../controlled-coding/approval_fixture.py`,'--root',approvalRoot,'--operation',operation],{input:JSON.stringify(input),encoding:'utf8',env:{PATH:process.env.PATH!,PYTHONDONTWRITEBYTECODE:'1'}});
+      const prepare=()=>{const p=fixture('prepare');if(p.status!==0)throw new Error('SYNTHETIC_approval_prepare_failed');return JSON.parse(p.stdout);};
+      let prepared=prepare();Object.assign(approvalChecks,prepared.checks);
+      approvalChecks.correct_question_hashing=prepared.question_hash===sha(question)&&binding.question_hash===sha(question);
+      if(turns===0){
+        if(fixture('crash').status!==23)throw new Error('SYNTHETIC_crash_intent_missing');
+        const replay=fixture('replay');if(replay.status!==0||!JSON.parse(replay.stdout).restart_replay_rejected)throw new Error('SYNTHETIC_replay_accepted');
+        approvalChecks.crash_restart_behavior=true;
+        prepared=prepare(); // Explicit new SYNTHETIC approval after failed intent.
+      }
+      const consumed=fixture('consume');if(consumed.status!==0)throw new Error('SYNTHETIC_approval_consume_failed');
+      const checked=JSON.parse(consumed.stdout);
+      if(checked.answer!==answer||checked.answer_hash!==sha(answer))throw new Error('SYNTHETIC_answer_changed');
+      approvalChecks.verbatim_answer_preservation=true;
+      await submit(checked.answer);
+    });
     s = await settle(sessionId);
     turns++;
   }
+  write('approval-integration.json',{classification:'SYNTHETIC',checks:approvalChecks,native_response_turns:turns});
   const actual = s.agent?.session?.model;
   if (actual?.provider !== 'offline-evaluation' || actual?.id !== 'gpt-4.1-mini-2025-04-14') throw new Error('resolved_model_mismatch');
   // Raw assistant text remains native, unedited and explicitly non-genuine.
-  write('native-test-double.json', { classification: 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
+  write('native-test-double.json', { classification: 'SYNTHETIC_OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
     transcript, summary: await native.getMissionInterviewSummary(sessionId),
     actual_model: { provider: actual.provider, id: actual.id },
     raw_assistant: s.agent.session.state.messages.filter((m: any) => m.role === 'assistant')
@@ -114,15 +142,30 @@ try {
     usage_accounting: 'provider_reported_unverified',
     cost_accounting: 'native_catalog_cost_not_billable', turns, incomplete: !s.summary });
   if (scenario === 'comprehensive') {
+    const session=s.agent.session;
+    const settings=session.settingsManager.getCompactionSettings(session.model);
+    const entries=session.sessionManager.getBranch();
+    let attempted=false;
     try {
-      await s.agent.session.compact('OFFLINE compaction routing check; return a short factual summary.');
-      write('compaction.json', { status: 'completed', statistics: s.agent.session.getSessionStats?.() });
-    } catch {
-      write('compaction.json', { status: 'not_completed' });
+      attempted=true;
+      await session.compact('SYNTHETIC compaction routing check; return a short factual summary.');
+      write('compaction.json', { classification:'SYNTHETIC',status:'completed',attempted,settings,branch_entries:entries.length,statistics:session.getSessionStats?.() });
+    } catch (error) {
+      const text=(error as Error).message;
+      const reason=text==='Nothing to compact (session too small)'?'SESSION_TOO_SMALL':text==='Already compacted'?'ALREADY_COMPACTED':'OTHER_ERROR';
+      write('compaction.json', { classification:'SYNTHETIC',status:'not_completed',attempted,reason,error_sha256:sha(text),settings,branch_entries:entries.length,statistics:session.getSessionStats?.() });
+      if(reason!=='SESSION_TOO_SMALL')throw error;
+      // FNXC:BlockerResolution 2026-11-09-18:27: Separate SYNTHETIC trigger
+      // control: retain a smaller tail in this disposable session only. This
+      // does not change input/output/request/time/spend limits or frozen tasks.
+      session.settingsManager.applyOverrides({compaction:{keepRecentTokens:512,reserveTokens:4096}});
+      const triggerSettings=session.settingsManager.getCompactionSettings(session.model);
+      await session.compact('SYNTHETIC compaction trigger control; return a short factual summary.');
+      write('SYNTHETIC-triggered-compaction.json',{classification:'SYNTHETIC',status:'completed',settings:triggerSettings,statistics:session.getSessionStats?.()});
     }
   }
 } catch (e) {
-  write('native-failure.json', { classification: 'OFFLINE_TEST_FAILURE', code: (e as Error).message });
+  write('native-failure.json', { classification: 'SYNTHETIC_OFFLINE_TEST_FAILURE', code: (e as Error).message });
 } finally {
   // Await persistence without fabricating a completed row; take evidence before
   // cleanup so the native session record is visible in the after snapshot.

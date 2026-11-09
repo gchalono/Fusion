@@ -72,7 +72,7 @@ def inside(scenario):
         'collector_commit': subprocess.check_output(['git','-C',str(HERE),'rev-parse','HEAD'], text=True).strip(),
         'runner_sha256': hashlib.sha256((HERE/'native-runner.mts').read_bytes()).hexdigest(),
         'gateway_sha256': hashlib.sha256((HERE/'gateway.py').read_bytes()).hexdigest(),
-        'classification': 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
+        'classification': 'SYNTHETIC_OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
     })
     capability = secrets.token_hex(24)  # ephemeral LOCAL test-server capability, never a real credential
     mock_requests = []
@@ -92,7 +92,7 @@ def inside(scenario):
             compaction = any('summar' in str(m.get('content', '')).lower() and m.get('role') == 'system' for m in body['messages'])
             storage_answered = any('PostgreSQL' in str(m.get('content', '')) and m.get('role') == 'user' and 'Answer:' in str(m.get('content', '')) for m in body['messages'])
             unknown_answered = any('No preference; use your judgment.' in str(m.get('content', '')) for m in body['messages'])
-            content = ('OFFLINE COMPACTION SUMMARY ONLY' if compaction else
+            content = ('SYNTHETIC COMPACTION SUMMARY ONLY' if compaction else
                        'not JSON' if (scenario == 'format-retry' and n == 1) or (scenario == 'comprehensive' and n == 2) else
                        json.dumps({'type': 'question', 'data': {'id': 'quality', 'type': 'text', 'question': 'What color theme is required?', 'description': 'offline context fixture ' * 100}})
                        if scenario == 'comprehensive' and storage_answered and not unknown_answered else
@@ -177,6 +177,7 @@ def inside(scenario):
     finally: c.close()
     save('bypass-probes.json', {'direct_mock_status': bypass_status, 'external_route_blocked': external_blocked})
     env = dict(os.environ, FUSION_SOURCE_ROOT=str(SOURCE),
+               FUSION_OFFLINE_COLLECTOR=str(HERE),FUSION_OFFLINE_PYTHON=sys.executable,
                FUSION_OFFLINE_GATEWAY=f'http://127.0.0.1:{proxy.server_port}',
                FUSION_OFFLINE_SCENARIO=scenario, FUSION_OFFLINE_PROTOCOL=str(HERE/'protocol.md'),
                FUSION_OFFLINE_BRIEFS=str(HERE/'briefs.json'))
@@ -201,13 +202,19 @@ def inside(scenario):
         db_diff = database_diff(before, after)
         fs_diff = filesystem_diff(json.loads((ROOT/'results'/'filesystem-before.json').read_text()), json.loads((ROOT/'results'/'filesystem-after.json').read_text()))
         proc_diff = process_diff(json.loads((ROOT/'results'/'processes-before.json').read_text()), json.loads((ROOT/'results'/'processes-after.json').read_text()))
-        save('verification.json', {'classification': 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS', 'scenario': scenario,
+        save('SYNTHETIC-ledger.json',shared_ledger.snapshot())
+        with shared_ledger.connect() as db:
+            durable_attempts=db.execute('SELECT COUNT(*) FROM reservations').fetchone()[0]
+        approval=json.loads((ROOT/'results'/'approval-integration.json').read_text()) if (ROOT/'results'/'approval-integration.json').exists() else None
+        if scenario=='comprehensive' and (not approval or not all(approval['checks'].values())):raise RuntimeError('SYNTHETIC_approval_integration_failed')
+        save('verification.json', {'classification': 'SYNTHETIC_OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS', 'scenario': scenario,
              'database_diff': db_diff, 'filesystem_diff': fs_diff, 'process_diff': proc_diff,
              'database_count_changes': changed, 'database_changed_tables': sorted(hashes),
              'forbidden_count_changes': forbidden, 'forbidden_row_changes': forbidden_hashes,
              'gateway_forwarded_attempts': gateway.budget.calls, 'mock_received_requests': len(mock_requests),
              'gateway_blocked_reasons': gateway.blocked_attempts,
              'request_count_match': gateway.budget.calls == len(mock_requests),
+             'durable_attempts':durable_attempts,'durable_count_match':durable_attempts==len(mock_requests),
              'output_token_limits': [{k:v for k,v in b.items() if k in ('max_tokens','max_completion_tokens')} for b in mock_requests],
              'reserved_micro_usd_estimated': gateway.budget.reserved,
              'direct_mock_bypass_blocked': bypass_status == 403, 'external_route_blocked': external_blocked,

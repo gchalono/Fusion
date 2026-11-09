@@ -362,7 +362,7 @@ def exercise(output):
         upstream.shutdown();upstream.server_close()
         if previous_canary is None:os.environ.pop('CANARY_GATEWAY_CREDENTIAL',None)
         else:os.environ['CANARY_GATEWAY_CREDENTIAL']=previous_canary
-    summary={'isolation_tier':'ENFORCED','classification':'OFFLINE_TEST_DOUBLE_NOT_A_PLAN_OR_CODING_RESULT','results':results,'counts':counts,'gateway_initial_canary_verified':initial_canary_present,'inheritable_canary_fd_positive_control':True,
+    summary={'isolation_tier':'ENFORCED','classification':'SYNTHETIC_OFFLINE_TEST_DOUBLE_NOT_A_PLAN_OR_CODING_RESULT','results':results,'counts':counts,'gateway_initial_canary_verified':initial_canary_present,'inheritable_canary_fd_positive_control':True,
              'scope':'deterministic clients in reference namespace; privileged host/kernel attacks excluded',
              'limitations':['Not integrated with a live coding runner','Raw ICMP/DNS/IPv6/metadata share a Python HTTP gateway positive control, not a protocol-identical positive control','Namespace gateway shutdown and token revocation tested; mid-request kill recovery tested independently; combined restart/resume protocol not yet exercised']}
     raw=json.dumps(summary,indent=2)+'\n'

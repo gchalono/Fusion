@@ -10,12 +10,12 @@ from contract import Contract,canonical
 from budget import AggregateBudget
 
 class ContractTests(unittest.TestCase):
-    def test_operator_allocations_refuse_arming(self):
-        c=Contract();self.assertIn('ARMING_ALLOCATION_EXCEEDS_80_PERCENT',c.arming_errors())
+    def test_operator_allocations_pass_arithmetic_without_paid_authority(self):
+        c=Contract();self.assertNotIn('ARMING_ALLOCATION_EXCEEDS_80_PERCENT',c.arming_errors())
         self.assertIn('NO_PAID_AUTHORIZATION',c.arming_errors())
         d=c.data
         from decimal import Decimal
-        self.assertEqual(Decimal(d['per_run_coding_cap_usd'])*9+Decimal(d['planning_reserve_usd']),Decimal('1.85'))
+        self.assertEqual(Decimal(d['per_run_coding_cap_usd'])*9+Decimal(d['planning_reserve_usd']),Decimal('1.58'))
 
     def test_byte_bound_uncached_and_output_clamp(self):
         c=Contract();body={'model':c.data['model'],'messages':[{'role':'user','content':'fixture'}],'max_tokens':9000}
@@ -44,3 +44,14 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(b.snapshot()['reserved_exposure_micro_usd'],500102)
             altered=dict(d,planning_reserve_usd='0.60')
             with self.assertRaisesRegex(ValueError,'contract_mismatch'):AggregateBudget(path,experiment_contract=altered)
+
+    def test_tighter_per_run_cap_survives_reopening(self):
+        c=Contract();d=copy.deepcopy(c.data);d.update(planning_run_ids=['task'],coding_run_ids=['task:A'])
+        with tempfile.TemporaryDirectory() as tmp:
+            b=AggregateBudget(Path(tmp)/'experiment.db',experiment_contract=d);b.control_run('coding','task:A','start')
+            b.reserve('coding','task:A',120000,token_bounds=(100,10))
+            with self.assertRaisesRegex(ValueError,'coding_run_cap'):AggregateBudget(b.path).reserve('coding','task:A',2,token_bounds=(1,1))
+        from decimal import Decimal
+        self.assertEqual(Decimal(d['coding_allocation_usd']),9*Decimal(d['per_run_coding_cap_usd']))
+        self.assertEqual(Decimal(d['aggregate_cap_usd'])-Decimal(d['coding_allocation_usd'])-Decimal(d['planning_reserve_usd']),Decimal('0.42'))
+        self.assertLessEqual(Decimal('1.58'),Decimal('0.8')*Decimal(d['aggregate_cap_usd']))

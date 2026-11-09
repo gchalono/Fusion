@@ -5,7 +5,11 @@
  * before this callback; the callback rechecks native question bytes before submit.
  */
 import crypto from 'node:crypto';
-import { getMissionInterviewSession, submitMissionInterviewResponse } from '../../packages/dashboard/src/mission-interview.ts';
+import {pathToFileURL} from 'node:url';
+// FNXC:BlockerResolution 2026-11-09-18:27: Resolve the prepared native runtime
+// in the trusted harness, so its actual session store is shared with the caller.
+const source=process.env.FUSION_SOURCE_ROOT;
+const {getMissionInterviewSession,submitMissionInterviewResponse}=await import(source?pathToFileURL(source+'/packages/dashboard/src/mission-interview.ts').href:'../../packages/dashboard/src/mission-interview.ts');
 
 export async function submitApprovedNativeAnswer(
   context: { sessionId: string; taskId: string; preregistrationHash: string; projectRoot: string; store: unknown },

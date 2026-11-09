@@ -74,7 +74,7 @@ def broker(root,run,action,stub_url,ca,key):
     audit=root/('gateway-'+secrets.token_hex(4));audit.mkdir();(audit/'.offline-test').touch()
     # The offline fixture requests a stricter 512 output ceiling, identically
     # across arms, preserving the frozen 16000 total-token run limit.
-    policy=Policy('OpenAI',c.data['model'],'https://api.openai.com/v1/chat/completions',('api.openai.com',),4,150000,400000,1600000,32000,512,512)
+    policy=Policy('OpenAI',c.data['model'],'https://api.openai.com/v1/chat/completions',('api.openai.com',),4,micro(c.data['per_run_coding_cap_usd']),400000,1600000,32000,512,512)
     artifacts=Artifacts(audit,offline=False,secrets=(token,Path(key).read_text().strip()))
     artifacts.write('policy.json',canonical(asdict(policy)))
     bounds=threading.local()

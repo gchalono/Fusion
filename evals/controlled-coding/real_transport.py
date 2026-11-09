@@ -18,7 +18,7 @@ import sys
 import time
 from urllib.parse import urlsplit
 from urllib.request import build_opener,ProxyHandler,HTTPSHandler
-from contract import Contract
+from contract import Contract,micro
 
 
 def validate(config):
@@ -97,7 +97,7 @@ def worker():
         # redirect and response-size boundary; external worker supplies deadline.
         sys.path.insert(0,str(Path(__file__).parent.parent/'planning-collector'))
         from gateway import Policy,HTTPSForwarder
-        policy=Policy('OpenAI',c.data['model'],url,(urlsplit(url).hostname,),4,150000,400000,1600000,32000,4096,4096)
+        policy=Policy('OpenAI',c.data['model'],url,(urlsplit(url).hostname,),4,micro(c.data['per_run_coding_cap_usd']),400000,1600000,32000,4096,4096)
         if opener is not None:
             from urllib.request import HTTPRedirectHandler
             class NoRedirect(HTTPRedirectHandler):

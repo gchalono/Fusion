@@ -145,7 +145,10 @@ class AggregateBudget:
                     if used_tokens+sum(token_bounds)>self.contract.get('frozen_coding_token_limit',16000):raise ValueError('frozen_coding_token_limit')
             if total+upper_micro > CAP_MICRO_USD:
                 raise ValueError('aggregate_spend_cap')
-            if stage == 'coding' and (used+upper_micro > CODING_CAP_MICRO_USD or calls >= CODING_CALL_CAP):
+            # FNXC:BlockerResolution 2026-11-09-18:27: Apply the operator's tighter
+            # per-run cap without changing frozen fixtures or legacy ceilings.
+            coding_cap=min(CODING_CAP_MICRO_USD,micro(self.contract['per_run_coding_cap_usd'])) if self.contract else CODING_CAP_MICRO_USD
+            if stage == 'coding' and (used+upper_micro > coding_cap or calls >= CODING_CALL_CAP):
                 raise ValueError('coding_run_cap')
             ident = db.execute('INSERT INTO reservations(stage,run,upper_micro) VALUES (?,?,?)', (stage, run, upper_micro)).lastrowid
             db.execute('INSERT INTO transitions(reservation_id,state,basis) VALUES (?,?,?)',(ident,'RESERVED','worst_case'))

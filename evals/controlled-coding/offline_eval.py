@@ -63,7 +63,7 @@ def start_stub(root, variant='correct', pause=None):
             except OSError:pass
     server=ThreadingHTTPServer(('127.0.0.1',0),Stub);ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);ctx.load_cert_chain(root/'tls.crt',root/'tls.key');server.socket=ctx.wrap_socket(server.socket,server_side=True)
     threading.Thread(target=server.serve_forever,daemon=True).start()
-    (root/'stub.json').write_bytes(canonical({'url':f'https://localhost:{server.server_port}/v1/chat/completions','classification':'TEST_DOUBLE_NOT_MODEL_OUTPUT'}))
+    (root/'stub.json').write_bytes(canonical({'url':f'https://localhost:{server.server_port}/v1/chat/completions','classification':'SYNTHETIC_TEST_DOUBLE_NOT_MODEL_OUTPUT'}))
     return server,contacts
 
 
@@ -76,7 +76,7 @@ def main():
         report,candidate,workspace=execute_agent(a.output,a.runtime,binding['task_id']+':A')
         from independent import evaluate_patch
         grading=evaluate_patch(binding['task_id'],(a.output/'candidate.patch').read_text(),a.output/'independent-check')
-        (a.output/'test-double-coding-observation.json').write_bytes(canonical({'classification':'TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE','agent_exit_code':report['exit_code'],'timed_out':report['timed_out'],'candidate_sha256':__import__('hashlib').sha256(candidate).hexdigest(),'contacts':contacts,'workspace':str(workspace),'independent_acceptance':grading}))
+        (a.output/'test-double-coding-observation.json').write_bytes(canonical({'classification':'SYNTHETIC_TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE','agent_exit_code':report['exit_code'],'timed_out':report['timed_out'],'candidate_sha256':__import__('hashlib').sha256(candidate).hexdigest(),'contacts':contacts,'workspace':str(workspace),'independent_acceptance':grading}))
         print('OFFLINE_AGENT_EXIT',report['exit_code'],'INDEPENDENT_ACCEPTANCE',grading['success'],flush=True)
         if grading['success']!=(a.variant=='correct'):raise RuntimeError('acceptance_control_failed')
         if report['exit_code']!=0:raise RuntimeError('coding_adapter_failed')

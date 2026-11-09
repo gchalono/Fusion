@@ -70,3 +70,27 @@ Protocol-identical controls, compaction and integrated live planning/approval
 validation remain outstanding. See controlled-coding/PHASE_2N_FINAL_READINESS.md
 and sanitized offline-readiness-observations.json. No Phase 2M reconstruction,
 provider requests or production changes were performed.
+
+## Offline blocker resolution at baseline 73dd29ab
+
+VERIFIED: Supersedes the earlier final-offline extension: 75 unit tests pass
+(29 coding, 37 collector, 9 persistence; 0 failures/skips). The new $0.12 × 9 +
+$0.50 allocation is $1.58 <= $1.60 at the unchanged 80% gate; headroom $0.42 is
+unallocated. Configured budgets confer no spending authority ($0.00 remains).
+
+VERIFIED: Default native compaction was diagnosed as fixture eligibility failure
+(3,334 context tokens versus a 20,000-token retained tail). A separate SYNTHETIC
+trigger control completed through the actual SDK without increasing safety caps.
+Actual native approval interfaces pass all nine requested checks, including
+crash/restart replay refusal and shared planning/coding ledger accounting.
+Two identical SYNTHETIC Arm A runs match normalized patches, grading and ledger
+records. Current 30-case ENFORCED/canary probe and four protocol-specific positive
+controls pass. The normal review mechanism permitted these runs; no bypass.
+
+UNVERIFIED: Real provider schema/availability, long native-session behavior with
+its 128k catalog window versus the gateway's stricter 32k-byte bound, actual human
+channel operation and integrated live execution. Live preflight refuses execution.
+PARTIALLY_READY: requested offline validation passed, live execution disabled.
+See controlled-coding/PHASE_2N_FINAL_READINESS.md and
+controlled-coding/blocker-resolution-observations.json. Phase 2M history was not
+recreated. No production behavior changed and no paid/provider traffic occurred.

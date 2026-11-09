@@ -33,6 +33,7 @@ class Approvals:
     def persist_question(self, question, session_id, task_id, preregistration_hash):
         if not isinstance(question,str) or not question:raise ValueError('verbatim_question_required')
         record={'question':question,'question_hash':digest(question),'session_id':session_id,'task_id':task_id,'preregistration_hash':preregistration_hash,'timestamp':time.time(),'test_double':self.test_double}
+        if self.test_double:record['classification']='SYNTHETIC'
         name=digest(canonical(record).decode())+'.question.json'
         with (self.root/name).open('x') as stream:json.dump(record,stream,sort_keys=True);stream.flush();os.fsync(stream.fileno())
         return name

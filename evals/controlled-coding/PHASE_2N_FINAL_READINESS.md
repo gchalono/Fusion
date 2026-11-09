@@ -1,189 +1,205 @@
-# Phase 2N final offline readiness
+# Phase 2N offline blocker resolution
 
-**BLOCKED** — VERIFIED: provider spending remains authorized at $0.00. No paid
-inference, live coding mission, autopilot, MCP operation or real provider-host
-request was performed. All upstream responses in these checks are test doubles.
+**PARTIALLY_READY** — **VERIFIED:** the requested offline blocker checks pass.
+**BLOCKED:** live execution remains disabled and unauthorized ($0.00). This report
+requests no paid execution. All offline answers, approvers, inference fixtures and
+wire doubles used here are **SYNTHETIC**, never historical Phase 2M evidence or
+human approvals. Earlier results are historical unless explicitly rerun below.
 
-## Claim table
+## Recovery and tests
 
-| Claim | Status | Evidence |
+| Claim | Tag | Evidence |
 |---|---|---|
-| Feature work is confined to evals; fork fetch/push destination is gchalono/Fusion | VERIFIED | Git diff and remote URL inspection; checkpoint tooling rechecks both URLs |
-| Baseline 98e8c310f097372c73c8cde3cab4247c509dde4d is present; 993af2bdf7a5fa223ca16bf233be399bc6fd9a86 is its ancestor | VERIFIED | Initial persistence preflight; live_preflight.py ancestry check |
-| Phase 2M supervisor and genuine historical artifacts remain missing | VERIFIED | Existing recovery inventory, PROJECT_STATE.md; no new plausible recovery location supplied; no reconstruction performed |
-| 28 coding, 37 collector, 9 persistence unit tests pass: 74 total | VERIFIED | offline-readiness-observations.json evidence hashes; commands below |
-| 30 reference namespace cases passed with no_new_privs=1 and UID 65534 | VERIFIED | Hardened security probe 3; summarized with original evidence hash in offline-readiness-observations.json |
-| ENFORCED applies to the measured namespace boundary | VERIFIED | isolation.py, security_filter.py; genuine agent runs used execution.py and the same namespace builder |
-| Every network protocol has a protocol-identical positive control | UNVERIFIED | Raw ICMP/DNS/IPv6/metadata cases share an allowed HTTP gateway control; additional protocol-specific controls remain required |
-| Genuine Fusion shared Pi coding session needs no mission/task/DB in this adapter | VERIFIED | coding-agent.mts; successful secured coding runs and subprocess/tool events |
-| Arm A correct scripted patch passes four independent frozen checks | VERIFIED | coding-test-double-2 observation; second sandbox, fresh Git checkout plus patch |
-| Wrong patch and test-tampering controls fail independent acceptance | VERIFIED | coding-wrong and coding-tamper observations; both agent processes exited 0 but grading rejected them |
-| B/C construction preserves common settings and differs only in rendered inputs | VERIFIED | test_inputs.py; synthetic plan/answer labels, no human approval claim |
-| Two identical complete Arm A runs are reproducible | UNVERIFIED | Second identical run was not executed: automatic approval review service usage limit |
-| Kill/abort preserve uncertain exposure and require explicit resume | VERIFIED | recovery_checks.py: kill and abort each produced UNCERTAIN,SETTLED,SETTLED,SETTLED; four contacts/four reservations; new token after resume |
-| Shared SQLite cap survives concurrent processes, crashes and restart | VERIFIED | test_budget.py plus persisted-contract tests and integrated recovery checks |
-| All nine coding IDs and three planning IDs share one contract-bound experiment DB | VERIFIED | pilot.initialize, budget.py; stage allocations and registered IDs are checked inside BEGIN IMMEDIATE |
-| Reserved exposure, upstream-reported usage, estimated charge and measured charge are separate | VERIFIED | Append-only reservations/observations/transitions; all measured provider charges remain null |
-| Real HTTPS transport is disabled by default and exercised against local TLS | VERIFIED | real_transport.py and test_real_transport.py: streaming, nonstreaming, missing usage, credential/destination boundaries |
-| Real provider schema fidelity and model availability | UNVERIFIED | No real call; deprecated exact model must be verified without substitution before live authorization |
-| Approval hashes/bindings and rejection of edited/test-double live records | VERIFIED | approvals.py, test_approvals.py; no human answers or approvals generated |
-| End-to-end live planning/approval/gateway integration | UNVERIFIED | planning-approval-bridge.mts wraps native APIs; the callback bridge has not been exercised with new real interviews and approved answers |
-| Native regression uses real PostgreSQL and genuine ICU 60 | VERIFIED | /tmp/fusion-native-offline-pe0t8uig/results; exit 0, 5 contacts/5 reservations, all output ceilings 4096, only project.ai_sessions changed |
-| Native compaction under the supplied contract | UNVERIFIED | Native compaction.json says not_completed; no production change or safety relaxation made |
-| Current live preflight fails closed | VERIFIED | live_preflight.py returns LIVE_REFUSED; no authorization, missing approvals, arithmetic conflict and integration gate; sandbox also prevents a current namespace probe |
-| Provider spend and real-provider-host contacts in offline checks are zero | VERIFIED | Local-only test transports, network namespaces, scrubbed worker destinations and recorded contacts; no billing measurement implied |
-| Remote code backup and fresh recovery of this implementation | UNVERIFIED at document creation | See subsequent CHECKPOINTS.md entry and independently verified branch tip; final operator report records exact SHA |
-| Private raw evidence has off-VM backup | UNVERIFIED | Only reviewed code, fixtures and sanitized observations are published; private ledgers/keys/raw logs remain local |
+| Initial HEAD exactly 73dd29ab2237fb9e7c47458b9deb0b11d681f033; clean persistence preflight passed | VERIFIED | blocker-resolution-observations.json: initial_checkpoint/initial_preflight and original preflight SHA-256 |
+| Before changes: 74 passed, 0 failed, 0 skipped (28 coding, 37 collector, 9 persistence) | VERIFIED | Three baseline suite logs, SHA-256 pointers in observations |
+| After changes: 75 passed, 0 failed, 0 skipped (29 coding, 37 collector, 9 persistence) | VERIFIED | Three final suite logs; checkpoint tooling reruns all three |
+| Frozen fixtures and acceptance criteria unchanged | VERIFIED | harness.py verify passed; no fixture/frozen.json diff |
+| Production packages unchanged, including prepared native runtime | VERIFIED | Both Git packages trees equal ef70b0eb0b194ba1481c73d5c27ac1bfa352d515; diff confined to evals |
+| Normal review mechanism permitted this phase's namespace/native/coding checks | VERIFIED | Successful reviewed command execution; no bypass of the earlier unavailable review service |
+| Current code checkpoint and fresh-clone recovery | UNVERIFIED at document creation | Final operator report supplies the independently verified publication SHA and fresh recovery result; CHECKPOINTS.md records the implementation |
 
-## Implemented boundary and limitations
+## Budget correction
 
-VERIFIED: `createResolvedAgentSession` in
-`packages/engine/src/agents/agent-session-helpers.ts` calls the existing Pi runtime
-(`createPiAgentSessionRaw` in `packages/engine/src/agents/pi.ts`). The adapter uses
-an in-memory session, fresh HOME and writable work directory, read/write/bash
-allowlist, no MCP and no fallback. Existing `sessionPurpose: merger` policy excludes
-host extensions that could open a TaskStore. This is the shared Fusion Pi agent
-session, **not** TaskExecutor, an orchestrated mission or the missing Phase 2M
-supervisor. The public runtime emitted an optional pi-claude-cli compatibility
-warning; the Pi session itself completed. Production files were not modified.
+**VERIFIED:** `experiment-parameters.json` now configures planning **$0.50**,
+coding **9 × $0.12 = $1.08**, total **$1.58**, and unallocated headroom **$0.42**.
+The exact unchanged arming formula is:
 
-VERIFIED: Untrusted code and descendants run in user/network/PID/mount/IPC/UTS
-namespaces with dropped capabilities, no_new_privs, masked setuid/setgid binaries,
-read-only public runtime, private HOME/tmp and seccomp. Namespace/mount/ptrace,
-process-memory inspection, capability/identity changes, namespace clone flags,
-non-IP/Unix socket families and setuid chmod are denied. The only host network
-path is the per-run inference Unix socket via an in-namespace loopback bridge.
-The host gateway owns the credential, immutable contract and ledger. Admin socket,
-approval records, hidden acceptance tests and other arm state are not mounted in
-the coding view. Abort revokes the token, kills owned transport workers and stops
-the gateway; the harness detects broker death and kills its owned namespace.
+`9 × per_run_coding_cap + planning_reserve ≤ 0.80 × aggregate_cap`
 
-VERIFIED: Independent grading uses a fresh Git checkout and generated one-file
-solution patch, then a second no-network/no-credential sandbox. Frozen checks are
-read-only. Candidate imports execute in child workers; the nondumpable grader
-holds a fresh MAC key and authenticates its result, rather than trusting candidate
-stdout or exit status. Only the trusted generated solution patch is collected;
-a fake test file in the coding workspace cannot alter grading.
+`9 × $0.12 + $0.50 = $1.58 ≤ 0.80 × $2.00 = $1.60` — **PASS**.
 
-INFERRED: These checks support isolation from unprivileged model-driven commands
-under this measured kernel/runtime configuration. They establish no protection
-against privileged host attackers, kernel exploits, VM escapes, malicious trusted
-harness changes or future untested runtime changes. Protocol-identical positive
-controls and a fresh ENFORCED probe remain live prerequisites.
+**VERIFIED:** stage limits do not allocate the $0.42 headroom automatically.
+`budget.py` enforces the tighter $0.12 run cap even after reopening SQLite; a new
+regression test reserves that cap and verifies that a further reservation fails.
+The gateway policy uses the same tighter cap. Frozen metadata's older $0.15 ceiling
+is preserved; the effective runtime limit is the stricter $0.12 contract, not a
+fixture rewrite. Existing experiment contracts remain immutable and are not
+silently migrated or refunded.
 
-## Parameters and accounting
+**VERIFIED:** the aggregate $2 ceiling, 80% threshold, uncached input reservation,
+request-byte upper bound, 32,000/4,096 request limits, 12 planning/4 coding attempt
+limits, 600/300-second original stage deadlines, at-most-60-second request timeout,
+and frozen 16,000 coding token upper bound remain unchanged. Retried, reformatted
+and compaction HTTP attempts require separate committed reservations. Reserved
+exposure, reported usage, estimated charges and measured charges remain separate.
+Evidence: contract/budget tests, native attempt links and independently replayed
+ledger verification. Proposed allocations confer no spending authorization.
 
-VERIFIED: Operator-supplied parameters and source/date are preserved verbatim in
-experiment-parameters.json. Requests reject unpriced features, unknown models,
-ambiguous output bounds and bodies beyond 32,000 bytes. Input reservation uses
-max(received bytes, normalized bytes) at uncached $0.40/M, plus clamped output at
-$1.60/M. Cached $0.10/M applies only to estimated charges from reported usage.
-32,000/4,096 costs $0.0193536, rounded upward to 19,354 micro-USD for reservation.
-Every underlying forwarded attempt, including retry/format/compaction attempts,
-must commit a durable reservation before transport. Failed reservation/audit
-writes fail closed. Reservations are never silently refunded or reused.
+## Native compaction diagnosis
 
-VERIFIED: Stage caps are planning $0.50, coding $1.35; contingency $0.15 is not
-transferred. Per-run coding $0.15/4 attempts, planning 12 attempts/task, original
-persisted deadlines 300/600 seconds, transport timeout at most 60 seconds. The
-frozen stricter 16,000 total coding token upper bound is also retained. The local
-scripted fixture requests 512 output tokens identically across arms; this is a
-stricter test profile and does not establish performance at 4,096 tokens.
-The native test-double runner was tightened from its former 128k/32,768 bounds
-and artificial prices to the supplied contract; giant synthetic descriptions
-were shortened under evals only. No frozen coding criteria changed.
+**VERIFIED — classification exactly 1: Fixture never triggers compaction.**
+The explicit manual API was called, but SDK preparation rejected the default
+fixture before any summarization HTTP request: `SESSION_TOO_SMALL`, corresponding
+to `Nothing to compact (session too small)`. Fourteen branch entries represented
+about 3,334 context tokens, below the default 20,000-token retained tail.
+Evidence: SYNTHETIC `compaction.json`, exception SHA-256, recorded SDK settings,
+and installed Pi SDK `AgentSession.compact` / `prepareCompaction` source.
 
-VERIFIED: **Arming is refused:** 9 × $0.15 + $0.50 = **$1.85**, exceeding
-0.8 × $2.00 = **$1.60**. The supplied parameters are proposals, not paid authority.
-No limit was increased or silently revised. A compatible revision would require
-operator approval, e.g. $0.12/run with $0.50 planning ($1.58 total), or planning
-at most $0.25 with $0.15/run. Neither revision has been applied.
+| Candidate category | Tag | Confirming/ruling-out evidence |
+|---|---|---|
+| 1. Fixture never triggers compaction | VERIFIED — confirmed | Default preparation has no messages to summarize; retain tail 20,000 versus context about 3,334; no compaction HTTP attempt |
+| 2. Compaction attempted but incomplete | VERIFIED — ruled out as original cause | Manual entry point was invoked, but failed during eligibility preparation. A separate eligible control completed actual native summarization |
+| 3. Insufficient token budget | VERIFIED — ruled out as original cause | Exception is eligibility-related, not a token cap. Trigger used reserveTokens 4,096 and output requests 3,276/2,048, all below the unchanged gateway 4,096 ceiling |
+| 4. Deadline or request-limit exhaustion | VERIFIED — ruled out | Five interview attempts plus two compaction attempts = 7/12; planning reserved $0.063686 < $0.50; original 600-second deadline retained; no timeout/exhaustion exception |
+| 5. Genuine native integration failure | VERIFIED — ruled out for this fixture | Actual SDK trigger completed, independent evidence verifier passed, only project.ai_sessions changed; empty MCP and no execution records |
 
-## Frozen fixture and evidence
+**VERIFIED:** the separate **SYNTHETIC trigger control** applies the SDK's public
+in-memory settings override only to its disposable test session: retained tail
+512, summary reserve 4,096. It does not modify production source, frozen tasks,
+request/time/spend/security limits or the default fixture's observed failure.
+`SYNTHETIC-triggered-compaction.json` records completion. The default
+`compaction.json` deliberately still records `not_completed / SESSION_TOO_SMALL`.
+No success was manufactured or substituted for that default observation.
 
-VERIFIED: First fixture in recorded canonical sorted inventory is `merge-intervals`.
-The shuffled execution schedule is a different ordering. The exact stored hashes
-were printed before the coding evaluation:
+**VERIFIED:** genuine PostgreSQL/ICU 60 loaded using the existing rootless dependency
+directory; the same `fusion-phase2a-pilot` start ledger and three-starts/hour cap
+were preserved. Two native starts were used in this phase. The independent verifier
+now checks the dynamically priced durable reservation links and bounds separately
+from the older fixed native audit upper bound; it does not relabel one as another.
+Historical evidence verification remains supported.
 
-- frozen.json SHA-256: `9d71a3317b9e0531af7c6dee66c8ba6ad70a36b6bd7be0ccc0ee8fb997b90c30`
-- objective: `398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa`
-- initial solution: `bebc624a42d606c9614702861d999c46f1359b7d4fedda0f0773bb5a6c061d93`
-- acceptance: `a3f8ad73b23cadea8e5a196e720f7d0f621ea3240591636680b6b3610dcbb73c`
-- derived fixture fingerprint (not a pre-existing stored fixture hash): `1618bc5acc2627e2f2574cc05266a4821db736ec0690594e60fc8def2ae3fe33`
+**UNVERIFIED:** suitability for arbitrarily long native planning sessions. The
+native catalog still reports a 128,000-token window despite the test provider's
+smaller metadata; the gateway independently enforces its 32,000-byte bound and
+fails closed. The small fixture and explicit trigger control do not prove that
+native automatic compaction will occur before that stricter gateway bound in a
+long session. No cap was loosened to accommodate the catalog mismatch.
 
-VERIFIED: `offline-readiness-observations.json` contains sanitized coding, native,
-security and recovery observations, complete synthetic ledger snapshots and
-SHA-256 pointers to VM-local original evidence. No private keys, credentials,
-auth files, raw provider records or synthetic human approvals are included.
-Stub framing was inspected against installed OpenAI 7.19.0 SDK declarations:
-`resources/chat/completions/completions.d.ts` (ChatCompletionChunk) and
-`resources/completions.d.ts` (CompletionUsage). This is not real-provider fidelity.
+## Native approval integration
 
-## Reproduction commands and results
+**VERIFIED:** the existing planning approval bridge was exercised against actual
+`getMissionInterviewSession` / `submitMissionInterviewResponse` interfaces in the
+prepared Fusion runtime. The bridge resolves the same module/session store as
+the native runner, rechecks the current question immediately before submission,
+and never starts a mission, autopilot or provider-backed interview.
 
-VERIFIED environment: Linux 6.18.57; Python 3.12.14; Node v24.22.1;
-Git 2.52.0; bubblewrap 0.12.0; prepared native PostgreSQL 15.18.0 runtime.
-The ICU package SHA-256 is
-`f01f61f57e63dc905e02e6441d10370fe0c79e43e70e6f5fe24b342fd2633209`.
-Libraries are supplied through a rootless verified dependency directory, not
-fake libraries or production source changes. Runtime starts use the existing
-`fusion-phase2a-pilot` ledger and unchanged three-starts/hour limit.
+| Required check | Result/tag | Evidence |
+|---|---|---|
+| Correct question hashing | PASS — VERIFIED | Native question JSON hash equals persisted approval binding |
+| Verbatim answer preservation | PASS — VERIFIED | SYNTHETIC JSON answer including surrounding whitespace/newline preserved and rehashed immediately before native map parsing/submission |
+| Explicit approval verification | PASS — VERIFIED | Wrong APPROVE hash rejected; only the labeled test approver supplies the valid test command |
+| Rejection of edited approvals | PASS — VERIFIED | Edited persisted answer rejected before native callback |
+| Rejection of missing approvals | PASS — VERIFIED | Missing record rejected before native callback |
+| Rejection of synthetic approvals in live mode | PASS — VERIFIED | Submission without explicit test permission rejected; existing live-path rejection unit tests also rerun |
+| Correct gateway accounting | PASS — VERIFIED | 7 native HTTP contacts = 7 gateway attempts = 7 durable planning reservations, including retry/format/compaction traffic |
+| Crash/restart behavior | PASS — VERIFIED | Separate approver process exits after durable submission intent; restart refuses replay and invokes no native callback; an explicit new SYNTHETIC approval is used for the positive path |
+| Shared experiment-ledger integration | PASS — VERIFIED | Actual Arm A continuation uses that same experiment.db: 7 planning + 3 coding reservations |
 
-```sh
-python -m unittest discover -s evals/controlled-coding -v  # 28 passed
-python -m unittest discover -s evals/planning-collector -v # 37 passed
-python -m unittest discover -s evals/persistence -v        # 9 passed
-python evals/controlled-coding/harness.py verify          # passed
-python evals/planning-collector/offline_runner.py --security-probe NEW_DIR
-# 30 passed outside the agent sandbox using previously authorized commands
-python evals/controlled-coding/offline_eval.py --runtime PREPARED_RUNTIME --output NEW_DIR
-# correct fixture: agent exit 0, 4/4 acceptance checks passed
-# --variant wrong and --variant tamper: independent acceptance rejected both
-python evals/controlled-coding/recovery_checks.py --runtime PREPARED_RUNTIME --output NEW_DIR
-# kill + abort passed; four attempts each; interrupted exposure never released
-python evals/planning-collector/offline_runner.py --scenario comprehensive \
-  --runtime PREPARED_RUNTIME --rate-ledger EXISTING_DURABLE_LEDGER \
-  --max-starts 3 --native-library-dir VERIFIED_RUNTIME_NATIVE_LIB_DIR
-# native exit 0; 5 accounted attempts; compaction not_completed
-python evals/controlled-coding/live_preflight.py
-# LIVE_REFUSED, expected: not authorized, arming conflict, missing live integration
-```
+**VERIFIED:** only **SYNTHETIC** approvals were created. `approval_fixture.py`
+requires a marked private test directory and never reads a human TTY. The signed
+question/approval records carry the SYNTHETIC label. Native response values are
+parsed from the approved verbatim JSON only because the actual native interface
+accepts a response map. No historical Phase 2M records were recreated.
 
-VERIFIED: Early development checks exposed a mount-on-symlink issue and a recovery
-test querying lifecycle state in the wrong table. Both were corrected under evals
-and their relevant checks subsequently passed. The second identical Arm A run was
-**not executed** because automatic approval review reported its usage limit;
-this was a review-service failure, not an unsafe-action determination. No approval
-bypass was attempted. The current sandbox cannot perform namespace creation, so
-its live-preflight current-isolation check correctly refuses despite the earlier
-outside-sandbox security proof. No readiness claim substitutes that earlier proof.
+## Reproducibility, security and accounting
 
-## Exact remaining actions
+**VERIFIED:** two identical Arm A profiles completed with the genuine Fusion
+shared Pi session, tools/subprocesses, gateway-to-local-TLS inference double,
+generated solution patch, and independent acceptance in a second no-network,
+no-credential sandbox. Normalized patches, grading, request accounting and coding
+ledger reservations/usage estimates/transitions matched exactly. Timestamps,
+absolute paths and reservation/run identifiers were excluded. Three coding attempts
+per run; normalized SHA-256:
+`72ccccad3838afa61ab175f3b8077fd99c3b6d22a0d46085650319aa5aa00c08`.
+Evidence: `blocker_checks.py` and SYNTHETIC reproducibility observation.
 
-VERIFIED blockers and required next actions:
+**VERIFIED:** first canonical frozen fixture remains `merge-intervals`.
+Frozen manifest SHA-256:
+`9d71a3317b9e0531af7c6dee66c8ba6ad70a36b6bd7be0ccc0ee8fb997b90c30`.
+Derived fixture fingerprint (not a stored fixture-file hash):
+`1618bc5acc2627e2f2574cc05266a4821db736ec0690594e60fc8def2ae3fe33`.
+The recorded component hashes were checked/printed before execution.
 
-1. Operator supplies compatible allocations satisfying the unchanged 80% gate.
-2. When approval review is available, rerun the identical Arm A profile and compare
-   normalized candidate, grading and ledger results; add protocol-specific positive
-   controls, then rerun the current ENFORCED/canary probe in the authorized context.
-3. Diagnose native compaction's not_completed status under the strict contract;
-   test its actual HTTP attempts and deadlines without relaxing limits. Validate
-   the approval callback against native question/submit APIs with labeled test
-   fixtures, then complete the shared-ledger live planning integration under evals.
-   The live preflight intentionally retains an explicit integration blocker.
-4. Before separately approving paid work, verify availability of the exact
-   deprecated model, confirm the supplied prices, prepare a dedicated provider key
-   with provider-side spending cap, store it privately in the gateway zone, and
-   provide a private expiring authorization file naming only api.openai.com.
-5. Conduct new interviews through that controlled pipeline only after separate
-   paid authority. Operator approves each new verbatim answer out of band with
-   APPROVE <answer-hash>. Historical Phase 2M approvals cannot be invented/reused.
-6. Run the single read-only preflight with explicit --live-transport,
-   --authorization FILE and --approvals-manifest FILE. It must refuse until every
-   prerequisite is independently satisfied. It never starts a run or authorizes
-   spending. Recommend a first separately authorized tiny canary capped at $0.001,
-   using a smaller defensible token bound and the same planning/aggregate ledger.
+**VERIFIED:** existing wrong-patch and test-tampering controls were rerun under
+the tighter budget and rejected by independent acceptance, as expected. Gateway
+kill and abort regressions were also rerun: each retained full uncertain exposure,
+refused implicit restart, required explicit resume/new token and counted four
+attempts without resetting the original deadline. Evidence: observations JSON
+negative_controls/gateway_recovery and original evidence SHA-256 pointers.
 
-UNVERIFIED: Full persistence success, live schema, model availability and coding
-performance. A successful remote code checkpoint does not back up private raw
-artifacts or demonstrate paid readiness.
+**VERIFIED:** current 30-case isolation/canary probe reports **ENFORCED**, with
+all blocks and positive controls passing, initial gateway canary present and no
+canary found in collected sandbox observations. Four supplemental protocol-specific
+positive controls passed: DNS/UDP on port 53 at a reserved address, raw ICMP echo,
+IPv6 TCP, and TCP at the metadata address. These controls run in a separate trusted
+user/network namespace with only loopback/assigned local aliases and no external
+route. Namespace-only capabilities permit test sink setup; the coding sandbox
+retains dropped capabilities and its existing seccomp filter. No host policy,
+interface, firewall or installed library was changed.
+
+**INFERRED:** these controls support the measured unprivileged command boundary,
+not protection against host administrators, kernel/VM exploits or malicious trusted
+harness changes. Coding remains the shared Pi session, not TaskExecutor or a
+recovered Phase 2M supervisor. Fresh HOME/in-memory sessions, allowlisted public
+runtime, isolated filesystems and the run-bound inference socket remain in use.
+
+**VERIFIED:** shared experiment exposure is **69,651 micro-USD**: planning
+63,686 plus coding 5,965. Seven planning records remain `UNCERTAIN` because the
+SYNTHETIC upstream deliberately omits usage; three coding records are `SETTLED`
+on SYNTHETIC reported usage with estimated charge, not measured billing. No refunds
+or measured charge records were introduced. This reserved exposure is **not**
+provider spend. Independent native verification also checks the separate legacy
+fixed audit upper bound of 135,478 micro-USD without substituting it for the
+shared durable exposure.
+
+## Final validation and remaining limits
+
+**VERIFIED:** offline regressions, native evidence replay, frozen verification,
+protocol controls, reproducibility and current isolation checks pass. The read-only
+live preflight ran without a live flag/auth file and returned **LIVE_REFUSED**,
+exit 1. Arming-allocation failure is gone; missing paid authorization, missing
+human approvals, model availability and live pipeline gates still refuse execution.
+The pre-publication recovery subcheck also correctly reports a dirty tree while
+these edits are pending; a clean fresh-clone preflight follows publication.
+
+**VERIFIED:** no paid inference or real-provider-host requests were made. Evidence
+is local-only namespace routing, scrubbed process environments, explicit local
+SYNTHETIC transports, contact/reservation counters and the unchanged $0.00 contract.
+No invoice-based measured charge is claimed. No provider pricing/availability host
+was queried. No host-wide changes, production edits or review bypass occurred.
+
+**UNVERIFIED:** real provider schema fidelity, deprecated model availability,
+long-session native catalog/compaction compatibility, actual human-channel approval
+operation and integrated live execution. The live pipeline remains disabled and
+is not authorized by offline test records. These limits do not prevent the
+requested SYNTHETIC offline validation; they prevent a claim of live readiness.
+
+**UNVERIFIED:** off-VM preservation of private raw artifacts. Only reviewed code,
+frozen fixtures and sanitized observations are pushed. Private TLS keys, approval
+keys/records, native raw logs and complete private evidence remain outside Git.
+
+**INFERRED:** historical Phase 2M evidence remains an independent development
+limitation recorded in PROJECT_STATE.md. No repeated search was undertaken because
+no new recovery location was supplied, and none was reconstructed.
+
+**VERIFIED:** `blocker-resolution-observations.json` contains the per-check results,
+source SHA-256 values and SHA-256 pointers to original VM-local evidence. Early
+DNS positive-control setup lacked namespace-only port-53 bind permission; adding
+that permission solely to the trusted control fixed it without altering the coding
+sandbox. The source-allowlist regression was updated to inspect both the runner
+and approval bridge for the same forbidden entry points, then all 37 collector
+tests passed. Neither development failure remains unresolved.
+
+**BLOCKED:** paid/live execution remains unavailable under the $0.00 authorization.
+The next permitted work is offline investigation of the long-session catalog
+mismatch if needed; this report does not request provider inference or paid approval.

@@ -16,7 +16,9 @@ import tempfile
 import time
 from contract import Contract,canonical
 from real_transport import validate
-BASELINE='98e8c310f097372c73c8cde3cab4247c509dde4d'
+# FNXC:BlockerResolution 2026-11-09-18:27: Pin refusal-mode recovery to
+# the newly supplied independent checkpoint, not the older milestone.
+BASELINE='73dd29ab2237fb9e7c47458b9deb0b11d681f033'
 EARLIER='993af2bdf7a5fa223ca16bf233be399bc6fd9a86'
 ROOT=Path(__file__).resolve().parents[2]
 
