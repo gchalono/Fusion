@@ -1,6 +1,6 @@
 # Fusion evaluation state
 
-Latest validated implementation: `f7a5698477e26771966cc09da58346e335bde6e0`
+Latest validated implementation: `d4ba7558fe28ada43c8bb5fe71e22387558b5b18`
 
 Branch: `eval/phase2n`. Independent minimum Phase 2N baseline:
 `9736d67e40c8656b56206eafd6b7bc615c1c5c3f`.
