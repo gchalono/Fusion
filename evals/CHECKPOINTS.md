@@ -80,3 +80,10 @@ VERIFIED: isolation overall PARTIAL; untested live wiring/protocol/resume/pricin
 controls remain UNVERIFIED. No original Phase 2M evidence or approvals recovered.
 VERIFIED: evidence hashes and full limitations are in controlled-coding/readiness-evidence.json
 and controlled-coding/PHASE_2N_READINESS.md. Raw artifacts remain private/local.
+
+## Validated checkpoint 2026-11-09T10:02:08.066188+00:00
+
+Implementation: `f7a5698477e26771966cc09da58346e335bde6e0`; branch `eval/phase2n`.
+Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
+Environment: Python 3.12.14; Git git version 2.52.0.
+Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
