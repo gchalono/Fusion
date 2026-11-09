@@ -32,10 +32,12 @@ fs.writeFileSync('/home/agent/.fusion/settings.json', JSON.stringify({
   mcpServers: { enabled: false, servers: [] }, customProviders: [{
     id: 'offline-provider', name: 'Offline Evaluation', apiType: 'openai-compatible',
     baseUrl: endpoint + '/v1', apiKey: 'offline-placeholder',
-    models: [{ id: 'offline-physical-model', name: 'Offline transport fixture' }],
+    models: [{ id: 'gpt-4.1-mini-2025-04-14', name: 'Offline transport fixture' }],
   }],
 }), { flag: 'wx' });
 
+// FNXC:OfflineFinal 2026-11-09-06:35: The wire model ID matches the supplied
+// contract; all responses remain scripted test doubles, not model substitution.
 // No stubbing of Fusion modules, prompts, parser, retry policy, or provider SDK.
 const core = await import(pathToFileURL(`${source}/packages/core/src/index.ts`).href);
 const native = await import(pathToFileURL(`${source}/packages/dashboard/src/mission-interview.ts`).href);
@@ -82,7 +84,7 @@ try {
   while (!fs.existsSync(`${run}/go`)) await new Promise(r => setTimeout(r, 25));
   sessionId = await native.createMissionInterviewSession('fusion-phase2a-pilot', brief.goal,
     `${run}/project`, store, undefined, 'offline-evaluation',
-    scenario === 'model-mismatch' ? 'unauthorized-model' : 'offline-physical-model', 'off');
+    scenario === 'model-mismatch' ? 'unauthorized-model' : 'gpt-4.1-mini-2025-04-14', 'off');
   let s = await settle(sessionId);
   const transcript: unknown[] = [];
   let turns = 0;
@@ -101,7 +103,7 @@ try {
     turns++;
   }
   const actual = s.agent?.session?.model;
-  if (actual?.provider !== 'offline-evaluation' || actual?.id !== 'offline-physical-model') throw new Error('resolved_model_mismatch');
+  if (actual?.provider !== 'offline-evaluation' || actual?.id !== 'gpt-4.1-mini-2025-04-14') throw new Error('resolved_model_mismatch');
   // Raw assistant text remains native, unedited and explicitly non-genuine.
   write('native-test-double.json', { classification: 'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS',
     transcript, summary: await native.getMissionInterviewSummary(sessionId),

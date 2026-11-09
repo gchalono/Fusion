@@ -27,7 +27,7 @@ from snapshots import database_diff, filesystem_diff, process_diff
 from rate_limit import reserve_start
 
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE.parents[1]
+SOURCE = Path(os.environ.get('FUSION_EVAL_RUNTIME',str(HERE.parents[1])))
 ROOT = Path('/run/fusion-eval')
 
 
@@ -94,17 +94,17 @@ def inside(scenario):
             unknown_answered = any('No preference; use your judgment.' in str(m.get('content', '')) for m in body['messages'])
             content = ('OFFLINE COMPACTION SUMMARY ONLY' if compaction else
                        'not JSON' if (scenario == 'format-retry' and n == 1) or (scenario == 'comprehensive' and n == 2) else
-                       json.dumps({'type': 'question', 'data': {'id': 'quality', 'type': 'text', 'question': 'What color theme is required?', 'description': 'offline context fixture ' * 2500}})
+                       json.dumps({'type': 'question', 'data': {'id': 'quality', 'type': 'text', 'question': 'What color theme is required?', 'description': 'offline context fixture ' * 100}})
                        if scenario == 'comprehensive' and storage_answered and not unknown_answered else
-                       json.dumps({'type': 'question', 'data': {'id': 'storage', 'type': 'text', 'question': 'Which storage system?', 'description': 'offline context fixture ' * (2500 if scenario == 'comprehensive' else 0)}})
+                       json.dumps({'type': 'question', 'data': {'id': 'storage', 'type': 'text', 'question': 'Which storage system?', 'description': 'offline context fixture ' * (100 if scenario == 'comprehensive' else 0)}})
                        if not storage_answered else
                        json.dumps({'type': 'complete', 'data': {'missionTitle': 'OFFLINE MOCK ONLY', 'missionDescription': 'Transport test, excluded from corpus', 'milestones': [{'title': 'Mock phase', 'slices': [{'title': 'Mock slice', 'features': [{'title': 'Mock fixture', 'acceptanceCriteria': 'Offline transport checks only'}]}]}]}}))
             finish = 'length' if scenario == 'length' else 'stop'
             packet = {'id': 'offline', 'object': 'chat.completion.chunk', 'created': 0,
-                      'model': 'offline-physical-model',
+                      'model': 'gpt-4.1-mini-2025-04-14',
                       'choices': [{'index': 0, 'delta': {'role': 'assistant', 'content': content}, 'finish_reason': None}]}
             final = {'id': 'offline', 'object': 'chat.completion.chunk', 'created': 0,
-                     'model': 'offline-physical-model', 'choices': [{'index': 0, 'delta': {}, 'finish_reason': finish}]}
+                     'model': 'gpt-4.1-mini-2025-04-14', 'choices': [{'index': 0, 'delta': {}, 'finish_reason': finish}]}
             if scenario not in ('missing-usage', 'comprehensive'): final['usage'] = {'prompt_tokens': 20, 'completion_tokens': 30, 'total_tokens': 50}
             out = b'data: ' + canonical(packet) + b'\n\ndata: ' + canonical(final) + b'\n\ndata: [DONE]\n\n'
             self.send_response(200); self.send_header('Content-Type', 'text/event-stream')
@@ -115,12 +115,12 @@ def inside(scenario):
     threading.Thread(target=mock.serve_forever, daemon=True).start()
     artifacts_dir = Path('/tmp/gateway-artifacts'); artifacts_dir.mkdir()
     (artifacts_dir / '.offline-test').touch()
-    p = Policy.from_config(dict(provider='offline-evaluation', model='offline-physical-model',
+    p = Policy.from_config(dict(provider='offline-evaluation', model='gpt-4.1-mini-2025-04-14',
        upstream_url='https://offline.invalid/v1/chat/completions', approved_hosts=['offline.invalid'],
        api_type='openai-chat-completions', physical_model_verified=True,
-       token_bound_evidence_sha256='0'*64, max_model_calls=8, spend_ceiling_usd='100',
-       input_price_per_million='0.001', output_price_per_million='0.001', input_token_bound=128000,
-       output_token_bound=32768, output_ceiling=None))
+       token_bound_evidence_sha256='0'*64, max_model_calls=12, spend_ceiling_usd='0.50',
+       input_price_per_million='0.40', output_price_per_million='1.60', input_token_bound=32000,
+       output_token_bound=4096, output_ceiling=4096))
     from dataclasses import asdict
     save('gateway-policy.json',asdict(p))
     def transport(url, raw):
@@ -132,9 +132,37 @@ def inside(scenario):
         finally: c.close()
     sys.path.insert(0,str(HERE.parent/'controlled-coding'))
     from budget import AggregateBudget, guard_gateway
-    shared_ledger=AggregateBudget(ROOT/'results'/'shared-budget.db')
-    gateway = guard_gateway(Gateway(p, Artifacts(artifacts_dir, offline=True), transport),
-                            shared_ledger,'planning','native-offline-'+scenario)
+    # FNXC:OfflineFinal 2026-11-09-06:35: Tighten the existing native test
+    # fixture to supplied limits; compaction remains an explicit native call.
+    from contract import Contract
+    from pilot import initialize
+    experiment=ROOT/'results'/'test-double-experiment';initialize(experiment)
+    shared_ledger=AggregateBudget(experiment/'experiment.db')
+    run='merge-intervals';shared_ledger.control_run('planning',run,'start')
+    contract=Contract();bounds=threading.local()
+    guarded=guard_gateway(Gateway(p, Artifacts(artifacts_dir, offline=True), transport),
+                         shared_ledger,'planning',run,
+                         cost_bound=lambda _:bounds.value['reserved_micro_usd'],
+                         estimator=contract.estimate,
+                         token_bound=lambda _:(bounds.value['input_token_upper_bound'],bounds.value['output_token_upper_bound']))
+    class ContractGateway:
+        def __getattr__(self,name):return getattr(guarded,name)
+        def handle(self,raw):
+            # SDK may request a larger output; clamp before contract validation.
+            try:
+                body=json.loads(raw)
+                field='max_completion_tokens' if 'max_completion_tokens' in body else 'max_tokens'
+                value=body.get(field,4096)
+                if type(value) is not int or value<=0:raise ValueError('output_limit')
+                body[field]=min(value,4096)
+                normalized,bounds.value=contract.prepare(canonical(body))
+                if len(raw)>32000:raise ValueError('input_byte_bound')
+                bounds.value['input_token_upper_bound']=max(len(raw),bounds.value['input_token_upper_bound'])
+                from decimal import Decimal,ROUND_CEILING
+                bounds.value['reserved_micro_usd']=int((Decimal(bounds.value['input_token_upper_bound'])*Decimal('.40')+Decimal(bounds.value['output_token_upper_bound'])*Decimal('1.60')).to_integral_value(rounding=ROUND_CEILING))
+                return guarded.handle(normalized)
+            except Exception:return 403,'application/json',b'{"error":"contract_denied"}'
+    gateway=ContractGateway()
     proxy = offline_server(gateway, gateway.artifacts)
     threading.Thread(target=proxy.serve_forever, daemon=True).start()
     # Negative control: direct access to mock never generates a response fixture.
@@ -203,6 +231,7 @@ def inside(scenario):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--runtime',type=Path,help='Prepared source/dependencies; no installation')
     parser.add_argument('--scenario', choices=['normal','format-retry','upstream-retry','missing-usage','model-mismatch','length','comprehensive'], default='normal')
     parser.add_argument('--inside', action='store_true')
     parser.add_argument('--rate-ledger', type=Path, help='Persistent offline start ledger outside disposable namespaces')
@@ -211,6 +240,8 @@ def main():
     parser.add_argument('--security-probe', type=Path, help='Run deterministic Unix-gateway namespace probes; no native interview start')
     parser.add_argument('--security-child',action='store_true',help=argparse.SUPPRESS)
     args = parser.parse_args()
+    global SOURCE
+    if args.runtime is not None:SOURCE=args.runtime.resolve()
     if args.security_probe is not None:
         # FNXC:NativeIsolation 2026-11-09-05:12: Fixture gateway receives only a
         # generated initial canary; no provider credential variables are inherited.
@@ -247,7 +278,7 @@ def main():
        '--bind',str(root/'home'),'/home/agent','--bind',str(root/'scratch'),'/tmp',
        '--proc','/proc','--dev','/dev','--clearenv',
        '--setenv','HOME','/home/agent','--setenv','PATH',os.environ['PATH'],
-       '--setenv','PYTHONDONTWRITEBYTECODE','1','--setenv','FUSION_OFFLINE_NAMESPACE','1',
+       '--setenv','PYTHONDONTWRITEBYTECODE','1','--setenv','FUSION_OFFLINE_NAMESPACE','1','--setenv','FUSION_EVAL_RUNTIME',str(SOURCE),
        '--setenv','TMPDIR','/tmp',*library_env,'--',sys.executable,str(Path(__file__).resolve()),'--inside','--scenario',args.scenario]
     result = subprocess.run(command, timeout=300)
     print(json.dumps({'classification':'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS','evidence_directory':str(root), 'exit_code':result.returncode}))

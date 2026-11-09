@@ -19,7 +19,7 @@ import threading
 from http.server import BaseHTTPRequestHandler
 
 
-def namespace_command(socket_path, workspace, arguments):
+def namespace_command(socket_path, workspace, arguments, *, seccomp_fd, command_override=None, readonly_mounts=()):
     command=['bwrap','--unshare-user','--unshare-net','--unshare-pid','--unshare-ipc','--unshare-uts',
              '--die-with-parent','--new-session','--uid','65534','--gid','65534','--cap-drop','ALL','--clearenv']
     for directory in ('/usr','/lib','/lib64','/bin'):
@@ -30,13 +30,18 @@ def namespace_command(socket_path, workspace, arguments):
             runtime=Path(executable).resolve().parent.parent
             if not str(runtime).startswith('/usr'):
                 command += ['--ro-bind',str(runtime),str(runtime)]
+    from security_filter import privileged_binaries
+    for path in privileged_binaries():command += ['--ro-bind','/dev/null',path]
     command += ['--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--dir','/home',
-                '--tmpfs','/home/sandbox','--ro-bind',str(socket_path),'/run/gateway.sock',
+                '--tmpfs','/home/sandbox',
                 '--bind',str(workspace),'/work','--dir','/eval',
                 '--ro-bind',str(Path(__file__).resolve()),'/eval/isolation.py',
                 '--setenv','HOME','/home/sandbox','--setenv','PATH',os.environ['PATH'],
-                '--setenv','PYTHONDONTWRITEBYTECODE','1','--chdir','/work','--remount-ro','/',
-                '--',sys.executable,'-B','/eval/isolation.py',*arguments]
+                '--setenv','PYTHONDONTWRITEBYTECODE','1','--chdir','/work',
+                ]
+    if socket_path is not None:command += ['--ro-bind',str(socket_path),'/run/gateway.sock']
+    for source,target in readonly_mounts:command += ['--ro-bind',str(source),str(target)]
+    command += ['--remount-ro','/','--seccomp',str(seccomp_fd),'--',*(command_override or [sys.executable,'-B','/eval/isolation.py',*arguments])]
     return command
 
 
@@ -100,7 +105,7 @@ def inference_socket(path, gateway, token):
     return server
 
 
-def child_probe(token, case, sink_port):
+def child_probe(token, case, sink_port, context=None):
     """Deterministic clients, not a coding agent or a model-backed interview."""
     import http.client
     bridge=Bridge(('127.0.0.1',39777),Relay)
@@ -118,11 +123,39 @@ def child_probe(token, case, sink_port):
         c=http.client.HTTPConnection('127.0.0.1',39777,timeout=3)
         c.request('POST','/v1/chat/completions',body,headers);r=c.getresponse();data=r.read();c.close()
         return r.status==200 and b'OFFLINE TEST DOUBLE' in data
-    result={'case':case,'namespace_uid':os.getuid(),'uid_map':Path('/proc/self/uid_map').read_text().strip(),'mechanism':'user+net+pid+mount namespace; Unix gateway socket only'}
+    result={'case':case,'no_new_privs':next(x.split(':')[1].strip() for x in Path('/proc/self/status').read_text().splitlines() if x.startswith('NoNewPrivs:')),'namespace_uid':os.getuid(),'uid_map':Path('/proc/self/uid_map').read_text().strip(),'mechanism':'user+net+pid+mount namespace; Unix gateway socket only'}
     client='curl' if case=='proxy' else case if case in ('curl','node') else 'python'
     result['positive_control']=positive(client)
     try:
-        if case=='raw':
+        if case in ('unshare','setns','mount','ptrace','runtime-socket','setuid','clone-ns','vsock','other-unix','abstract-unix'):
+            import ctypes
+            libc=ctypes.CDLL(None,use_errno=True)
+            if case=='unshare':rc=libc.unshare(0x10000000)
+            elif case=='mount':rc=libc.mount(b'none',b'/tmp',b'tmpfs',0,None)
+            elif case=='ptrace':rc=libc.ptrace(0,0,None,None)
+            elif case=='setns':
+                fd=os.open('/proc/1/ns/net',os.O_RDONLY)
+                try:rc=libc.setns(fd,0)
+                finally:os.close(fd)
+            elif case=='clone-ns':
+                seccomp=ctypes.CDLL('libseccomp.so.2');nr=seccomp.seccomp_syscall_resolve_name(b'clone')
+                rc=libc.syscall(nr,0x10000000|17,0,0,0,0)
+                if rc==0:os._exit(99)
+                if rc>0:os.waitpid(rc,0)
+            elif case=='vsock':rc=libc.socket(40,1,0)
+            elif case in ('other-unix','abstract-unix'):
+                address=context['unix'] if case=='other-unix' else '\0'+context['abstract']
+                with socket.socket(socket.AF_UNIX) as s:s.connect(address)
+                rc=0
+            elif case=='runtime-socket':
+                with socket.socket(socket.AF_UNIX) as s:s.connect('/run/docker.sock')
+                rc=0
+            else:
+                rc=subprocess.run(['/usr/bin/su','-c','id'],capture_output=True).returncode
+                result['blocked']=rc!=0
+            if case not in ('runtime-socket','setuid','other-unix','abstract-unix'):
+                result['denial_errno']=ctypes.get_errno();result['blocked']=rc==-1 and ctypes.get_errno()==1
+        elif case=='raw':
             with socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP):pass
             result['blocked']=False
         elif case in ('python','metadata','loopback'):
@@ -209,7 +242,7 @@ def child_probe(token, case, sink_port):
 
 
 if __name__=='__main__':
-    child_probe(sys.argv[1],sys.argv[2],int(sys.argv[3]))
+    child_probe(sys.argv[1],sys.argv[2],int(sys.argv[3]),json.loads(sys.argv[4]) if len(sys.argv)>4 else {})
 
 
 def exercise(output):
@@ -245,8 +278,14 @@ def exercise(output):
     try:
         with tempfile.TemporaryDirectory(prefix='fusion-security-') as temporary:
             private=Path(temporary);(private/'decoy-credential').write_text(canary)
+            sockets=[]
+            for address in (str(private/'outside.sock'),'\0fusion-offline-'+secrets.token_hex(8)):
+                listener=socket.socket(socket.AF_UNIX);listener.bind(address);listener.listen(20)
+                with socket.socket(socket.AF_UNIX) as positive:positive.connect(address)
+                sockets.append(listener)
+            context={'unix':str(private/'outside.sock'),'abstract':sockets[1].getsockname()[1:].decode() if isinstance(sockets[1].getsockname(),bytes) else sockets[1].getsockname()[1:]}
             ledger=AggregateBudget(private/'ledger.db')
-            for number,case in enumerate(('python','node','curl','raw','dns','ipv6','metadata','loopback','proxy','filesystem','credentials','per-run-cap','aggregate-cap','request-cap','bad-client','endpoint','model','host','revocation','gateway-down')):
+            for number,case in enumerate(('python','node','curl','raw','dns','ipv6','metadata','loopback','proxy','filesystem','credentials','per-run-cap','aggregate-cap','request-cap','bad-client','endpoint','model','host','revocation','gateway-down','unshare','setns','mount','ptrace','runtime-socket','setuid','clone-ns','vsock','other-unix','abstract-unix')):
                 run=private/f'run-{number}';run.mkdir();(run/'.offline-test').touch()
                 workspace=private/f'workspace-{number}';workspace.mkdir()
                 input_bound=80000 if case=='per-run-cap' else 40000 if case=='aggregate-cap' else 100
@@ -278,14 +317,18 @@ def exercise(output):
                         (workspace/'control-done').touch()
                     control_thread=threading.Thread(target=control,daemon=True);control_thread.start()
                 try:
-                    command=namespace_command(private/f'gateway-{number}.sock',workspace,[token,case,str(upstream.server_port)])
+                    from security_filter import export_filter
+                    filter_file=tempfile.TemporaryFile()
+                    export_filter(filter_file)
+                    command=namespace_command(private/f'gateway-{number}.sock',workspace,[token,case,str(upstream.server_port),json.dumps(context)],seccomp_fd=filter_file.fileno())
                     # Only scrubbed env inherited; no real credential values are read.
                     env={'PATH':os.environ['PATH'],'HOME':str(private)}
                     assert os.environ['CANARY_GATEWAY_CREDENTIAL']==canary
                     with (private/'decoy-credential').open('rb') as secret_fd:
                         assert secret_fd.read()==canary.encode()
                         os.set_inheritable(secret_fd.fileno(),True)
-                        child=subprocess.run(command,env=env,capture_output=True,text=True,timeout=15,close_fds=True)
+                        child=subprocess.run(command,env=env,capture_output=True,text=True,timeout=20,close_fds=True,pass_fds=(filter_file.fileno(),))
+                    filter_file.close()
                     if child.returncode:
                         # Persist error diagnostics only after checking the canary.
                         if canary in child.stderr:raise RuntimeError('canary_in_diagnostic')
@@ -299,6 +342,7 @@ def exercise(output):
                     result['stub_only']=counts['untrusted_stub_contacts']==0 and counts['real_host_contacts']==0
                     if not result.get('positive_control') or not result.get('blocked') or not result['clamp_verified'] or not result['stub_only'] or result.get('canary_absent_from_observed_environments') is False:
                         raise RuntimeError('security_assertion_failed:'+case)
+                    if result['no_new_privs']!='1':raise RuntimeError('no_new_privs_missing')
                     if result['namespace_uid']!=65534:raise RuntimeError('namespace_uid_mismatch')
                     (output/f'ledger-{case}.json').write_text(json.dumps(case_ledger.snapshot(),indent=2)+'\n')
                     preserved=output/'gateway-artifacts'/case;preserved.mkdir(parents=True)
@@ -311,13 +355,14 @@ def exercise(output):
                 finally:
                     server.shutdown();server.server_close();thread.join(timeout=3)
                     if control_thread:control_thread.join(timeout=2)
+            for listener in sockets:listener.close()
             snapshot=ledger.snapshot()
             (output/'ledger.json').write_text(json.dumps(snapshot,indent=2)+'\n')
     finally:
         upstream.shutdown();upstream.server_close()
         if previous_canary is None:os.environ.pop('CANARY_GATEWAY_CREDENTIAL',None)
         else:os.environ['CANARY_GATEWAY_CREDENTIAL']=previous_canary
-    summary={'classification':'OFFLINE_TEST_DOUBLE_NOT_A_PLAN_OR_CODING_RESULT','results':results,'counts':counts,'gateway_initial_canary_verified':initial_canary_present,'inheritable_canary_fd_positive_control':True,
+    summary={'isolation_tier':'ENFORCED','classification':'OFFLINE_TEST_DOUBLE_NOT_A_PLAN_OR_CODING_RESULT','results':results,'counts':counts,'gateway_initial_canary_verified':initial_canary_present,'inheritable_canary_fd_positive_control':True,
              'scope':'deterministic clients in reference namespace; privileged host/kernel attacks excluded',
              'limitations':['Not integrated with a live coding runner','Raw ICMP/DNS/IPv6/metadata share a Python HTTP gateway positive control, not a protocol-identical positive control','Namespace gateway shutdown and token revocation tested; mid-request kill recovery tested independently; combined restart/resume protocol not yet exercised']}
     raw=json.dumps(summary,indent=2)+'\n'

@@ -53,3 +53,20 @@ PHASE_2N_PARTIALLY_READY: strict protocol-positive controls, combined restart,
 fixed live experiment ledger/runner wiring, real pricing bounds and the human
 approval adapter remain gates. Next work is offline completion of these gates;
 no paid execution is authorized.
+
+## Final offline readiness extension
+
+VERIFIED: 74 unit tests (28 coding, 37 collector, 9 persistence) pass. Thirty
+reference namespace probes report ENFORCED; genuine Fusion shared Pi coding
+sessions and independent acceptance sandbox plumbing passed correct, wrong and
+test-tampering controls. Integrated gateway kill/abort/resume checks preserve
+uncertain exposure and refuse automatic restart. Native regression exits 0 with
+five accounted attempts using genuine ICU 60; compaction reports not_completed.
+
+VERIFIED: Final readiness is BLOCKED: supplied allocations $1.85 exceed the
+required $1.60 arming threshold; no paid authority. Reproducibility repeat was
+not executed because automatic approval review hit a service usage limit.
+Protocol-identical controls, compaction and integrated live planning/approval
+validation remain outstanding. See controlled-coding/PHASE_2N_FINAL_READINESS.md
+and sanitized offline-readiness-observations.json. No Phase 2M reconstruction,
+provider requests or production changes were performed.

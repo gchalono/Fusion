@@ -10,6 +10,7 @@ of the Phase 2M supervisor and independent proof of its sandbox boundary.
 import json
 import hashlib
 import threading
+import time
 from dataclasses import asdict
 import sqlite3
 from pathlib import Path
@@ -20,10 +21,17 @@ CODING_CALL_CAP = 4
 
 
 class AggregateBudget:
-    def __init__(self, path):
+    def __init__(self, path, *, experiment_contract=None):
         self.path = str(Path(path).resolve())
         with self.connect() as db:
             db.executescript('''
+                CREATE TABLE IF NOT EXISTS experiment_contract (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL);
+                CREATE TRIGGER IF NOT EXISTS contract_no_update BEFORE UPDATE ON experiment_contract
+                    BEGIN SELECT RAISE(ABORT,'immutable_contract'); END;
+                CREATE TRIGGER IF NOT EXISTS contract_no_delete BEFORE DELETE ON experiment_contract
+                    BEGIN SELECT RAISE(ABORT,'immutable_contract'); END;
+                CREATE TABLE IF NOT EXISTS run_controls (stage TEXT NOT NULL,run TEXT NOT NULL,started REAL NOT NULL,deadline REAL NOT NULL,status TEXT NOT NULL,PRIMARY KEY(stage,run));
+                CREATE TABLE IF NOT EXISTS request_bounds (reservation_id INTEGER PRIMARY KEY REFERENCES reservations(id), input_upper INTEGER NOT NULL, output_upper INTEGER NOT NULL);
                 CREATE TABLE IF NOT EXISTS reservations (
                     id INTEGER PRIMARY KEY, stage TEXT NOT NULL CHECK(stage IN ('planning','coding')),
                     run TEXT NOT NULL, upper_micro INTEGER NOT NULL CHECK(upper_micro>0),
@@ -57,6 +65,38 @@ class AggregateBudget:
                     BEGIN SELECT RAISE(ABORT,'immutable_observation'); END;
             ''')
 
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row=db.execute('SELECT body FROM experiment_contract WHERE id=1').fetchone()
+            body=json.dumps(experiment_contract,sort_keys=True,separators=(',',':')) if experiment_contract is not None else None
+            if row and body and row[0]!=body:raise ValueError('experiment_contract_mismatch')
+            if not row and body:db.execute('INSERT INTO experiment_contract VALUES (1,?)',(body,))
+            self.contract=json.loads(row[0] if row else body) if row or body else None
+
+    def control_run(self, stage, run, action):
+        if not self.contract:raise ValueError('experiment_contract_required')
+        now=time.time();limit=self.contract['planning_seconds' if stage=='planning' else 'coding_seconds']
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row=db.execute('SELECT started,deadline,status FROM run_controls WHERE stage=? AND run=?',(stage,run)).fetchone()
+            if action=='start':
+                if row:raise ValueError('run_exists_resume_required')
+                db.execute('INSERT INTO run_controls VALUES (?,?,?,?,?)',(stage,run,now,now+limit,'ACTIVE'))
+            elif action=='resume':
+                if not row or row[2]!='INCOMPLETE' or not row[0]<=now<row[1]:raise ValueError('resume_denied')
+                db.execute("UPDATE run_controls SET status='ACTIVE' WHERE stage=? AND run=?",(stage,run))
+            elif action in ('INCOMPLETE','COMPLETE'):
+                if not row:raise ValueError('unknown_run')
+                db.execute('UPDATE run_controls SET status=? WHERE stage=? AND run=?',(action,stage,run))
+            else:raise ValueError('unknown_control')
+
+    def remaining_seconds(self, stage, run):
+        with self.connect() as db:
+            row=db.execute('SELECT started,deadline,status FROM run_controls WHERE stage=? AND run=?',(stage,run)).fetchone()
+        now=time.time()
+        if not row or row[2]!='ACTIVE' or now<row[0] or now>=row[1]:raise ValueError('run_not_active_or_deadline')
+        return row[1]-now
+
     def connect(self):
         db = sqlite3.connect(self.path, timeout=10)
         db.execute('PRAGMA synchronous=FULL')
@@ -72,7 +112,7 @@ class AggregateBudget:
             if row and row[0]!=policy_hash:raise ValueError('run_policy_mismatch')
             if not row:db.execute('INSERT INTO run_policies VALUES (?,?,?)',(stage,run,policy_hash))
 
-    def reserve(self, stage, run, upper_micro):
+    def reserve(self, stage, run, upper_micro, *, token_bounds=None):
         if stage not in ('planning', 'coding') or not isinstance(run, str) or not run:
             raise ValueError('invalid_reservation')
         if type(upper_micro) is not int or not 0 < upper_micro <= CAP_MICRO_USD:
@@ -82,12 +122,34 @@ class AggregateBudget:
             db.execute('BEGIN IMMEDIATE')
             total = db.execute('SELECT COALESCE(SUM(upper_micro),0) FROM reservations').fetchone()[0]
             used, calls = db.execute('SELECT COALESCE(SUM(upper_micro),0), COUNT(*) FROM reservations WHERE stage=? AND run=?', (stage, run)).fetchone()
+            if self.contract:
+                allowed=self.contract['planning_run_ids' if stage=='planning' else 'coding_run_ids']
+                if run not in allowed:raise ValueError('unregistered_experiment_run')
+                control=db.execute('SELECT started,deadline,status FROM run_controls WHERE stage=? AND run=?',(stage,run)).fetchone()
+                now=time.time()
+                if not control or control[2]!='ACTIVE' or not control[0]<=now<control[1]:raise ValueError('run_deadline_or_inactive')
+                stage_used=db.execute('SELECT COALESCE(SUM(upper_micro),0) FROM reservations WHERE stage=?',(stage,)).fetchone()[0]
+                from contract import micro
+                cap=micro(self.contract['planning_reserve_usd' if stage=='planning' else 'coding_allocation_usd'])
+                if stage_used+upper_micro>cap:raise ValueError('stage_allocation_cap')
+                request_cap=self.contract['planning_attempts_per_task' if stage=='planning' else 'coding_attempts_per_run']
+                if calls>=request_cap:raise ValueError('experiment_request_cap')
+                if token_bounds is None:raise ValueError('request_token_bounds_required')
+                if any(type(x) is not int or x<0 for x in token_bounds):raise ValueError('invalid_token_bounds')
+                from decimal import Decimal,ROUND_CEILING
+                minimum=int((Decimal(token_bounds[0])*Decimal(self.contract['input_usd_per_million'])+Decimal(token_bounds[1])*Decimal(self.contract['output_usd_per_million'])).to_integral_value(rounding=ROUND_CEILING))
+                if upper_micro<minimum:raise ValueError('under_reserved_request')
+                if token_bounds[0]>self.contract['max_input_tokens'] or token_bounds[1]>self.contract['max_output_tokens']:raise ValueError('request_token_limit')
+                if stage=='coding':
+                    used_tokens=db.execute('SELECT COALESCE(SUM(b.input_upper+b.output_upper),0) FROM request_bounds b JOIN reservations r ON r.id=b.reservation_id WHERE r.stage=? AND r.run=?',(stage,run)).fetchone()[0]
+                    if used_tokens+sum(token_bounds)>self.contract.get('frozen_coding_token_limit',16000):raise ValueError('frozen_coding_token_limit')
             if total+upper_micro > CAP_MICRO_USD:
                 raise ValueError('aggregate_spend_cap')
             if stage == 'coding' and (used+upper_micro > CODING_CAP_MICRO_USD or calls >= CODING_CALL_CAP):
                 raise ValueError('coding_run_cap')
             ident = db.execute('INSERT INTO reservations(stage,run,upper_micro) VALUES (?,?,?)', (stage, run, upper_micro)).lastrowid
             db.execute('INSERT INTO transitions(reservation_id,state,basis) VALUES (?,?,?)',(ident,'RESERVED','worst_case'))
+            if token_bounds is not None:db.execute('INSERT INTO request_bounds VALUES (?,?,?)',(ident,*token_bounds))
         # Return only AFTER commit. Failed/uncertain commits never reach transport.
         return ident
 
@@ -138,7 +200,7 @@ class AggregateBudget:
                 'reservations': rows, 'observations': observations, 'transitions':events}
 
 
-def guard_gateway(gateway, ledger, stage, run):
+def guard_gateway(gateway, ledger, stage, run, *, cost_bound=None, estimator=None, token_bound=None):
     """Offline integration with the existing gateway; no new supervisor."""
     original = gateway.budget
     transport = gateway.transport
@@ -161,12 +223,13 @@ def guard_gateway(gateway, ledger, stage, run):
             before = original.reserved
             try:
                 attempt = original.reserve(request)
-                reservation_id = ledger.reserve(stage, run, original.reserved-before)
+                exposure=cost_bound(request) if cost_bound else original.reserved-before
+                reservation_id = ledger.reserve(stage, run, exposure,token_bounds=token_bound(request) if token_bound else None)
                 active.ident=reservation_id
                 # Audit linking must also succeed before transport is permitted.
                 gateway.artifacts.write(f'aggregate-reservation-{attempt:04}.json',
                     json.dumps({'reservation_id': reservation_id, 'stage': stage, 'run': run,
-                                'policy_sha256':policy_hash, 'attempt': attempt, 'reserved_exposure_micro_usd': original.reserved-before},
+                                'policy_sha256':policy_hash, 'attempt': attempt, 'reserved_exposure_micro_usd': exposure},
                                sort_keys=True).encode())
                 return attempt
             except BaseException:
@@ -187,6 +250,7 @@ def guard_gateway(gateway, ledger, stage, run):
                     ledger.transition(ident,'UNCERTAIN','invalid_usage')
                 else:
                     estimate=(u['prompt_tokens']*gateway.policy.input_price_micro_per_million+u['completion_tokens']*gateway.policy.output_price_micro_per_million+999999)//1000000
+                    if estimator:estimate=estimator(u)
                     ledger.observe(ident,evidence_ref='gateway-attempt:'+str(ident),provider_usage=u,estimated_charge_micro=estimate)
                     active.settlement='estimated_from_provider_reported_usage'
             return status,content_type,response
