@@ -22,7 +22,7 @@
     "backup/public-inputs/A.txt": "eeb98f4c68aa3ae99907cc8475b2e9ab97a4945cb7acf0942b72c033083f9495",
     "backup/public-inputs/common-instructions.md": "f6807d6bd0f165b0f4bcc97b0331a067adea348cb715a8c4335a970a36b4d6fa",
     "backup/public-inputs/objective.txt": "4edc93814c7a6ad5c43445ad07f853ca3350ed0e3f6dc7764e1c04e0c4cdffe0",
-    "backup/publish.py": "3ede4c38a492bc9f5edd03d9cc6e540f38411fce2896bc47a9dae354212c4f85",
+    "backup/publish.py": "ed1883886c596982cea84bb5c5058d6ed4c51b5d67a5b2415f045c776f61b540",
     "backup/test_public.py": "32771e33651b3206307a85ac0f16077b8baa60a4bef9a8648b4d816c4f2e1fa2",
     "backup/verify.py": "ad20a8c6f14b510f2844aa0c5ef937819e6460095d05e87ccaff2458b8c92b2c",
     "eslint.config.mjs": "1fc7137298a31ae0468c94d0b5e16eae8e39a9ca3c703d1c99d47b18469153fa",

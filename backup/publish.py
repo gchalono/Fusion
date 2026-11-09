@@ -66,10 +66,10 @@ def checkpoint_from(source,destination,event,milestone):
  if not old:raise ValueError('INITIAL_BACKUP_REQUIRED')
  source_sha=git(source,'rev-parse','HEAD')
  dependencies=json.loads((HERE/'FROZEN_DEPENDENCIES.json').read_text())
- for group in ('public','private'):
-  for original,item in dependencies[group].items():
-   path=Path(original)
-   if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('FROZEN_DEPENDENCY_CHANGED_OR_UNAVAILABLE:'+original)
+ frozen=list(dependencies['public'].items())+[(v['source_path'],v) for v in dependencies['private_dependencies']]
+ for original,item in frozen:
+  path=Path(original)
+  if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('FROZEN_DEPENDENCY_CHANGED_OR_UNAVAILABLE:'+original)
  checkpoint.build(source,source_sha,destination)
  # Transport the trusted public workflow, never source Git metadata or private data.
  for name in GENERATED-{'SOURCE_MAP.json','INVENTORY.json','PUBLICATION_SCAN.json','TEST_RESULTS.json','test_public.py'}:
