@@ -37,8 +37,8 @@ def inventory(root):
  return files
 def commit(root,message):
  files=inventory(root);verify(root)
- for name in [*files,'backup/INVENTORY.json']:
-  subprocess.run(['git','add','-f','--',name],cwd=root,check=True,stdout=subprocess.DEVNULL)
+ names=b'\0'.join(n.encode() for n in [*files,'backup/INVENTORY.json'])+b'\0'
+ subprocess.run(['git','add','-f','--pathspec-from-file=-','--pathspec-file-nul'],cwd=root,input=names,check=True,stdout=subprocess.DEVNULL)
  subprocess.run(['git','-c','user.name=Fusion sanitized checkpoint','-c','user.email=checkpoint@example.invalid','commit','-m',message],cwd=root,check=True,stdout=subprocess.DEVNULL)
  return git(root,'rev-parse','HEAD')
 def push_verify(root,expected_old):
@@ -64,7 +64,13 @@ def checkpoint_from(source,destination,event,milestone):
  if event=='interval' and state.exists() and 0<=time.time()-json.loads(state.read_text()).get('epoch',0)<1200:return {'status':'NOT_DUE'}
  metadata();old=remote()
  if not old:raise ValueError('INITIAL_BACKUP_REQUIRED')
- source_sha=git(source,'rev-parse','HEAD');checkpoint.build(source,source_sha,destination)
+ source_sha=git(source,'rev-parse','HEAD')
+ dependencies=json.loads((HERE/'FROZEN_DEPENDENCIES.json').read_text())
+ for group in ('public','private'):
+  for original,item in dependencies[group].items():
+   path=Path(original)
+   if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('FROZEN_DEPENDENCY_CHANGED_OR_UNAVAILABLE:'+original)
+ checkpoint.build(source,source_sha,destination)
  # Transport the trusted public workflow, never source Git metadata or private data.
  for name in GENERATED-{'SOURCE_MAP.json','INVENTORY.json','PUBLICATION_SCAN.json','TEST_RESULTS.json','test_public.py'}:
   if (HERE/name).is_file():shutil.copyfile(HERE/name,destination/'backup'/name)

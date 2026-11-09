@@ -82,7 +82,7 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "b2d41b0195e9fefc996ad8f320afb90d6670ff282a172e65abb15d5a28850e10",
+      "sha256": "d800c5ac5465703cd9a1f474f0e894edb9e50ce31b025f865530aedf1f5df67a",
       "source_blob": "8dd459a10eae6f68211ea606cf76c95c1284d89b",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata",
@@ -91,7 +91,7 @@
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "bc6cf06e3c61adb6186b4786798d00dfa72bfae568d713d8a8bf52f8d95f148a",
+      "sha256": "0fb766639aab4055503602c1413ed57276044f39b1e8ca96d4962d43ed3e7df5",
       "source_blob": "64ee88d4eb01143a5a7c0226938282c1f7af22e7",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata",

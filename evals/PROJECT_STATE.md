@@ -99,3 +99,5 @@ recreated. No production behavior changed and no paid/provider traffic occurred.
 ## Sanitized public recovery snapshot
 
 Original source b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c; original history is intentionally absent. Read backup/README.md and backup/FROZEN_DEPENDENCIES.json. Public code recovery does not restore the 32 private experiment artifacts. Native TEST DOUBLE plumbing is verified; positive Chromium grading remains blocked; provider spending authorization is $0.00.
+
+Sanitized root `b1542ac7f090f815c92a0ddd63830c5a33c0d2cd` independently fetched and fresh-cloned from `backup/fusion-checkpoints`; 84 public-recovery tests passed, 8 private-dependent skipped. Full experiment recovery still requires 32 protected inputs. Provider spending $0.00.
