@@ -1,7 +1,7 @@
 # Sanitized Fusion recovery
 
 This branch is a history-free SOURCE snapshot, not the original development ancestry.
-Source checkpoint: b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c.
+Initial root source checkpoint: b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c.
 Original history and local recovery bundles remain untouched. The old checkpoint and
 operational database objects must not exist in this repository. Never merge or fetch
 original development history into this backup clone.
@@ -32,10 +32,10 @@ checks as SKIPPED. Run it with no original evidence mounted; dependencies must n
 silently bleed in from an older workspace. Python 3.12+, Git, Node and OpenSSL are
 needed for offline units. Native agent/runtime builds require locked dependencies.
 
-Current engineering state: native Pi Arm A plumbing/repeat/security controls verified
+Engineering state at the initial root (current state is SOURCE_MAP.json plus evals/PROJECT_STATE.md): native Pi Arm A plumbing/repeat/security controls verified
 with TEST DOUBLES, but the generated scaffold is intentionally incomplete. Real
 Chromium positive reference fails on capset under the mandatory security filter.
-The token proposal is NOT ACTIVE at this source checkpoint. No paid inference,
+The token proposal was NOT ACTIVE at the initial root; later explicitly scoped offline revisions are recorded in evals/controlled-coding/POST_BACKUP_OFFLINE_REPORT.md. No paid inference,
 model substitution, mission or autopilot is authorized by any backup operation.
 
 ## Checkpoint workflow

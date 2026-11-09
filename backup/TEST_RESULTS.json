@@ -3,8 +3,8 @@
   "results": [
     {
       "suite": "controlled-coding",
-      "run": 44,
-      "passed": 37,
+      "run": 47,
+      "passed": 40,
       "failed": 0,
       "skipped": 7,
       "skip_reasons": [

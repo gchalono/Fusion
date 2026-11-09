@@ -72,7 +72,7 @@ def checkpoint_from(source,destination,event,milestone):
   if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('FROZEN_DEPENDENCY_CHANGED_OR_UNAVAILABLE:'+original)
  checkpoint.build(source,source_sha,destination)
  # Transport the trusted public workflow, never source Git metadata or private data.
- for name in GENERATED-{'SOURCE_MAP.json','INVENTORY.json','PUBLICATION_SCAN.json','TEST_RESULTS.json','test_public.py'}:
+ for name in GENERATED-{'SOURCE_MAP.json','INVENTORY.json','PUBLICATION_SCAN.json','TEST_RESULTS.json'}:
   if (HERE/name).is_file():shutil.copyfile(HERE/name,destination/'backup'/name)
  shutil.copytree(HERE/'public-inputs',destination/'backup/public-inputs')
  (destination/'backup/INITIAL_SCAN.json').unlink(missing_ok=True)

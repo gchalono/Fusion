@@ -95,9 +95,6 @@ Tests: controlled-coding, collector and persistence unittest suites passed; froz
 Environment: Python 3.12.14; Git git version 2.52.0.
 Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
 
+## Sanitized persistence and offline A/B/C milestone
 
-## Sanitized public recovery snapshot
-
-Original source b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c; original history is intentionally absent. Read backup/README.md and backup/FROZEN_DEPENDENCIES.json. Public code recovery does not restore the 32 private experiment artifacts. Native TEST DOUBLE plumbing is verified; positive Chromium grading remains blocked; provider spending authorization is $0.00.
-
-Sanitized root `b1542ac7f090f815c92a0ddd63830c5a33c0d2cd` independently fetched and fresh-cloned from `backup/fusion-checkpoints`; 84 public-recovery tests passed, 8 private-dependent skipped. Full experiment recovery still requires 32 protected inputs. Provider spending $0.00.
+Original b3bc7b0 checkpoint preserved; public orphan b1542ac7 verified by independent fetch and fresh clone (84 passed, 8 private-dependent skipped). Remote descendants remain sanitized-only. See controlled-coding/POST_BACKUP_OFFLINE_REPORT.md. Explicit offline Experiment 2 token revision verified; native A/B/C local test-double loops and A repeat completed; incomplete candidates rejected. Chromium positive reference remains blocked. Provider spending $0.00. Public recovery still requires 32 protected input dependencies for full experiment reproduction.

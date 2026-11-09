@@ -1,8 +1,9 @@
 """FNXC:TaskManagerOfflineValidation 2026-11-09-20:38:
-TEST DOUBLE native Arm A wire/coding validation; no live transport entry point.
-Uses unchanged Pi session, broker, namespace and active 16000 reservation bound.
+TEST DOUBLE native wire/coding validation; no live transport entry point.
+Default remains Arm A / 16000. Explicit expanded_offline opts into the verified
+operator-directed Experiment 2 revision and permits frozen A/B/C inputs.
 A small bounded tool payload is a deliberately incomplete implementation control,
-not a claimed correct task manager or model capability result. B/C never dispatch.
+not a claimed correct task manager or model capability result.
 """
 import difflib,json,os,secrets,subprocess,sys,threading
 from pathlib import Path
@@ -43,11 +44,13 @@ def persist_checked_outputs(root, report, raw):
  for name in ('stdout','stderr'):(root/('agent-'+name+'.txt')).write_bytes(report[name])
 
 
-def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None):
+def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False):
+ if arm not in "ABC" or len(arm)!=1 or (arm!="A" and not expanded_offline):raise ValueError("arm_requires_scoped_offline_revision")
  root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
- prompt=load_arm('/workspace/phase2m-genuine-success','/workspace/phase2n-evaluation/frozen','A')
+ prompt=load_arm('/workspace/phase2m-genuine-success','/workspace/phase2n-evaluation/frozen',arm)
  (root/'objective.txt').write_bytes(prompt)
- d=experiment_contract();(root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
+ from task_manager_token_revision import offline_contract
+ d=offline_contract() if expanded_offline else experiment_contract();(root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
  wires=[]
  def observe(body):
   wires.append(body);(root/f'native-wire-{len(wires):02}.json').write_bytes(canonical(body))
@@ -56,7 +59,7 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None):
  subprocess.run(['git','-c','core.hooksPath=/dev/null','clone','--quiet','--no-local','/workspace/phase2n-evaluation/frozen/empty-seed',str(workspace)],check=True,capture_output=True,env={'PATH':os.environ['PATH'],'HOME':str(root)})
  process=None;log=None;watch_stop=threading.Event();abort=threading.Event();report=None
  try:
-  process,log=spawn_broker(root,TASK+':A')
+  process,log=spawn_broker(root,TASK+':'+arm)
   if broker_hook is not None:broker_hook(process)
   def watch():
    while not watch_stop.wait(.05):
@@ -70,13 +73,13 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None):
   (root/'candidate.patch').write_text(patch)
   if process.poll() is None:request_admin(root,'finish' if report['exit_code']==0 and len(contacts)==2 else 'abort')
   else:
-   recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':A','INCOMPLETE')
+   recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':'+arm,'INCOMPLETE')
   result={'classification':'TEST DOUBLE native Pi run; incomplete implementation control; NOT model performance',
-    'variant':variant,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
+    'arm':arm,'variant':variant,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
     'local_model_wire_requests':len(contacts),'real_provider_requests':0,'provider_usage':None,'actual_provider_cost_usd':'0.00',
     'coding_tool_modified_files':bool(raw),'candidate_sha256':sha(raw),'patch_sha256':sha(patch.encode()),
     'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':len(contacts)==2 and any(m['role']=='tool' for m in wires[-1]['messages']) and report['exit_code']==0,
-    'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':16000,'active_offline_output_bound':512,
+    'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':d['frozen_coding_token_limit'],'active_offline_output_bound':512,
     'full_task_completion':False,'browser_grading':'UNVERIFIED / independent gate',
     'wire_files':[str(root/f'native-wire-{i:02}.json') for i in range(1,len(wires)+1)]}
   (root/'result.json').write_bytes(canonical(result));return result
@@ -92,4 +95,4 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None):
 
 if __name__=='__main__':
  import argparse
- p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--variant',choices=['coding','security','unauthorized'],default='coding');a=p.parse_args();r=run(a.root,a.runtime,variant=a.variant);print(json.dumps({k:r[k] for k in ('native_loop_completed','exit_code','local_model_wire_requests','coding_tool_modified_files','actual_provider_cost_usd')}))
+ p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--arm',choices=list('ABC'),default='A');p.add_argument('--expanded-offline',action='store_true');p.add_argument('--variant',choices=['coding','security','unauthorized'],default='coding');a=p.parse_args();r=run(a.root,a.runtime,variant=a.variant,arm=a.arm,expanded_offline=a.expanded_offline);print(json.dumps({k:r[k] for k in ('native_loop_completed','exit_code','local_model_wire_requests','coding_tool_modified_files','actual_provider_cost_usd')}))

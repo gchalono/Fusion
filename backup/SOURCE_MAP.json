@@ -1,5 +1,5 @@
 {
-  "source_commit": "b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c",
+  "source_commit": "4d96fd89186661e84dbd6725277414ecfc8df2c7",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,21 +82,17 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "d800c5ac5465703cd9a1f474f0e894edb9e50ce31b025f865530aedf1f5df67a",
-      "source_blob": "8dd459a10eae6f68211ea606cf76c95c1284d89b",
+      "sha256": "20a657611406395f202bf1bfa2868ce0088aff4a1fab9ed0228810d4a1155c1e",
+      "source_blob": "bd4c658cb6dc16f0505570f0d930ee70242263e3",
       "mode": "100644",
-      "category": "evaluation source/test or reviewed metadata",
-      "source_sha256": "f7743d95a24d31265fe9593aa8314d71fa0a8f8d3e09ff1720a513a3b514d86c",
-      "transformation": "append sanitized recovery note; original state record retained"
+      "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "0fb766639aab4055503602c1413ed57276044f39b1e8ca96d4962d43ed3e7df5",
-      "source_blob": "64ee88d4eb01143a5a7c0226938282c1f7af22e7",
+      "sha256": "9139eb1c2f538e4c7d88df05c1235bfc7b021ef293e74086146facb9471ad12c",
+      "source_blob": "3f7d864f3f186531bd91e2013a43870bd5464887",
       "mode": "100644",
-      "category": "evaluation source/test or reviewed metadata",
-      "source_sha256": "0aa11b7b8ac402b1fe3118166229516ff73e30584482760e7bcd7aa507924595",
-      "transformation": "append sanitized recovery note; original state record retained"
+      "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/artifact-manifest.json",
@@ -130,6 +126,13 @@
       "path": "evals/controlled-coding/PHASE_2N_REPORT.md",
       "sha256": "2169c7077585a3a4b264280933c5f1b7cd816327e7eb0296efc1fc418491cfc0",
       "source_blob": "2769945094f5a3161d7d3eb87a5fd53ce786b5d1",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/POST_BACKUP_OFFLINE_REPORT.md",
+      "sha256": "7265dafd81f9ee79644a3ae13d92da11a0b633973c6be669e8306e31f7a141d5",
+      "source_blob": "cb5660b0159c01b522a124ea06d2863a24483a0c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -281,6 +284,13 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/fixtures/merge-intervals/objective.txt",
+      "sha256": "398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa",
+      "source_blob": "2e861af07830d29610617d671e18f955c32c0410",
+      "mode": "100644",
+      "category": "explicit frozen synthetic benchmark objective"
+    },
+    {
       "path": "evals/controlled-coding/fixtures/parse-duration/acceptance/test_acceptance.py",
       "sha256": "302530c570a1a3d3e6047c3dce6e053fb92c0f220387ed1730a1d9d7ecec57db",
       "source_blob": "bfb07fd4521f5337302e6ac5eeb12e94a32ea87c",
@@ -295,6 +305,13 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/fixtures/parse-duration/objective.txt",
+      "sha256": "12cc69703ccc4f7755c9aae33591296f829263f20c8895f247fd073cde989d8a",
+      "source_blob": "73b7cc9f7c98ee5ef51a74936690b3c92919df85",
+      "mode": "100644",
+      "category": "explicit frozen synthetic benchmark objective"
+    },
+    {
       "path": "evals/controlled-coding/fixtures/stable-toposort/acceptance/test_acceptance.py",
       "sha256": "2251daef3f53015057616e956aa34f1f85b8f19f90aeaea3d750499a2c401537",
       "source_blob": "caf4d10ca98bd464aca468337a389794415e9303",
@@ -307,6 +324,13 @@
       "source_blob": "45131a6342d8c14aac56dc57b433d1a5d01170d2",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/fixtures/stable-toposort/objective.txt",
+      "sha256": "fa41bddde00add3d946a7755e97f3e1af4608045637f9b3e82970ede937e9376",
+      "source_blob": "6a2ddc8d07617f19b7bf1f98d56a7280f6d3a040",
+      "mode": "100644",
+      "category": "explicit frozen synthetic benchmark objective"
     },
     {
       "path": "evals/controlled-coding/frozen.json",
@@ -443,8 +467,8 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_native.py",
-      "sha256": "c5da4c97b22f2116574ac120f7de033ff45acf3b9dd59133385ab482356a3f5c",
-      "source_blob": "cc9a208e009ecea874180496206d6f5eb6a1647a",
+      "sha256": "ac5b3c11bd671a8380c792f624a597a85f9e71257a32a5ece9b3a579cc2236fe",
+      "source_blob": "a520d4ecca40ac678c3b10d6b1edc878eab99a1c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -459,6 +483,13 @@
       "path": "evals/controlled-coding/task_manager_reference.py",
       "sha256": "baa22bfb334021ecd5fc91f4da20b62e7e44dccc378a68c56938ebcf3f5c5717",
       "source_blob": "e28b28a7d18f43c681c0e4bfd7797c61bb5471d1",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/task_manager_token_revision.py",
+      "sha256": "b061e5350e079a6bba03fe23fff2463cd6a1fabe1b90f3896f77da1857e7eb60",
+      "source_blob": "7a0d47c84ab1c4de0dfc37d2e8b3113edb6efcef",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -529,6 +560,13 @@
       "path": "evals/controlled-coding/test_task_manager_adapter.py",
       "sha256": "2a0e9989192a8979a81a3895408696bcf3718eb9e0ed09000952ea6bb322616c",
       "source_blob": "eb3b8248d2dd72f0a3a9c8b0adb2c1eaa3ae9fb2",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/test_task_manager_token_revision.py",
+      "sha256": "ce52285da55eafca83573789ebd42252db9cc8ef4ee8097dbaf5ad5312d95ade",
+      "source_blob": "569efbcb4385b619be717df8952829668d4960d3",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -54851,27 +54889,6 @@
       "source_blob": "cb0ff5c3b541f646105198ee23ac0fc3d805023e",
       "mode": "100644",
       "category": "explicit root configuration/source"
-    },
-    {
-      "path": "evals/controlled-coding/fixtures/merge-intervals/objective.txt",
-      "sha256": "398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa",
-      "source_blob": "2e861af07830d29610617d671e18f955c32c0410",
-      "mode": "100644",
-      "category": "explicit frozen synthetic benchmark objective"
-    },
-    {
-      "path": "evals/controlled-coding/fixtures/parse-duration/objective.txt",
-      "sha256": "12cc69703ccc4f7755c9aae33591296f829263f20c8895f247fd073cde989d8a",
-      "source_blob": "73b7cc9f7c98ee5ef51a74936690b3c92919df85",
-      "mode": "100644",
-      "category": "explicit frozen synthetic benchmark objective"
-    },
-    {
-      "path": "evals/controlled-coding/fixtures/stable-toposort/objective.txt",
-      "sha256": "fa41bddde00add3d946a7755e97f3e1af4608045637f9b3e82970ede937e9376",
-      "source_blob": "6a2ddc8d07617f19b7bf1f98d56a7280f6d3a040",
-      "mode": "100644",
-      "category": "explicit frozen synthetic benchmark objective"
     }
   ],
   "excluded": [
