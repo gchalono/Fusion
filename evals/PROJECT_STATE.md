@@ -31,7 +31,13 @@ aggregate new-spend cap. Missing Phase 2M does not block preserving Phase 2N.
 Exact next task: restore write access to gchalono/Fusion, scan and push eval/phase2n
 without force, confirm tip with git ls-remote, then run fresh remote recovery.
 Fresh local bundle recovery: 56 unit tests and artifact hashes passed. Native
-recovery remains incomplete because PostgreSQL requires libicui18n.so.60; the
+recovery remains incomplete; genuine ICU 60 now loads with an explicit dependency
+library path, but full native revalidation awaits the existing start window. The
 shared five-starts/hour limit is preserved. See persistence/PERSISTENCE_REPORT.md.
 After persistence is durable, obtain the Phase 2M bundle/evidence and integrate
 the ledger with its supervisor before considering any separately approved live run.
+
+GitHub diagnosis: user metadata says push/admin, but both shell Git and connected
+Git blob writes return 403. Reconnect the fork with Contents read/write; see
+persistence/BLOCKER_RESOLUTION.md. A sanitized incremental recovery bundle is
+prepared locally; off-VM export has not been verified.

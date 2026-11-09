@@ -61,3 +61,38 @@ through supported environment/package setup; do not substitute incompatible ABI
 symlinks or relax namespace isolation. Retest only after the existing shared
 five-starts/hour ledger permits another start. These are recorded environment
 requirements, not evidence of a passing native recovery.
+
+## ICU 60 recovery clarification
+
+The failing binary is the pinned `@embedded-postgres/linux-x64` PostgreSQL 15.18.
+The earlier working checkout contained ICU 60 libraries in its native/lib, with
+`libicuuc` RUNPATH `$ORIGIN`. This dependency setup was not in Git. The fresh
+package installation omitted ICU; Debian 13 does not provide this old ABI by
+default. Do not copy untracked libraries from an older worktree.
+
+A verified rootless alternative is the genuine Ubuntu archive package:
+
+- URL: `https://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu60_60.2-3ubuntu3.2_amd64.deb`
+- SHA-256: `f01f61f57e63dc905e02e6441d10370fe0c79e43e70e6f5fe24b342fd2633209`
+- Checksum was compared with Ubuntu's HTTPS bionic-updates/main amd64 package index.
+
+Download/check the package, use `dpkg-deb -x` into a new recovery directory, and
+copy its genuine `usr/lib/x86_64-linux-gnu/libicu*.so.60*` files into the fresh
+installed PostgreSQL native/lib directory. This does not install system packages
+or modify production source. With `LD_LIBRARY_PATH` set to that directory, both
+`postgres --version` and `initdb --version` passed (15.18), and the missing ICU
+libraries resolved. Standard package symlinks are genuine ABI aliases, not fake
+shared libraries. This validates loading, not the full native integration.
+
+Pass that same explicitly verified directory into the existing namespace:
+
+```sh
+python evals/planning-collector/offline_runner.py --scenario comprehensive \
+  --rate-ledger /path/to/reused-private-offline-starts.json \
+  --native-library-dir /fresh/checkout/node_modules/.pnpm/PACKAGE/native/lib
+```
+
+Resolve PACKAGE from the actual pinned install; the directory must be inside the
+current checkout. This optional flag sets only LD_LIBRARY_PATH after clearenv;
+network isolation, read-only source and five-starts/hour accounting stay intact.
+Do not reset the ledger. Full native revalidation remains pending an eligible start.

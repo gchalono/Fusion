@@ -200,11 +200,20 @@ def main():
     parser.add_argument('--scenario', choices=['normal','format-retry','upstream-retry','missing-usage','model-mismatch','length','comprehensive'], default='normal')
     parser.add_argument('--inside', action='store_true')
     parser.add_argument('--rate-ledger', type=Path, help='Persistent offline start ledger outside disposable namespaces')
+    parser.add_argument('--native-library-dir', type=Path, help='Verified native library directory inside this checkout (offline only)')
     args = parser.parse_args()
     if args.inside:
         inside(args.scenario); return
     if args.rate_ledger is None:
         parser.error('--rate-ledger required; reuse one durable ledger across offline starts')
+    # FNXC:Persistence 2026-11-09-04:22: Pass only an explicitly verified local
+    # dependency directory; preserve network isolation and native start limits.
+    library_env = []
+    if args.native_library_dir is not None:
+        library_dir = args.native_library_dir.resolve()
+        if not library_dir.is_dir() or not library_dir.is_relative_to(SOURCE.resolve()):
+            parser.error('--native-library-dir must be a directory inside this checkout')
+        library_env = ['--setenv', 'LD_LIBRARY_PATH', str(library_dir)]
     reserve_start(args.rate_ledger)
     root = Path(tempfile.mkdtemp(prefix='fusion-native-offline-'))
     for d in ('home','scratch','project','database','results'): (root/d).mkdir()
@@ -215,7 +224,7 @@ def main():
        '--proc','/proc','--dev','/dev','--clearenv',
        '--setenv','HOME','/home/agent','--setenv','PATH',os.environ['PATH'],
        '--setenv','PYTHONDONTWRITEBYTECODE','1','--setenv','FUSION_OFFLINE_NAMESPACE','1',
-       '--setenv','TMPDIR','/tmp','--',sys.executable,str(Path(__file__).resolve()),'--inside','--scenario',args.scenario]
+       '--setenv','TMPDIR','/tmp',*library_env,'--',sys.executable,str(Path(__file__).resolve()),'--inside','--scenario',args.scenario]
     result = subprocess.run(command, timeout=300)
     print(json.dumps({'classification':'OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS','evidence_directory':str(root), 'exit_code':result.returncode}))
     raise SystemExit(result.returncode)
