@@ -1,6 +1,6 @@
 # Fusion evaluation state
 
-Latest validated implementation: `9736d67e40c8656b56206eafd6b7bc615c1c5c3f`
+Latest validated implementation: `15fad6de69f42565e9e230e5edd08a649a401b0d`
 
 Branch: `eval/phase2n`. Minimum independent Phase 2N baseline is the SHA above.
 The independently verified authorized fork branch tip is the recovery authority;

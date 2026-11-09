@@ -17,3 +17,10 @@ confirmed. Snapshot/bundle is local-only. Phase 2M remains missing.
 
 Future records reference preceding validated implementation commits. The remote
 branch tip, independently verified after push, is authoritative for recovery.
+
+## Validated checkpoint 2026-11-09T04:09:29.339600+00:00
+
+Implementation: `15fad6de69f42565e9e230e5edd08a649a401b0d`; branch `eval/phase2n`.
+Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
+Environment: Python 3.12.14; Git git version 2.52.0.
+Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
