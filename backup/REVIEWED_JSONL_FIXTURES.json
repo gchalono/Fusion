@@ -1,0 +1,5 @@
+{
+  "plugins/fusion-plugin-cursor-runtime/src/__tests__/fixtures/cursor-mcp-server-failure.stream.jsonl": "af094a69686ae0a9955e05f9327bc5549b7031ebb5ba39681493622c801e80d8",
+  "plugins/fusion-plugin-cursor-runtime/src/__tests__/fixtures/cursor-mcp-tool-call.stream.jsonl": "5d70d1c2635e17fe53e50003838e351614f9e99fcd2bcf7914bb016bf7025a37",
+  "scripts/__tests__/fixtures/pg-loaded-failure-census/high.jsonl": "6c465c39f6bd11e46c2dd66f1988c358e46e51d347bafd562d98a7f934ccd11b"
+}

@@ -1,0 +1,65 @@
+{
+  "classification": "PUBLIC_SNAPSHOT_OFFLINE_TESTS_PRIVATE_DEPENDENCIES_EXPLICIT",
+  "results": [
+    {
+      "suite": "controlled-coding",
+      "run": 44,
+      "passed": 37,
+      "failed": 0,
+      "skipped": 7,
+      "skip_reasons": [
+        {
+          "test": "test_actual_B_C_two_request_loop_exceeds_token_reservation_cap (test_task_manager_adapter.TaskManagerTests.test_actual_B_C_two_request_loop_exceeds_token_reservation_cap)",
+          "reason": "original private evidence unavailable"
+        },
+        {
+          "test": "test_historical_inputs_and_approvals (test_task_manager_adapter.TaskManagerTests.test_historical_inputs_and_approvals)",
+          "reason": "original private evidence unavailable"
+        },
+        {
+          "test": "test_manifest_generation_no_inference (test_task_manager_adapter.TaskManagerTests.test_manifest_generation_no_inference)",
+          "reason": "original private evidence unavailable"
+        },
+        {
+          "test": "test_actual_native_security_and_unknown_tool_outcomes (test_task_manager_validation.ValidationTests.test_actual_native_security_and_unknown_tool_outcomes)",
+          "reason": "private native evidence unavailable"
+        },
+        {
+          "test": "test_measured_native_A_and_projected_B_C_fit_money_not_active_token_bound (test_task_manager_validation.ValidationTests.test_measured_native_A_and_projected_B_C_fit_money_not_active_token_bound)",
+          "reason": "private native evidence unavailable"
+        },
+        {
+          "test": "test_native_crash_keeps_exposure_without_Pi_replay (test_task_manager_validation.ValidationTests.test_native_crash_keeps_exposure_without_Pi_replay)",
+          "reason": "private native evidence unavailable"
+        },
+        {
+          "test": "test_native_repeat_has_equal_patch_and_actual_wires (test_task_manager_validation.ValidationTests.test_native_repeat_has_equal_patch_and_actual_wires)",
+          "reason": "private native evidence unavailable"
+        }
+      ]
+    },
+    {
+      "suite": "planning-collector",
+      "run": 37,
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0,
+      "skip_reasons": []
+    },
+    {
+      "suite": "persistence",
+      "run": 11,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 1,
+      "skip_reasons": [
+        {
+          "test": "test_modified_or_advanced_worktree_cannot_repass_original_gate (test_task_manager_local_gate0.LocalGateTests.test_modified_or_advanced_worktree_cannot_repass_original_gate)",
+          "reason": "Requires original private-history checkpoint, intentionally absent from sanitized orphan. Not a passed security test."
+        }
+      ]
+    }
+  ],
+  "isolation": "existing mandatory namespace + seccomp; original workspace unmounted; network isolated",
+  "exit_code": 0
+}

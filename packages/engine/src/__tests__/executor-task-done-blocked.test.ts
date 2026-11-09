@@ -1,0 +1,826 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "./executor-test-helpers.js";
+import { TaskExecutor } from "../executor.js";
+import * as worktreePool from "../worktree/worktree-pool.js";
+import { SelfHealingManager } from "../self-healing.js";
+import { evaluateNoCommitsNoOpFinalize, TaskNotFoundError } from "@fusion/core";
+import {
+  createMockStore,
+  mockedExecSync,
+  resetExecutorMocks,
+} from "./executor-test-helpers.js";
+
+/*
+FNXC:Lifecycle 2026-07-16-10:20:
+FN-8141 — regression coverage for the honest blocked exit. Asserts the INVARIANT across surfaces:
+(1) fn_task_done(outcome="blocked") parks failed with a BLOCKED: error + audit event and NEVER trips the
+    completion/bulk-completion gates or auto-completes/auto-skips steps;
+(2) blockedBy becomes real task.dependencies so the task requeues behind the blocker;
+(3) the completed-work recovery sweep never promotes a blocked-parked row to in-review;
+(4) the ordinary completed outcome is unchanged.
+*/
+
+function baseTask(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "FN-8141",
+    title: "Blocked exit test",
+    description: "",
+    column: "in-progress",
+    worktree: "/repo/.worktrees/swift-falcon",
+    branch: "fusion/fn-8141",
+    baseCommitSha: "abc123",
+    taskDoneRetryCount: 0,
+    // Two unreviewed pending steps: the exact shape that trips bulk-step-completion-without-review.
+    steps: [
+      { name: "Implement", status: "in-progress" as const },
+      { name: "Testing & Verification", status: "pending" as const },
+    ],
+    currentStep: 0,
+    dependencies: [],
+    log: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    ...overrides,
+  };
+}
+
+async function setup(overrides: Record<string, unknown> = {}) {
+  const store = createMockStore();
+  store.recordRunAuditEvent = vi.fn().mockResolvedValue(undefined);
+  store.getAgentLogCount = vi.fn().mockResolvedValue(0);
+  const blockerTargets = (overrides.blockerTargets ?? {}) as Record<string, { deletedAt?: string; sourceParentTaskId?: string } | null>;
+  let task: any = baseTask(overrides);
+  let tool: any;
+
+  store.getTask.mockImplementation(async (id: string) => {
+    if (id === task.id) return { ...task, steps: task.steps.map((s: any) => ({ ...s })) };
+    const target = blockerTargets[id];
+    if (target === null) throw new TaskNotFoundError(id);
+    return { id, ...target };
+  });
+  store.updateTask.mockImplementation(async (_id: string, updates: any) => {
+    task = { ...task, ...updates };
+    return task;
+  });
+  store.moveTask.mockImplementation(async (id: string, column: string) => {
+    task = { ...task, id, column };
+  });
+
+  const executor = new TaskExecutor(store as any, "/repo");
+  // FNXC:MergeRetryReliability 2026-09-04-02:24: this suite verifies the
+  // completion tool's observable park contract. Constructing it directly keeps
+  // that contract isolated from graph-session scheduling and its unrelated
+  // lifecycle waits.
+  tool = (executor as any).createTaskDoneTool(
+    task.id,
+    task.worktree,
+    "",
+    new Map(),
+    vi.fn(),
+  );
+
+  return { store, tool, getTask: () => task };
+}
+
+describe("FN-8141 fn_task_done honest blocked exit", () => {
+  beforeEach(() => {
+    resetExecutorMocks();
+    vi.spyOn(worktreePool, "isUsableTaskWorktree").mockResolvedValue(true);
+    mockedExecSync.mockImplementation((cmd: string) => {
+      if (cmd.includes("rev-parse --show-toplevel")) return Buffer.from("/repo/.worktrees/swift-falcon\n");
+      if (cmd.includes("rev-parse --abbrev-ref HEAD")) return Buffer.from("fusion/fn-8141\n");
+      if (cmd.includes("rev-list --count")) return Buffer.from("0\n");
+      if (cmd.includes("rev-parse HEAD")) return Buffer.from("def456\n");
+      return Buffer.from("");
+    });
+  });
+
+  it("freezes the verbatim MRG-058 ENOSPC obstacle without replanning or releasing progress", async () => {
+    const reason = "Les contrôles obligatoires de typecheck (`npm run check`) et de build (`npm run build`) réussissent, mais Vitest ne peut pas démarrer : la commande ciblée complète et une unique spec avec TMPDIR local échouent avant tout test avec `ENOSPC: no space left on device, write`.";
+    const { store, tool, getTask } = await setup({ currentStep: 1, effectiveNodeId: "steps#0:step-execute" });
+
+    const result = await tool.execute("id", { outcome: "blocked", obstacle: "outside-worktree", reason, blockedBy: [] });
+    const persisted = getTask();
+
+    expect(persisted).toMatchObject({
+      status: "blocked",
+      paused: true,
+      pausedReason: "external-block",
+      currentStep: 1,
+      worktree: "/repo/.worktrees/swift-falcon",
+      branch: "fusion/fn-8141",
+      externalBlock: {
+        origin: "host-environment",
+        code: "ENOSPC",
+        message: reason,
+        source: "agent-declaration",
+        resume: { nodeId: "steps#0:step-execute", currentStep: 1 },
+      },
+    });
+    expect(store.moveTask).not.toHaveBeenCalled();
+    expect(store.updateStep).not.toHaveBeenCalled();
+    expect(store.logEntry.mock.calls.flat().join(" ")).not.toContain("no blocking dependencies recorded");
+    expect(result.content[0].text).toContain("frozen as Blocked");
+  });
+
+  it("persists a sanitized four-part report only with an accepted external block", async () => {
+    const { tool, getTask } = await setup();
+    await tool.execute("id", {
+      outcome: "blocked", obstacle: "outside-worktree", reason: "ENOSPC: no space left on device",
+      blockedReport: {
+        verifiedCondition: "Session-isolated MCP support was verified unavailable.",
+        stopReason: "Persistent configuration was not changed.",
+        unimplementedWork: "Remaining implementation was not performed.",
+        unblockCondition: "Provide a supported session-scoped interface.",
+      },
+    });
+
+    expect(getTask().externalBlock.report).toEqual({
+      verifiedCondition: "Session-isolated MCP support was verified unavailable.",
+      stopReason: "Persistent configuration was not changed.",
+      unimplementedWork: "Remaining implementation was not performed.",
+      unblockCondition: "Provide a supported session-scoped interface.",
+    });
+  });
+
+  it("refuses the FN-243 missing-interpreter declaration without mutating lifecycle state", async () => {
+    const reason = "Implementation is committed in 1fc8057. JavaScript tests, typecheck, and build pass, but the required Python regression command cannot run because neither python nor python3 is installed in the execution host.";
+    const { store, tool, getTask } = await setup();
+    const before = getTask();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      blockedBy: [],
+      reason,
+    });
+
+    expect(getTask()).toEqual(before);
+    expect(getTask().externalBlock).toBeUndefined();
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalledWith(
+      expect.objectContaining({ mutationType: "task:external-block-parked" }),
+    );
+    expect(result.content[0].text).toContain("missing-tooling");
+    expect(result.content[0].text).toContain("Resolve it");
+    expect(result.content[0].text).toContain("Substitute");
+    expect(result.content[0].text).toContain("Degrade and record");
+    expect(result.content[0].text).toContain("recommendations");
+    expect(result.details.error).toBe(result.content[0].text);
+  });
+
+  it("never produces a third-party-service freeze for an unclassified outside-worktree reason", async () => {
+    const { store, tool, getTask } = await setup();
+    const before = getTask();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      reason: "An optional local helper is unavailable",
+      blockedBy: [],
+    });
+
+    expect(getTask()).toEqual(before);
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(JSON.stringify(getTask())).not.toContain("third-party-service");
+    expect(result.content[0].text).toContain("not authorized to freeze");
+  });
+
+  it.each([
+    ["ECONNRESET from provider", "network", "ECONNRESET"],
+    ["quota exceeded for this billing period", "model-provider", "USAGE_LIMIT"],
+    ["invalid api key for provider", "credentials", "CREDENTIALS"],
+  ])("keeps classified %s failures freezable", async (reason, origin, code) => {
+    const { tool, getTask } = await setup();
+
+    await tool.execute("id", { outcome: "blocked", obstacle: "outside-worktree", reason, blockedBy: [] });
+
+    expect(getTask()).toMatchObject({
+      status: "blocked",
+      paused: true,
+      externalBlock: { origin, code, source: "agent-declaration" },
+    });
+  });
+
+  it("refuses transient credential rotation rather than freezing it", async () => {
+    const { store, tool, getTask } = await setup();
+    const before = getTask();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      reason: '401 {"type":"authentication_error","message":"Invalid authentication credentials"}',
+      blockedBy: [],
+    });
+
+    expect(getTask()).toEqual(before);
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain("Continue repairing in place");
+  });
+
+  it("keeps a real dependency park for an unclassified outside-worktree reason", async () => {
+    const { tool, getTask } = await setup();
+
+    await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      reason: "optional helper is unavailable",
+      blockedBy: ["FN-8145"],
+    });
+
+    expect(getTask()).toMatchObject({ status: "failed", dependencies: ["FN-8145"] });
+    expect(getTask().externalBlock).toBeUndefined();
+  });
+
+  it.each([
+    ["missing", null],
+    ["soft-deleted", { deletedAt: "2026-08-28T22:00:00.000Z" }],
+  ])("refuses a classified host failure after discarding a %s dependency", async (_kind, blockerTarget) => {
+    const { store, tool, getTask } = await setup({
+      blockerTargets: { "FN-8145": blockerTarget },
+    });
+    const before = getTask();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      reason: "ENOSPC: no space left on device, write",
+      blockedBy: ["FN-8145"],
+    });
+
+    expect(getTask()).toEqual(before);
+    expect(getTask().externalBlock).toBeUndefined();
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain("Continue repairing in place");
+  });
+
+  it("refuses a classified host failure after discarding an all-self-spawned dependency list", async () => {
+    const { store, tool, getTask } = await setup({
+      blockerTargets: { "FN-8145": { sourceParentTaskId: "FN-8141" } },
+    });
+    const before = getTask();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "outside-worktree",
+      reason: "ENOSPC: no space left on device, write",
+      blockedBy: ["FN-8145"],
+    });
+
+    expect(getTask()).toEqual(before);
+    expect(getTask().externalBlock).toBeUndefined();
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain("Continue repairing in place");
+  });
+
+  it("refuses an explicit inside-worktree failure and preserves execution state", async () => {
+    const { store, tool, getTask } = await setup();
+    const before = getTask();
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "tests mention ENOSPC in an expected fixture but the assertion failed",
+    });
+
+    expect(result.content[0].text).toContain("Continue repairing in place");
+    expect(getTask()).toEqual(before);
+    expect(getTask().externalBlock).toBeUndefined();
+    expect(store.moveTask).not.toHaveBeenCalled();
+    expect(store.updateTask).not.toHaveBeenCalled();
+  });
+
+  it("keeps task dependencies distinct even when the reason also contains an external code", async () => {
+    const { tool, getTask } = await setup();
+    await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "ENOSPC while waiting for upstream task",
+      blockedBy: ["FN-8145"],
+    });
+
+    expect(getTask().status).toBe("failed");
+    expect(getTask().dependencies).toContain("FN-8145");
+    expect(getTask().externalBlock).toBeUndefined();
+  });
+
+  it("parks failed with a BLOCKED: error and does NOT trip the bulk-completion refusal", async () => {
+    const { store, tool } = await setup();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "pi 0.80.10 removed AuthStorage; SDK bump cannot pass verify:fast",
+      blockedBy: ["FN-8145"],
+    });
+
+    // Not a refusal — the blocked exit bypasses the completion gates.
+    expect(result.content[0].text).not.toContain("fn_task_done refused");
+    expect(result.content[0].text).toContain("parked as blocked");
+
+    // Parked failed with the BLOCKED: convention; requeue budget untouched.
+    const parkCall = store.updateTask.mock.calls.find(
+      (c: any[]) => c[1]?.status === "failed" && typeof c[1]?.error === "string" && c[1].error.startsWith("BLOCKED:"),
+    );
+    expect(parkCall).toBeTruthy();
+    expect(parkCall![1].error).toBe("BLOCKED: pi 0.80.10 removed AuthStorage; SDK bump cannot pass verify:fast");
+    // The bulk-completion refusal path requeues to todo — blocked must not.
+    expect(store.moveTask).not.toHaveBeenCalled();
+  });
+
+  it("records blockedBy as real dependency edges, unioned with existing, so the task requeues behind the blocker", async () => {
+    const { store, tool } = await setup({ dependencies: ["FN-0001"] });
+
+    await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "upstream break",
+      blockedBy: ["FN-8145", "FN-8145", " FN-8146 "],
+    });
+
+    const depCall = store.updateTask.mock.calls.find((c: any[]) => Array.isArray(c[1]?.dependencies));
+    expect(depCall).toBeTruthy();
+    expect(depCall![1].dependencies).toEqual(["FN-0001", "FN-8145", "FN-8146"]);
+  });
+
+  it("refuses an inside-worktree block when its requested task dependency is missing", async () => {
+    const { store, tool } = await setup({ blockerTargets: { "FN-9999": null } });
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "FN-9999 is missing from Fusion",
+      blockedBy: ["FN-9999"],
+    });
+
+    expect(result.content[0].text).toContain("Continue repairing in place");
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.updateStep).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("refuses an inside-worktree block when its requested task dependency is deleted", async () => {
+    const { store, tool } = await setup({
+      blockerTargets: { "FN-9999": { deletedAt: "2026-08-20T00:00:00.000Z" } },
+    });
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "the prerequisite was deleted",
+      blockedBy: ["FN-9999"],
+    });
+
+    expect(result.content[0].text).toContain("Continue repairing in place");
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("refuses mixed blocker input when any requested task is stale", async () => {
+    const { store, tool } = await setup({ blockerTargets: { "FN-9999": null } });
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "one preflight dependency no longer exists",
+      blockedBy: [" FN-8145 ", "FN-8145", "FN-9999"],
+    });
+
+    expect(result.content[0].text).toContain("Continue repairing in place");
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("emits task:execution-blocked-parked with ids/outcomes-only metadata (no reason prose)", async () => {
+    const { store, tool } = await setup();
+
+    await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "secret blocker prose that must never land in run-audit metadata",
+      blockedBy: ["FN-8145"],
+    });
+
+    expect(store.recordRunAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mutationType: "task:execution-blocked-parked",
+        target: "FN-8141",
+        // Dependency-backed parks remain ids/outcomes-only.
+        metadata: expect.objectContaining({
+          taskId: "FN-8141",
+          blockedBy: ["FN-8145"],
+          hasReason: true,
+          parkedAs: "failed",
+          blockedClass: "external",
+        }),
+      }),
+    );
+    const auditCall = store.recordRunAuditEvent.mock.calls[0][0];
+    expect(JSON.stringify(auditCall.metadata)).not.toContain("secret blocker prose");
+  });
+
+  it("requires the conditioned obstacle enum before reading or mutating task state", async () => {
+    const { store, tool } = await setup();
+
+    const result = await tool.execute("id", { outcome: "blocked", reason: "requirements contradict each other" });
+
+    expect(result.content[0].text).toContain('"outside-worktree" or "inside-worktree"');
+    expect(store.getTask).not.toHaveBeenCalled();
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.moveTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("discards open-PR blocker refs and refuses the resulting inside-worktree block", async () => {
+    const { store, tool } = await setup();
+
+    const result = await tool.execute("id", {
+      outcome: "blocked",
+      obstacle: "inside-worktree",
+      reason: "Required path packages/core/src/task-store/reads.ts is actively claimed by PR #2398 (check-file-claimed).",
+      blockedBy: ["pr:2398"],
+    });
+
+    expect(result.content[0].text).toContain("Continue repairing in place");
+    expect(store.updateTask).not.toHaveBeenCalled();
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it("leaves steps in their true statuses (no auto-done, no auto-skip)", async () => {
+    const { store, tool } = await setup();
+
+    await tool.execute("id", { outcome: "blocked", obstacle: "inside-worktree", reason: "cannot proceed" });
+
+    expect(store.updateStep).not.toHaveBeenCalled();
+  });
+
+  it("requires a non-empty reason before parking", async () => {
+    const { store, tool } = await setup();
+
+    const result = await tool.execute("id", { outcome: "blocked", reason: "   " });
+
+    expect(result.content[0].text).toContain("requires a non-empty `reason`");
+    // No park write, and no blocked audit event (execute() emits unrelated audit events, so scope the check).
+    const parkCall = store.updateTask.mock.calls.find(
+      (c: any[]) => typeof c[1]?.error === "string" && c[1].error.startsWith("BLOCKED:"),
+    );
+    expect(parkCall).toBeUndefined();
+    const blockedAudit = store.recordRunAuditEvent.mock.calls.find(
+      (c: any[]) => c[0]?.mutationType === "task:execution-blocked-parked",
+    );
+    expect(blockedAudit).toBeUndefined();
+  });
+
+  it("completed outcome (default) is unchanged — still marks steps done and hands off", async () => {
+    const { store, tool } = await setup({
+      steps: [{ name: "Implement", status: "in-progress" as const }],
+    });
+    mockedExecSync.mockImplementation((cmd: string) => {
+      if (cmd.includes("rev-parse --show-toplevel")) return Buffer.from("/repo/.worktrees/swift-falcon\n");
+      if (cmd.includes("rev-parse --abbrev-ref HEAD")) return Buffer.from("fusion/fn-8141\n");
+      if (cmd.includes("rev-list --count")) return Buffer.from("1\n");
+      if (cmd.includes("rev-parse HEAD")) return Buffer.from("def456\n");
+      return Buffer.from("");
+    });
+
+    const result = await tool.execute("id", { summary: "Implemented the fix and verified." });
+
+    expect(result.content[0].text).toContain("Task marked complete");
+    expect(store.updateStep).toHaveBeenCalledWith("FN-8141", 0, "done");
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalledWith(
+      expect.objectContaining({ mutationType: "task:execution-blocked-parked" }),
+    );
+  });
+});
+
+describe("FN-8141 blocked-parked task is not auto-recovered by the completed-todo sweep", () => {
+  function blockedParkedTask(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "FN-8141",
+      title: "Blocked exit test",
+      column: "in-progress",
+      status: "failed",
+      error: "BLOCKED: upstream pi SDK break",
+      dependencies: ["FN-8145"],
+      paused: false,
+      // Steps stay in their true statuses — NOT all done/skipped.
+      steps: [
+        { name: "Implement", status: "in-progress" as const },
+        { name: "Testing & Verification", status: "pending" as const },
+      ],
+      currentStep: 0,
+      log: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...overrides,
+    };
+  }
+
+  it("recoverStrandedCompletedTodoTasks never promotes a blocked-parked row", async () => {
+    const store = createMockStore();
+    const recoverCompletedTask = vi.fn().mockResolvedValue(true);
+
+    // A blocked-parked task, even if it somehow surfaces in a todo listing, is filtered out
+    // because task.error is set AND its steps are not all done/skipped.
+    store.listTasks = vi.fn().mockResolvedValue([blockedParkedTask({ column: "todo" })]);
+
+    const manager = new SelfHealingManager(store as any, {
+      rootDir: "/tmp/test",
+      recoverCompletedTask: recoverCompletedTask as any,
+      getExecutingTaskIds: () => new Set<string>(),
+    });
+
+    const recovered = await manager.recoverStrandedCompletedTodoTasks();
+
+    expect(recovered).toBe(0);
+    expect(recoverCompletedTask).not.toHaveBeenCalled();
+  });
+
+  it("guard sanity: the blocked-parked shape has non-complete steps so the sweep's completion predicate is false", () => {
+    const t = blockedParkedTask({ column: "todo" });
+    const allDoneOrSkipped = t.steps.every((s) => {
+      const status = s.status as string;
+      return status === "done" || status === "skipped";
+    });
+    expect(allDoneOrSkipped).toBe(false);
+    // And the FN-6461 no-op finalize guard is not what stops it — task.error is the primary gate.
+    expect(Boolean((t as any).error)).toBe(true);
+    // evaluateNoCommitsNoOpFinalize is import-checked to keep the guard reference honest.
+    expect(typeof evaluateNoCommitsNoOpFinalize).toBe("function");
+  });
+});
+
+/*
+FNXC:Lifecycle 2026-07-16-21:22:
+FN-8141 follow-up 1 — the honest blocked park must SURVIVE the graph-teardown machinery that undid the
+original incident's failed park. In FN-8141 the pause-abort classifier and the workflow-graph failure
+handler bounced the parked-failed task back to `todo` (clearing status/error) or overwrote the distinctive
+`BLOCKED:` error with a generic graph-failure string — either of which re-opens the laundering hole because
+self-healing (#2257/#2260) and dependency-gated scheduling key off exactly that error + the recorded
+blockedBy dependencies. These tests drive handleGraphFailure (the graph-teardown sink) against a live
+blocked park across the enumerated surfaces: pause-abort (hard-cancel), engine-internal auto-continue, and
+the plain terminal graph-failure sink. Invariant asserted on every surface: the row stays parked
+(status:"failed", error starts with "BLOCKED:", dependencies intact), is NOT moved to todo, is NOT
+auto-continued into a new agent session, keeps its steps, and releases its worktree/concurrency slot.
+*/
+describe("FN-8141 follow-up 1 — blocked park survives graph teardown", () => {
+  const now = "2026-07-16T00:00:00.000Z";
+
+  function blockedParkedDetail(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "FN-8141",
+      title: "Blocked exit test",
+      description: "",
+      column: "in-progress",
+      status: "failed",
+      error: "BLOCKED: pi 0.80.10 removed AuthStorage; SDK bump cannot pass verify:fast",
+      dependencies: ["FN-8145"],
+      worktree: "/repo/.worktrees/swift-falcon",
+      branch: "fusion/fn-8141",
+      baseBranch: "main",
+      paused: false,
+      userPaused: false,
+      autoMerge: true,
+      mergeRetries: 0,
+      // True statuses — NOT all done/skipped — so a laundered "complete" state can never form.
+      steps: [
+        { name: "Implement", status: "in-progress" as const },
+        { name: "Testing & Verification", status: "pending" as const },
+      ],
+      currentStep: 0,
+      log: [],
+      createdAt: now,
+      updatedAt: now,
+      ...overrides,
+    };
+  }
+
+  function makeHarness(overrides: Record<string, unknown> = {}) {
+    const store = createMockStore();
+    const task = blockedParkedDetail(overrides);
+    store.getTask.mockResolvedValue(task as any);
+    store.getSettings.mockResolvedValue({
+      maxConcurrent: 2,
+      maxWorktrees: 4,
+      pollIntervalMs: 15000,
+      autoMerge: true,
+      maxAutoMergeRetries: 3,
+    } as any);
+    store.recordRunAuditEvent = vi.fn().mockResolvedValue(undefined);
+    (store as any).updateTaskAtomic = vi.fn(async (id: string, reducer: (current: any) => any, context: unknown) => {
+      const patch = reducer(task);
+      return patch ? store.updateTask(id, patch, context) : task;
+    });
+    const executor = new TaskExecutor(store as any, "/repo", {} as any);
+    return { store, task, executor };
+  }
+
+  async function invokeGraphFailure(
+    executor: TaskExecutor,
+    task: any,
+    resultOverrides: Record<string, unknown> = {},
+  ) {
+    await (executor as any).handleGraphFailure(task, {
+      disposition: "failed",
+      outcome: "failure",
+      visitedNodeIds: ["plan", "execute"],
+      context: {},
+      ...resultOverrides,
+    });
+  }
+
+  function logText(store: ReturnType<typeof createMockStore>): string {
+    return store.logEntry.mock.calls.map((call: unknown[]) => call[1]).join("\n");
+  }
+
+  function assertParkPreserved(store: ReturnType<typeof createMockStore>, executor: TaskExecutor) {
+    // Never moved to todo (the FN-8141 bounce).
+    expect(store.moveTask).not.toHaveBeenCalled();
+    // status/error never cleared to null...
+    const clearedStatusOrError = store.updateTask.mock.calls.some((call: unknown[]) => {
+      const patch = call[1] as { status?: unknown; error?: unknown } | undefined;
+      return patch?.status === null || patch?.error === null;
+    });
+    expect(clearedStatusOrError).toBe(false);
+    // ...and the distinctive BLOCKED: error is never overwritten by a generic graph-failure string.
+    const overwroteBlockedError = store.updateTask.mock.calls.some((call: unknown[]) => {
+      const patch = call[1] as { error?: unknown } | undefined;
+      return typeof patch?.error === "string" && !patch.error.startsWith("BLOCKED:");
+    });
+    expect(overwroteBlockedError).toBe(false);
+    // Dependencies never mutated.
+    const mutatedDeps = store.updateTask.mock.calls.some(
+      (call: unknown[]) => (call[1] as { dependencies?: unknown } | undefined)?.dependencies !== undefined,
+    );
+    expect(mutatedDeps).toBe(false);
+    // Steps left untouched.
+    expect(store.updateStep).not.toHaveBeenCalled();
+    // Worktree/concurrency slot released; no leaked maxWorktrees holder (FN-6782).
+    expect((executor as any).activeWorktrees.has("FN-8141")).toBe(false);
+    expect((executor as any).pausedAborted.has("FN-8141")).toBe(false);
+    // Honor-park breadcrumb logged.
+    expect(logText(store)).toContain("honoring park, not requeueing, retrying, or clearing state");
+  }
+
+  beforeEach(() => {
+    resetExecutorMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("honors the park under a hard-cancel pause-abort bounce (no requeue, no clear, no auto-continue)", async () => {
+    const { store, task, executor } = makeHarness();
+    (executor as any).addActiveWorktree(task.id, task.worktree);
+    // The exact FN-8141 teardown: pause-abort mark/classify/cleanup fired hard-cancel.
+    (executor as any).markPausedAborted(task.id, "hard-cancel");
+    const executeSpy = vi.spyOn(executor as any, "execute").mockResolvedValue(undefined);
+
+    await invokeGraphFailure(executor, task, {
+      interruptedNodeId: "execute",
+      interruptedAbortKind: "engine-pause",
+      context: { "node:execute:value": "aborted", "node:execute:abortKind": "engine-pause" },
+    });
+
+    assertParkPreserved(store, executor);
+    // NOT auto-continued into a fresh agent session (the engine-internal auto-continue path).
+    await vi.advanceTimersByTimeAsync(10);
+    expect(executeSpy).not.toHaveBeenCalled();
+  });
+
+  it("honors the park under a plain terminal graph failure (no pause-abort marker) — the sink never overwrites BLOCKED:", async () => {
+    // Without the guard, the terminal graph-failure sink overwrites error with
+    // "Workflow graph terminated with failure at node 'execute'", erasing the BLOCKED: marker.
+    const { store, task, executor } = makeHarness();
+    (executor as any).addActiveWorktree(task.id, task.worktree);
+    const executeSpy = vi.spyOn(executor as any, "execute").mockResolvedValue(undefined);
+
+    await invokeGraphFailure(executor, task, {
+      visitedNodeIds: ["plan", "execute"],
+      context: { "node:execute:value": "aborted" },
+    });
+
+    assertParkPreserved(store, executor);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(executeSpy).not.toHaveBeenCalled();
+  });
+
+  it("does NOT emit a redundant blocked-parked run-audit event on the honor-park (the exit already emitted it)", async () => {
+    const { store, task, executor } = makeHarness();
+    (executor as any).addActiveWorktree(task.id, task.worktree);
+    (executor as any).markPausedAborted(task.id, "hard-cancel");
+
+    await invokeGraphFailure(executor, task);
+
+    expect(store.recordRunAuditEvent).not.toHaveBeenCalledWith(
+      expect.objectContaining({ mutationType: "task:execution-blocked-parked" }),
+    );
+  });
+
+  it("keeps a non-blocked graph failure terminalized in its current lane", async () => {
+    const { store, task, executor } = makeHarness({
+      status: null,
+      error: null,
+    });
+
+    await invokeGraphFailure(executor, task, {
+      visitedNodeIds: ["plan", "execute"],
+      context: { "node:execute:value": "some-non-blocked-failure" },
+    });
+
+    const parkedFailed = store.updateTask.mock.calls.some(
+      (call: unknown[]) => (call[1] as { status?: string } | undefined)?.status === "failed",
+    );
+    expect(parkedFailed).toBe(true);
+    expect(store.moveTask).not.toHaveBeenCalled();
+    // The blocked honor-park breadcrumb is absent.
+    expect(logText(store)).not.toContain("honoring park, not requeueing, retrying, or clearing state");
+  });
+
+  it("does not re-honor a cleared non-blocked row", async () => {
+    const { store, task, executor } = makeHarness({
+      status: null,
+      error: null,
+    });
+
+    await invokeGraphFailure(executor, task, {
+      visitedNodeIds: ["plan", "execute"],
+      context: { "node:execute:value": "some-non-blocked-failure" },
+    });
+
+    expect(logText(store)).not.toContain("honoring park, not requeueing, retrying, or clearing state");
+    const parkedFailed = store.updateTask.mock.calls.some(
+      (call: unknown[]) => (call[1] as { status?: string } | undefined)?.status === "failed",
+    );
+    expect(parkedFailed).toBe(true);
+    expect(store.moveTask).not.toHaveBeenCalled();
+  });
+
+  it("keeps re-attempting deferred terminal persistence until the store recovers (no round cap)", async () => {
+    // Store outage: every fenced terminal write is rejected. The initial bounded
+    // round exhausts, then deferred fenced rounds continue past the old 31-round
+    // cap and park the unchanged execution as soon as the store comes back.
+    const { store, task, executor } = makeHarness({
+      status: null,
+      error: null,
+    });
+    // A live execution owns the task — the run identity the deferred fence captures.
+    (executor as any).currentRunContexts.set(task.id, { runId: `exec-${task.id}-1`, agentId: "executor" });
+    const OUTAGE_ROUNDS = 33; // one past the old cap of 31 deferred attempts
+    let atomicAttempts = 0;
+    let parkedPatch: { status?: string } | null = null;
+    store.updateTaskAtomic = vi.fn(async (_id: string, reducer: (current: any) => any) => {
+      atomicAttempts += 1;
+      if (atomicAttempts <= 7 + OUTAGE_ROUNDS) throw new Error("store outage");
+      const patch = reducer({ ...task, status: null, deletedAt: null, paused: false, userPaused: false });
+      if (patch) parkedPatch = patch;
+      return patch ? { ...task, ...patch } : task;
+    });
+
+    const pending = invokeGraphFailure(executor, task, {
+      visitedNodeIds: ["plan", "execute"],
+      context: { "node:execute:value": "some-non-blocked-failure" },
+    });
+    await vi.advanceTimersByTimeAsync(300_000);
+    await pending;
+
+    // One bounded round of seven atomic attempts, followed by deferred rounds.
+    expect(atomicAttempts).toBe(7 + OUTAGE_ROUNDS + 1);
+    expect(parkedPatch).toEqual({ error: expect.any(String), status: "failed" });
+  });
+
+  it("does not let a bounded terminal retry fail an operator-requeued execution", async () => {
+    const columnMovedAt = "2026-09-04T02:24:00.000Z";
+    const { store, task, executor } = makeHarness({
+      status: null,
+      error: null,
+      columnMovedAt,
+    });
+    let current = { ...task, status: null, error: null, columnMovedAt };
+    let attempts = 0;
+    store.updateTaskAtomic = vi.fn(async (_id: string, reducer: (row: any) => any) => {
+      attempts += 1;
+      if (attempts === 1) throw new Error("store outage");
+      const patch = reducer(current);
+      if (patch) current = { ...current, ...patch };
+      return patch ? current : current;
+    });
+
+    const handling = invokeGraphFailure(executor, task, {
+      visitedNodeIds: ["plan", "execute"],
+      context: { "node:execute:value": "some-non-blocked-failure" },
+    });
+    await Promise.resolve();
+    // An operator requeue is a new execution identity while persistence waits.
+    current = { ...current, columnMovedAt: "2026-09-04T02:25:00.000Z" };
+    await vi.advanceTimersByTimeAsync(1_000);
+    await handling;
+
+    expect(attempts).toBe(2);
+    expect(current.status).toBeNull();
+    expect(current.error).toBeNull();
+  });
+});

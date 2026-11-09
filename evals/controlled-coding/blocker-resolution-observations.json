@@ -1,0 +1,246 @@
+{
+  "classification": "SYNTHETIC_OFFLINE_VALIDATION_NOT_HUMAN_APPROVAL_NOT_PERFORMANCE",
+  "initial_checkpoint": "73dd29ab2237fb9e7c47458b9deb0b11d681f033",
+  "initial_preflight": "PREFLIGHT_VERIFIED",
+  "unit_tests": {
+    "before": {
+      "coding": 28,
+      "collector": 37,
+      "persistence": 9,
+      "total": 74,
+      "failed": 0,
+      "skipped": 0
+    },
+    "after": {
+      "coding": 29,
+      "collector": 37,
+      "persistence": 9,
+      "total": 75,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "budget": {
+    "formula": "9 * 0.12 + 0.50 = 1.58 <= 0.80 * 2.00 = 1.60",
+    "arithmetic_passed": true,
+    "unallocated_headroom_usd": "0.42",
+    "provider_spend_authorized_usd": "0.00"
+  },
+  "compaction": {
+    "classification_exactly_one": "1. Fixture never triggers compaction",
+    "default_exception": "SESSION_TOO_SMALL",
+    "default_settings": {
+      "enabled": true,
+      "reserveTokens": 16384,
+      "keepRecentTokens": 20000
+    },
+    "default_branch_entries": 14,
+    "default_context_tokens": 3334,
+    "context_window_reported_by_native_catalog": 128000,
+    "gateway_input_byte_bound": 32000,
+    "gateway_output_token_bound": 4096,
+    "separate_synthetic_trigger_status": "completed",
+    "separate_synthetic_trigger_settings": {
+      "enabled": true,
+      "reserveTokens": 4096,
+      "keepRecentTokens": 512
+    },
+    "native_model_http_attempts": 7,
+    "planning_attempt_cap": 12,
+    "native_verifier": {
+      "classification": "SYNTHETIC_OFFLINE_MOCK_NOT_GENUINE_NOT_CORPUS",
+      "scenario": "comprehensive",
+      "verified": true,
+      "model_http_attempts": 7,
+      "database_changed_tables": [
+        "project.ai_sessions"
+      ],
+      "reserved_micro_usd_estimated": 135478
+    }
+  },
+  "approval_integration": {
+    "classification": "SYNTHETIC",
+    "native_response_turns": 2,
+    "checks": {
+      "explicit_approval_verification": true,
+      "edited_approval_rejection": true,
+      "missing_approval_rejection": true,
+      "synthetic_live_rejection": true,
+      "correct_question_hashing": true,
+      "crash_restart_behavior": true,
+      "verbatim_answer_preservation": true,
+      "correct_gateway_accounting": true,
+      "shared_experiment_ledger_integration": true
+    }
+  },
+  "shared_ledger": {
+    "stages": {
+      "coding": {
+        "attempts": 3,
+        "reserved_exposure_micro_usd": 5965
+      },
+      "planning": {
+        "attempts": 7,
+        "reserved_exposure_micro_usd": 63686
+      }
+    },
+    "total_reserved_exposure_micro_usd": 69651,
+    "latest_states": {
+      "SETTLED": 3,
+      "UNCERTAIN": 7
+    },
+    "measured_charge_records": 0,
+    "legacy_fixed_native_audit_upper_micro_usd": 135478,
+    "note": "Reserved exposure is not a measured charge. Coding usage and estimated charges are SYNTHETIC; planning missing-usage attempts retain full exposure."
+  },
+  "reproducibility": {
+    "classification": "SYNTHETIC",
+    "coding_attempts": 3,
+    "compared": [
+      "patch",
+      "grading",
+      "request_accounting",
+      "coding_ledger_reservations_usage_estimates_transitions"
+    ],
+    "fixture": {
+      "canonical_order": [
+        "merge-intervals",
+        "parse-duration",
+        "stable-toposort"
+      ],
+      "derived_fixture_sha256": "1618bc5acc2627e2f2574cc05266a4821db736ec0690594e60fc8def2ae3fe33",
+      "frozen_manifest_sha256": "9d71a3317b9e0531af7c6dee66c8ba6ad70a36b6bd7be0ccc0ee8fb997b90c30",
+      "stored_file_sha256": {
+        "fixtures/merge-intervals/acceptance/test_acceptance.py": "a3f8ad73b23cadea8e5a196e720f7d0f621ea3240591636680b6b3610dcbb73c",
+        "fixtures/merge-intervals/initial/solution.py": "bebc624a42d606c9614702861d999c46f1359b7d4fedda0f0773bb5a6c061d93",
+        "fixtures/merge-intervals/objective.txt": "398849811813d1415586b86e9c27107cc8e4addd70da06af2fff135ee866e2aa"
+      },
+      "task_id": "merge-intervals"
+    },
+    "identical_normalized_profiles": true,
+    "normalized_sha256": "72ccccad3838afa61ab175f3b8077fd99c3b6d22a0d46085650319aa5aa00c08",
+    "shared_exposure_micro_usd": 69651,
+    "shared_planning_coding_ledger": true
+  },
+  "security": {
+    "classification": "SYNTHETIC",
+    "tier": "ENFORCED",
+    "cases": 30,
+    "all_block_and_positive_controls_passed": true,
+    "credential_canary_control": true,
+    "real_host_contacts": 0,
+    "protocol_specific_positive_controls": {
+      "classification": "SYNTHETIC",
+      "positive_controls": {
+        "metadata": true,
+        "ipv6": true,
+        "dns": true,
+        "raw": true
+      },
+      "external_route": false
+    }
+  },
+  "live_preflight_refusal_before_publication": {
+    "status": "LIVE_REFUSED",
+    "classification": "READ_ONLY_NO_EXECUTION",
+    "checks": {
+      "recovery_preflight": false,
+      "earlier_ancestor": true,
+      "isolation_enforced_now": true
+    },
+    "failures": [
+      "INTEGRATED_LIVE_PLANNING_PIPELINE_NOT_VALIDATED",
+      "MODEL_AVAILABILITY_UNVERIFIED",
+      "NO_PAID_AUTHORIZATION",
+      "RECOVERY_PREFLIGHT_FAILED",
+      "REQUIRED_HUMAN_APPROVALS_MISSING_OR_INVALID",
+      "TRANSPORT_AUTHORIZATION_OR_ARMING_INVALID"
+    ]
+  },
+  "normal_review_permitted_current_runs": true,
+  "provider_spend_usd": "0.00",
+  "provider_contacts": 0,
+  "production_packages_git_tree": "ef70b0eb0b194ba1481c73d5c27ac1bfa352d515",
+  "source_sha256": {
+    "evals/controlled-coding/approvals.py": "4b156e062c9c38acc280b78511fa3ecc5138e7f450a916f6d95005460c15140c",
+    "evals/controlled-coding/budget.py": "0eb7577129dd3aeac2abcaf90cf353de9d291a7e179c9cdc075f209af54befd0",
+    "evals/controlled-coding/experiment-parameters.json": "e9c78d5a2d00cf0776816ac26cb1c7e0c1f76f3cc43a0a85cf616e6f41d86244",
+    "evals/controlled-coding/isolation.py": "70c32c664b7de00771e9ef94f4f25d26bb1f00dc5ef1bec36bbb18dcf956523e",
+    "evals/controlled-coding/offline_eval.py": "599eeb2cd520f9b67a02a3cf474c0ac74fb03815e662b013adb3d7446fe9dc92",
+    "evals/controlled-coding/pilot.py": "4d05141923f432c038a1ab9d5907bfcc21e08be650f6d35c9d487c9f1e787a63",
+    "evals/controlled-coding/planning-approval-bridge.mts": "8ad94b5389436d6da068e5a77839836ec4313a6964937a180a938b325705f3da",
+    "evals/controlled-coding/real_transport.py": "f848374587ff75ba98db2897f20836a69bb69921eb67804a94477cf9e8348ba4",
+    "evals/controlled-coding/test_contract.py": "2a437ae466dccc80df48b30a4f1bc6fecff5443e3e12cc295d6282681417b417",
+    "evals/planning-collector/native-runner.mts": "c76426f52fbac0fd994dd05dd6151b6447f4f4a40dff3f3172689e65a03c1966",
+    "evals/planning-collector/offline_runner.py": "28831248193534ad4f30e5a4a91b9731f20db03da9da60e7f8092c5119e15a3a",
+    "evals/planning-collector/test_snapshots.py": "b7ebc6f3b97374d1ff9e73982ff783820510d400bbe5e7bd695d795f58f60539",
+    "evals/planning-collector/verify_evidence.py": "def2cb40c4837b5edec57cd85b4639aaab8d469be98dc8e73e0673e39adb269e",
+    "evals/controlled-coding/approval_fixture.py": "e7c35d9abb3345b5ca5bd5da725478fde53c5b1c4a35e7b0d7933ea0ff7146b8",
+    "evals/controlled-coding/blocker_checks.py": "a4c8166bcbaacfe822d002fb99c9a989647bd322dd8222d25d89e0ff4a0374fb",
+    "evals/controlled-coding/protocol_controls.py": "d97e96e76a8a4e133bc284074a00f5f6ec4c3c5deb48bc307b587dd596107ff7",
+    "evals/controlled-coding/live_preflight.py": "1bcd5ababd4af8860e91b1c34723d7cddd3a2cb0e11066b65115eb19f2c80594"
+  },
+  "evidence_sha256": {
+    "/workspace/work/blocker-preflight.json": "f7f04fe6f6c34bf9201c58b6cd70fd4d4cff134854ae94d8281a7d24f16bdf62",
+    "/workspace/work/blocker-before-coding.log": "498dc9d7ca9e13e6acd0fd14a631fc20fe56595cd5fc569110169406bcea99ca",
+    "/workspace/work/blocker-before-collector.log": "31988a40be42ee458b9525e84b16d49870186be42f34dad4dbcc194d48f585ee",
+    "/workspace/work/blocker-before-persistence.log": "507497e01ec4c3c941eeedb089d4b9c2df68a2c21f7814518265f2b9a402cd9b",
+    "/workspace/work/blocker-after-coding.log": "1bdd51198e0a227ef6e860e7bf573c0bbf40b585be1679123c0e8e7e39aade02",
+    "/workspace/work/blocker-after-collector-2.log": "8e2bceac7d5e69b0ae5c5bd27e9719f4a1895d037c5dc51f9c057e5c704544c2",
+    "/workspace/work/blocker-after-persistence.log": "155beaa0d57d1532bcf90a8c094e96c148fc2069651c1a1987adcdcc393ed48d",
+    "/workspace/work/blocker-native-verified.json": "9cc42cb2e56ed0ede3f8dc46034ef3139dd90b5c4d80b9f1eaff28eb6cf7b31f",
+    "/workspace/work/blocker-protocol-controls-2.json": "31dc74a63605294103b63bda446043979fab488491c83e1c4a79e66ae28cdaef",
+    "/workspace/work/blocker-live-refusal-before-push.json": "1fbe6663a50e5b685f997d79cb997a7fac4e37d96e48a4f22e075dfeeacb7a20",
+    "/tmp/fusion-native-offline-u7cwaf4y/results/compaction.json": "585c22ce0acf1e76855443f636784e31da3380c594cf416a4e225bf53e307b21",
+    "/tmp/fusion-native-offline-u7cwaf4y/results/SYNTHETIC-triggered-compaction.json": "7a2fd7800e17b0ac691a695f8a4ee1d746da5ed4a9a275eb9a7d88c108cd73ed",
+    "/tmp/fusion-native-offline-u7cwaf4y/results/approval-integration.json": "85ee79538a9e09d4218f07d1abc3ce464437f76d3de1028d5a876aed1c56cad4",
+    "/workspace/work/blocker-SYNTHETIC-security-final/summary.json": "38e55bc56dec67a471c54b6acd284975d6fbeec5668dd36896b0da7ee6ead72b",
+    "/workspace/work/blocker-SYNTHETIC-repro/SYNTHETIC-reproducibility.json": "ae3799398798bc75d65d28b44377333957c32970004bb0102def0f33b4b72fff",
+    "/workspace/work/blocker-SYNTHETIC-wrong/test-double-coding-observation.json": "2498f04937fbe0e1c5abb1e0d664c84f4809718907055176c627b08507260af5",
+    "/workspace/work/blocker-SYNTHETIC-tamper/test-double-coding-observation.json": "2f1b070c4141ac9eb32d270c47d3abc6f8c4b27bb4f8cfd805b3e502da3ed9e1",
+    "/workspace/work/blocker-SYNTHETIC-recovery/kill/recovery-observation.json": "883368baeab6a4c255c4716eb47314c3d8d6f308fae48bae944787d0adf117d9",
+    "/workspace/work/blocker-SYNTHETIC-recovery/abort/recovery-observation.json": "1630c2254b146c08bc41e47ddf06d776ccafbadb4b34d7658a3072fefd141eb9"
+  },
+  "negative_controls": {
+    "wrong": {
+      "classification": "SYNTHETIC",
+      "agent_exit_code": 0,
+      "independent_acceptance_rejected": true
+    },
+    "tamper": {
+      "classification": "SYNTHETIC",
+      "agent_exit_code": 0,
+      "independent_acceptance_rejected": true
+    }
+  },
+  "gateway_recovery": {
+    "kill": {
+      "classification": "SYNTHETIC",
+      "uncertain_exposure_preserved": true,
+      "default_restart_refused": true,
+      "explicit_resume_succeeded": true,
+      "local_token_rotated": true,
+      "attempts": 4,
+      "states": [
+        "UNCERTAIN",
+        "SETTLED",
+        "SETTLED",
+        "SETTLED"
+      ]
+    },
+    "abort": {
+      "classification": "SYNTHETIC",
+      "uncertain_exposure_preserved": true,
+      "default_restart_refused": true,
+      "explicit_resume_succeeded": true,
+      "local_token_rotated": true,
+      "attempts": 4,
+      "states": [
+        "UNCERTAIN",
+        "SETTLED",
+        "SETTLED",
+        "SETTLED"
+      ]
+    }
+  }
+}

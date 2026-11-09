@@ -1,0 +1,29 @@
+{
+  "status": "PROPOSED_NOT_ACTIVE",
+  "operator_approval_artifact": "none",
+  "not_an_approval": true,
+  "experiment": "Experiment 2 only",
+  "existing_cumulative_bound": 16000,
+  "proposed_cumulative_bound": 144384,
+  "derivation": "4 * (32000 input upper + 4096 output upper)",
+  "measured_two_request_fixture_minimum_for_all_arms": 29525,
+  "alternative_current_512_profile_four_request_upper": 130048,
+  "alternative_measured_fixture_two_request_upper": 29525,
+  "scope": "smallest universal bound covering every allowed four-request trace at full existing per-request maxima, not the minimum two-request fixture",
+  "four_request_worst_case_reserved_micro_usd": 77416,
+  "per_run_cap_micro_usd": 120000,
+  "unchanged_dollar_caps": {
+    "aggregate": "2.00",
+    "planning": "0.50",
+    "per_run": "0.12"
+  },
+  "unchanged_request_cap": 4,
+  "unchanged_wall_seconds": 300,
+  "unchanged_offline_output_limit": 512,
+  "contract_output_upper_bound_unchanged": 4096,
+  "fail_closed_and_durable_reservations_unchanged": true,
+  "actual_provider_spending_authorized_usd": "0.00",
+  "activation": "Requires genuine operator-authored approval bound to this proposal hash and activation by someone other than this agent.",
+  "measurements_sha256": "782fb06e8abf90ba2c3d3d4c2b9c7e93100735a1875c1a5c43ac33a908813357",
+  "measurement_hash_encoding": "contract.canonical sorted compact JSON UTF-8, not the indented file bytes"
+}

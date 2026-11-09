@@ -1,0 +1,216 @@
+import { describe, expect, it, vi } from "vitest";
+import { fileScopeLeaseScopeFingerprint, type Settings, type Task, type TaskStore } from "@fusion/core";
+import { blockOuterDispatchWhenFileScopeLeaseHeld } from "../executor/file-scope-lease-dispatch-gate.js";
+
+function makeTask(overrides: Partial<Task> = {}): Task {
+  return {
+    id: "FN-CANDIDATE",
+    title: "candidate",
+    description: "",
+    column: "todo",
+    dependencies: [],
+    steps: [],
+    currentStep: 0,
+    log: [],
+    createdAt: "2026-01-02T00:00:00.000Z",
+    updatedAt: "2026-01-02T00:00:00.000Z",
+    ...overrides,
+  } as Task;
+}
+
+function createStore(tasks: Task[], scopes: Record<string, string[]>, settings: Partial<Settings> = {}): TaskStore {
+  return {
+    getSettings: vi.fn(async () => ({ groupOverlappingFiles: true, ...settings })),
+    listTasks: vi.fn(async () => tasks),
+    parseFileScopeFromPrompt: vi.fn(async (taskId: string) => scopes[taskId] ?? []),
+    getCompletionHandoffAcceptedMarker: vi.fn(async () => null),
+    transitionQueuedEpisode: vi.fn(async (taskId: string, transition: { blockedBy: string | null; overlapBlockedBy: string | null; signature: string }) => {
+      const task = tasks.find((candidate) => candidate.id === taskId)!;
+      Object.assign(task, {
+        status: "queued",
+        blockedBy: transition.blockedBy,
+        overlapBlockedBy: transition.overlapBlockedBy,
+        queuedLogEpisodeSignature: transition.signature,
+      });
+      return { appended: true, task };
+    }),
+    updateTaskAtomic: vi.fn(async (taskId: string, update: (task: Task) => Partial<Task> | null) => {
+      const task = tasks.find((candidate) => candidate.id === taskId);
+      if (!task) return undefined;
+      const patch = update(task);
+      if (!patch) return undefined;
+      Object.assign(task, patch);
+      return task;
+    }),
+    moveTask: vi.fn(),
+    moveTaskIf: vi.fn(),
+  } as unknown as TaskStore;
+}
+
+describe("blockOuterDispatchWhenFileScopeLeaseHeld", () => {
+  it.each(["singular", "workspace"])("does not block fresh work behind a landed %s checkout", async (kind) => {
+    const holder = makeTask({
+      id: "FN-HOLDER", column: "in-review", mergeDetails: { mergeConfirmed: true },
+      ...(kind === "singular" ? { worktree: "/wt/retained" } : {
+        workspaceWorktrees: { repo: { worktreePath: "/wt/repo" } } as Task["workspaceWorktrees"],
+      }),
+    });
+    const candidate = makeTask();
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["src/shared.ts"], [candidate.id]: ["src/shared.ts"],
+    });
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+
+  it("does not reacquire implementation scope for landed verification behind new work", async () => {
+    const candidate = makeTask({ column: "in-review", worktree: "/wt/retained", mergeDetails: { mergeConfirmed: true } });
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["src/shared.ts"], [candidate.id]: ["src/shared.ts"],
+    });
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+
+  it.each(["prerequisite", "unrelated"])("admits a ready %s past an older dependency-blocked dormant holder", async (kind) => {
+    const candidate = makeTask();
+    const dependency = kind === "prerequisite" ? candidate : makeTask({ id: "FN-DEP" });
+    const holder = makeTask({ id: "FN-HOLDER", worktree: "/wt/holder", dependencies: [dependency.id],
+      blockedBy: dependency.id, createdAt: "2026-01-01T00:00:00Z" });
+    const store = createStore([holder, candidate, ...(dependency === candidate ? [] : [dependency])], {
+      [holder.id]: ["src/shared.ts"], [candidate.id]: ["src/shared.ts"],
+    });
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+    expect(holder.worktree).toBe("/wt/holder");
+  });
+
+  it("reacquires and invalidates a stale scope receipt before outer dispatch", async () => {
+    const holder = makeTask({
+      id: "FN-HOLDER", lineageId: "holder-lineage", column: "in-progress", paused: true,
+      fileScopeLeaseRelease: {
+        holderId: "FN-HOLDER",
+        holderLineageId: "holder-lineage",
+        scopeFingerprint: fileScopeLeaseScopeFingerprint(["docs/old.md"]),
+        releasedFollowerIds: ["FN-CANDIDATE"],
+        checkoutIdentity: "no-checkout",
+        inspectedAt: "2026-01-01T00:00:00.000Z",
+        revision: 4,
+      },
+    });
+    const candidate = makeTask();
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["docs/current.md"],
+      [candidate.id]: ["docs/current.md"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(true);
+
+    expect(store.updateTaskAtomic).toHaveBeenCalledWith(holder.id, expect.any(Function));
+    expect(holder.fileScopeLeaseRelease).toBeUndefined();
+    expect(store.transitionQueuedEpisode).toHaveBeenCalledWith(candidate.id, expect.objectContaining({
+      overlapBlockedBy: holder.id,
+    }));
+  });
+
+  it("holds a fresh dispatch behind an overlapping active lease without moving its column", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress", createdAt: "2026-01-01T00:00:00.000Z" });
+    const candidate = makeTask({ blockedBy: "FN-DEP" });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["packages/core/src/store.ts"],
+      [candidate.id]: ["packages/core/src/store.ts"],
+    });
+
+    const blocked = await blockOuterDispatchWhenFileScopeLeaseHeld({
+      store,
+      getRunContextFor: () => undefined,
+    }, candidate);
+
+    expect(blocked).toBe(true);
+    expect(store.transitionQueuedEpisode).toHaveBeenCalledWith(candidate.id, expect.objectContaining({
+      signature: `file-scope:${holder.id}`,
+      blockedBy: "FN-DEP",
+      overlapBlockedBy: holder.id,
+    }));
+    expect(store.moveTask).not.toHaveBeenCalled();
+    expect(store.moveTaskIf).not.toHaveBeenCalled();
+  });
+
+  it("does not hold a task that already owns a worktree", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const candidate = makeTask({ worktree: "/wt/fn-candidate" });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["packages/core/src/store.ts"],
+      [candidate.id]: ["packages/core/src/store.ts"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+
+  it("does not re-hold a workspace task that already owns repository checkouts", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const candidate = makeTask({ workspaceWorktrees: { "repo-a": { worktreePath: "/wt/fn-candidate/repo-a" } } as Task["workspaceWorktrees"] });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["repo-a/src/shared.ts"],
+      [candidate.id]: ["repo-a/src/shared.ts"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+
+  it("holds a fresh workspace task with no repository checkouts", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const candidate = makeTask({ workspaceWorktrees: {} });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["repo-a/src/shared.ts"],
+      [candidate.id]: ["repo-a/src/shared.ts"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(true);
+    expect(store.transitionQueuedEpisode).toHaveBeenCalledOnce();
+  });
+
+  it("uses a workspace review checkout as an active holder", async () => {
+    const holder = makeTask({
+      id: "FN-HOLDER",
+      column: "in-review",
+      workspaceWorktrees: { "repo-a": { worktreePath: "/wt/fn-holder/repo-a" } } as Task["workspaceWorktrees"],
+    });
+    const candidate = makeTask();
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["repo-a/src/shared.ts"],
+      [candidate.id]: ["repo-a/src/shared.ts"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(true);
+    expect(store.transitionQueuedEpisode).toHaveBeenCalledWith(candidate.id, expect.objectContaining({ overlapBlockedBy: holder.id }));
+  });
+
+  it("does not apply overlap admission when grouping is disabled", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const candidate = makeTask();
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["packages/core/src/store.ts"],
+      [candidate.id]: ["packages/core/src/store.ts"],
+    }, { groupOverlappingFiles: false });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+
+  it("leaves stale overlap bookkeeping for the scheduler when no live holder overlaps", async () => {
+    const holder = makeTask({ id: "FN-HOLDER", column: "in-progress" });
+    const candidate = makeTask({ overlapBlockedBy: "FN-STALE" });
+    const store = createStore([holder, candidate], {
+      [holder.id]: ["packages/engine/src/scheduler.ts"],
+      [candidate.id]: ["packages/core/src/store.ts"],
+    });
+
+    await expect(blockOuterDispatchWhenFileScopeLeaseHeld({ store, getRunContextFor: () => undefined }, candidate)).resolves.toBe(false);
+    expect(candidate.overlapBlockedBy).toBe("FN-STALE");
+    expect(store.transitionQueuedEpisode).not.toHaveBeenCalled();
+  });
+});

@@ -1,0 +1,1 @@
+Build a lightweight, local-first personal task manager with task creation, editing, completion, deletion, due dates, and a simple web interface. Use SQLite for persistence, include automated tests, and avoid authentication, cloud deployment, and external paid services.

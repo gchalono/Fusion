@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      "source_commit": "b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c",
+      "snapshot_commit": "SELF (resolve containing root commit)",
+      "event": "initial sanitized history-free recovery checkpoint"
+    }
+  ],
+  "current_source": "b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c",
+  "snapshot_identity": "resolve HEAD; source mapping also in commit trailer",
+  "remote_status": "PENDING"
+}

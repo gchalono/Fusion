@@ -1,0 +1,182 @@
+{
+  "total_original_inputs": 35,
+  "verified_in_original_workspace": 35,
+  "public": {
+    "/workspace/phase2n-evaluation/frozen/inputs/objective.txt": {
+      "snapshot_path": "backup/public-inputs/objective.txt",
+      "sha256": "4edc93814c7a6ad5c43445ad07f853ca3350ed0e3f6dc7764e1c04e0c4cdffe0"
+    },
+    "/workspace/Fusion-phase2a/evals/implementation-evaluation/COMMON_INSTRUCTIONS.md": {
+      "snapshot_path": "backup/public-inputs/common-instructions.md",
+      "sha256": "f6807d6bd0f165b0f4bcc97b0331a067adea348cb715a8c4335a970a36b4d6fa"
+    },
+    "/workspace/phase2n-evaluation/frozen/prompts/A.txt": {
+      "snapshot_path": "backup/public-inputs/A.txt",
+      "sha256": "eeb98f4c68aa3ae99907cc8475b2e9ab97a4945cb7acf0942b72c033083f9495"
+    }
+  },
+  "private_dependencies": [
+    {
+      "source_path": "/workspace/phase2m-genuine-success/manifest.json",
+      "sha256": "f6ad492d9810973d06d94bacfb6d78236fbaf038f39b7206e875daf5d7185c59",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/MissionPlanSummary.native.json",
+      "sha256": "f35c276d3a69484914e5581f8c1548b6f29b34449add117a87578bfae5d34456",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/transcript.native.json",
+      "sha256": "4de3c1e5d6c172b6f70c21222480a0513fd35513b4b716f66da182ea378ef57e",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/frozen-hashes.json",
+      "sha256": "3780a6fd1c5af0aa5bbf1f94c2ad114e0ab6d0cd01f1d5a818e39ed5a34f2e8e",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/result.json",
+      "sha256": "3b198a64e34c51fac5fb8b229c1a37bb1ebc17498e0dadccf228e00c686d2a37",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/audit.jsonl",
+      "sha256": "36d57f3293520b96bfd05e8284017997f6ce26f4a8c192e1df135afd72fc757b",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-001.json",
+      "sha256": "9f57e545fb9597dbcaa5028f293214f83f863772e016636ad63f5d7d835218d8",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-001.json",
+      "sha256": "c759595000adba05b22fc32d3bd377933e322febb7cbb377237e6aa2309fba0b",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-002.json",
+      "sha256": "5393382720a2a3d5103be620d210138a4e7e74cabd3cd221b8b16d43f39a3faa",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-002.json",
+      "sha256": "7925dd53ded37c53b35bb548dbe91437117edf350b310a0064999fbea77f2d8a",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-003.json",
+      "sha256": "3ab4b158c029d42e06c0e5e09e80ab4adec4fb07569b61186005fb2949da1d12",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-003.json",
+      "sha256": "cb2aac95a4e2257595a1a5d9274685123983cb76711c4a4ce3be5c5d84fc1c97",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-004.json",
+      "sha256": "0744fbfe6a47943f8dc4c5fc2d42d2011e1cb9aeebc560bbe2dbae3085d90018",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-004.json",
+      "sha256": "0dcad4694924400dfad579af195af89b0e036c226adc410309378d9f95fb7dc0",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-005.json",
+      "sha256": "c4a493ec79ac074f016cb09517e538d8696e6b6e3c2aeb017381a2793b081786",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-005.json",
+      "sha256": "3d596a6fc69d34f8d8316ff21e63d1201c17068ed6754da2823766e5ac781791",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-006.json",
+      "sha256": "ca15bd3b6325745303c7e66452c515564bf073536c656d24399bb4b478794d8b",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-006.json",
+      "sha256": "215b7fbe82e56f968e37a210e70813af48646662fa57777eb91daca58d20177c",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-007.json",
+      "sha256": "f03f612014a208df6b393969a98d159b3a88a1d88f81f4ac45c92952328ade5d",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-007.json",
+      "sha256": "90bc1a5e560a886900122ae40b5ed9a578dea4d20b9dffc28b7a2d66f405da0a",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-answer-008.json",
+      "sha256": "501b92b306aaaf4bafdf3c63267476409a33c324df9baa090c36943dc0f16422",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/human-approval-provenance-008.json",
+      "sha256": "a23ae8b3c32c2cd5beb9fb78ac21a21bd65da13c3dff5f8878c9b1cb3f763af8",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-f3842e1085a4ce57de3ab51c7ba5d91749714b74517e008d6215da1cc73484b0.json",
+      "sha256": "27802df8244fdb7a9c95f94c9388b3e09357e9822a29a51f38724bb3efde7ea4",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-ee67cc436747a027e14b39610b7c671536c00b690839d4501ed14ae5614bfc60.json",
+      "sha256": "3be163317d672794c1155df851aa9e98291a0dc84d1354a80816c2da5b54129a",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-7f3766eb9b99f1365786d6a679e26ad6daede0ac4557b76047275aa5ec14d345.json",
+      "sha256": "a2b419f075d1e8339f026d611c609d99ef12e28182eaab91e803e30fb58300b6",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-3258f74751cff767772672e7f704682bc4271f3236a4bb6881edfda8ac11a8eb.json",
+      "sha256": "f4b53be968b03dbdba11b6e5e947be452849dfaead091ca0704589a628d2d283",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-ae370dea0e9af739289a0234c5b18c2dcdee161f779cce6dd662c35babbc75fe.json",
+      "sha256": "69584039e2b9a17855f8cce11e8abead3d78fd0904d3a224dad0cd4e013446bf",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-4a84954102c832720a3af458b7cabe4e8ac672c94af676631ad11666f3740c47.json",
+      "sha256": "72220dde1d0701f0c61aa6b53b70c1c1a632a3de008db6a0e21a9402d6a77b94",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-734d2c8fa5c07f45f1df2bfc10e567891e77bfb9108c1593f2730ee849090aa2.json",
+      "sha256": "982a1094f35c5f4617175480297f594b0590e6b0fb39b24b5b74f282f5a00468",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2m-genuine-success/results/human/command-ac582440445d84b1a46a2b5dc7cbe6c0df9013faad7dd68d4154084fc53bc2c1.json",
+      "sha256": "fc4df243df82ec32744277d4767df860e6726a93c988e65475d9e811d0df4066",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2n-evaluation/frozen/prompts/B.txt",
+      "sha256": "d00040330c3361836bb7e768172a89af0147d6c0884de0ec0de271baadc555a7",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    },
+    {
+      "source_path": "/workspace/phase2n-evaluation/frozen/prompts/C.txt",
+      "sha256": "22c0339f292f8a6c69b2d539a6789c902e4783908e0fc51c48393986b0f0d8bb",
+      "reason": "Original genuine planning/approval/usage evidence or B/C treatment containing that evidence; private recovery dependency, contents not published"
+    }
+  ],
+  "complete_experiment_reproducible_from_public_snapshot_alone": false,
+  "restore_policy": "Restore byte-exact originals from separately protected evidence, then verify all hashes. Never reconstruct or invent approvals."
+}

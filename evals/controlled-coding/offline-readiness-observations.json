@@ -1,0 +1,976 @@
+{
+  "classification": "OFFLINE_TEST_DOUBLE_PLUMBING_NOT_PERFORMANCE_NOT_APPROVAL",
+  "status": "BLOCKED",
+  "unit_tests": {
+    "controlled_coding": 28,
+    "planning_collector": 37,
+    "persistence": 9,
+    "total": 74
+  },
+  "security": {
+    "tier_at_probe": "ENFORCED",
+    "positive_controls_all": true,
+    "blocked_all": true,
+    "cases": [
+      "python",
+      "node",
+      "curl",
+      "raw",
+      "dns",
+      "ipv6",
+      "metadata",
+      "loopback",
+      "proxy",
+      "filesystem",
+      "credentials",
+      "per-run-cap",
+      "aggregate-cap",
+      "request-cap",
+      "bad-client",
+      "endpoint",
+      "model",
+      "host",
+      "revocation",
+      "gateway-down",
+      "unshare",
+      "setns",
+      "mount",
+      "ptrace",
+      "runtime-socket",
+      "setuid",
+      "clone-ns",
+      "vsock",
+      "other-unix",
+      "abstract-unix"
+    ],
+    "count": 30,
+    "counts": {
+      "stub_contacts": 33,
+      "untrusted_stub_contacts": 0,
+      "real_host_contacts": 0
+    },
+    "canary_initial_control": true,
+    "limits": [
+      "Not integrated with a live coding runner",
+      "Raw ICMP/DNS/IPv6/metadata share a Python HTTP gateway positive control, not a protocol-identical positive control",
+      "Namespace gateway shutdown and token revocation tested; mid-request kill recovery tested independently; combined restart/resume protocol not yet exercised"
+    ]
+  },
+  "native": {
+    "scenario": "comprehensive",
+    "gateway_forwarded_attempts": 5,
+    "mock_received_requests": 5,
+    "request_count_match": true,
+    "output_token_limits": [
+      {
+        "max_tokens": 4096
+      },
+      {
+        "max_tokens": 4096
+      },
+      {
+        "max_tokens": 4096
+      },
+      {
+        "max_tokens": 4096
+      },
+      {
+        "max_tokens": 4096
+      }
+    ],
+    "forbidden_count_changes": {},
+    "forbidden_row_changes": [],
+    "direct_mock_bypass_blocked": true,
+    "external_route_blocked": true,
+    "native_failure": false
+  },
+  "native_compaction": {
+    "status": "not_completed"
+  },
+  "native_shared_ledger": {
+    "cap_micro_usd": 2000000,
+    "reserved_exposure_micro_usd": 52759,
+    "remaining_reservable_micro_usd": 1947241,
+    "reservations": [
+      {
+        "id": 1,
+        "stage": "planning",
+        "run": "merge-intervals",
+        "reserved_exposure_micro_usd": 9809,
+        "created_utc": "2026-11-09T06:36:06.151Z"
+      },
+      {
+        "id": 2,
+        "stage": "planning",
+        "run": "merge-intervals",
+        "reserved_exposure_micro_usd": 9809,
+        "created_utc": "2026-11-09T06:36:08.172Z"
+      },
+      {
+        "id": 3,
+        "stage": "planning",
+        "run": "merge-intervals",
+        "reserved_exposure_micro_usd": 9969,
+        "created_utc": "2026-11-09T06:36:08.196Z"
+      },
+      {
+        "id": 4,
+        "stage": "planning",
+        "run": "merge-intervals",
+        "reserved_exposure_micro_usd": 11042,
+        "created_utc": "2026-11-09T06:36:08.215Z"
+      },
+      {
+        "id": 5,
+        "stage": "planning",
+        "run": "merge-intervals",
+        "reserved_exposure_micro_usd": 12130,
+        "created_utc": "2026-11-09T06:36:08.233Z"
+      }
+    ],
+    "observations": [],
+    "transitions": [
+      {
+        "id": 1,
+        "reservation_id": 1,
+        "state": "RESERVED",
+        "basis": "worst_case"
+      },
+      {
+        "id": 2,
+        "reservation_id": 1,
+        "state": "FORWARDED",
+        "basis": "before_transport"
+      },
+      {
+        "id": 3,
+        "reservation_id": 1,
+        "state": "UNCERTAIN",
+        "basis": "missing_usage_or_incomplete_response"
+      },
+      {
+        "id": 4,
+        "reservation_id": 2,
+        "state": "RESERVED",
+        "basis": "worst_case"
+      },
+      {
+        "id": 5,
+        "reservation_id": 2,
+        "state": "FORWARDED",
+        "basis": "before_transport"
+      },
+      {
+        "id": 6,
+        "reservation_id": 2,
+        "state": "UNCERTAIN",
+        "basis": "missing_usage_or_incomplete_response"
+      },
+      {
+        "id": 7,
+        "reservation_id": 3,
+        "state": "RESERVED",
+        "basis": "worst_case"
+      },
+      {
+        "id": 8,
+        "reservation_id": 3,
+        "state": "FORWARDED",
+        "basis": "before_transport"
+      },
+      {
+        "id": 9,
+        "reservation_id": 3,
+        "state": "UNCERTAIN",
+        "basis": "missing_usage_or_incomplete_response"
+      },
+      {
+        "id": 10,
+        "reservation_id": 4,
+        "state": "RESERVED",
+        "basis": "worst_case"
+      },
+      {
+        "id": 11,
+        "reservation_id": 4,
+        "state": "FORWARDED",
+        "basis": "before_transport"
+      },
+      {
+        "id": 12,
+        "reservation_id": 4,
+        "state": "UNCERTAIN",
+        "basis": "missing_usage_or_incomplete_response"
+      },
+      {
+        "id": 13,
+        "reservation_id": 5,
+        "state": "RESERVED",
+        "basis": "worst_case"
+      },
+      {
+        "id": 14,
+        "reservation_id": 5,
+        "state": "FORWARDED",
+        "basis": "before_transport"
+      },
+      {
+        "id": 15,
+        "reservation_id": 5,
+        "state": "UNCERTAIN",
+        "basis": "missing_usage_or_incomplete_response"
+      }
+    ]
+  },
+  "runs": {
+    "coding-test-double-2": {
+      "classification": "TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE",
+      "agent_exit_code": 0,
+      "candidate_sha256": "5ba7398583810c98b5f13827ecb5be5925a630cb9a4ef525e9fb280eeabf2417",
+      "contacts": [
+        {
+          "bytes": 2293,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 2942,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 3531,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        }
+      ],
+      "acceptance": {
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "errors": 0,
+        "success": true
+      },
+      "ledger": {
+        "cap_micro_usd": 2000000,
+        "reserved_exposure_micro_usd": 5965,
+        "remaining_reservable_micro_usd": 1994035,
+        "reservations": [
+          {
+            "id": 1,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1737,
+            "created_utc": "2026-11-09T06:28:45.136Z"
+          },
+          {
+            "id": 2,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1996,
+            "created_utc": "2026-11-09T06:28:45.258Z"
+          },
+          {
+            "id": 3,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 2232,
+            "created_utc": "2026-11-09T06:28:45.330Z"
+          }
+        ],
+        "observations": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:1"
+          },
+          {
+            "id": 2,
+            "reservation_id": 2,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:2"
+          },
+          {
+            "id": 3,
+            "reservation_id": 3,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:3"
+          }
+        ],
+        "transitions": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 2,
+            "reservation_id": 1,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 3,
+            "reservation_id": 1,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 4,
+            "reservation_id": 2,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 5,
+            "reservation_id": 2,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 6,
+            "reservation_id": 2,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 7,
+            "reservation_id": 3,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 8,
+            "reservation_id": 3,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 9,
+            "reservation_id": 3,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          }
+        ]
+      }
+    },
+    "coding-wrong": {
+      "classification": "TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE",
+      "agent_exit_code": 0,
+      "candidate_sha256": "0f9fc0884bc067b3485167d4329df3547ff611bb708ecfc2e3a9f6a99d1918ce",
+      "contacts": [
+        {
+          "bytes": 2293,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 2942,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 3267,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        }
+      ],
+      "acceptance": {
+        "tests": 4,
+        "passed": 1,
+        "failed": 3,
+        "errors": 0,
+        "success": false
+      },
+      "ledger": {
+        "cap_micro_usd": 2000000,
+        "reserved_exposure_micro_usd": 5859,
+        "remaining_reservable_micro_usd": 1994141,
+        "reservations": [
+          {
+            "id": 1,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1737,
+            "created_utc": "2026-11-09T06:33:12.236Z"
+          },
+          {
+            "id": 2,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1996,
+            "created_utc": "2026-11-09T06:33:12.337Z"
+          },
+          {
+            "id": 3,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 2126,
+            "created_utc": "2026-11-09T06:33:12.406Z"
+          }
+        ],
+        "observations": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:1"
+          },
+          {
+            "id": 2,
+            "reservation_id": 2,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:2"
+          },
+          {
+            "id": 3,
+            "reservation_id": 3,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:3"
+          }
+        ],
+        "transitions": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 2,
+            "reservation_id": 1,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 3,
+            "reservation_id": 1,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 4,
+            "reservation_id": 2,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 5,
+            "reservation_id": 2,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 6,
+            "reservation_id": 2,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 7,
+            "reservation_id": 3,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 8,
+            "reservation_id": 3,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 9,
+            "reservation_id": 3,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          }
+        ]
+      }
+    },
+    "coding-tamper": {
+      "classification": "TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE",
+      "agent_exit_code": 0,
+      "candidate_sha256": "0f9fc0884bc067b3485167d4329df3547ff611bb708ecfc2e3a9f6a99d1918ce",
+      "contacts": [
+        {
+          "bytes": 2293,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 2942,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "bytes": 3527,
+          "gateway_auth_valid": true,
+          "max_tokens": 512,
+          "model": "gpt-4.1-mini-2025-04-14"
+        }
+      ],
+      "acceptance": {
+        "tests": 4,
+        "passed": 1,
+        "failed": 3,
+        "errors": 0,
+        "success": false
+      },
+      "ledger": {
+        "cap_micro_usd": 2000000,
+        "reserved_exposure_micro_usd": 5963,
+        "remaining_reservable_micro_usd": 1994037,
+        "reservations": [
+          {
+            "id": 1,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1737,
+            "created_utc": "2026-11-09T06:33:40.119Z"
+          },
+          {
+            "id": 2,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 1996,
+            "created_utc": "2026-11-09T06:33:40.228Z"
+          },
+          {
+            "id": 3,
+            "stage": "coding",
+            "run": "merge-intervals:A",
+            "reserved_exposure_micro_usd": 2230,
+            "created_utc": "2026-11-09T06:33:40.296Z"
+          }
+        ],
+        "observations": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:1"
+          },
+          {
+            "id": 2,
+            "reservation_id": 2,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:2"
+          },
+          {
+            "id": 3,
+            "reservation_id": 3,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "estimated_provider_charge_micro_usd": 18,
+            "measured_provider_charge_micro_usd": null,
+            "evidence_ref": "gateway-attempt:3"
+          }
+        ],
+        "transitions": [
+          {
+            "id": 1,
+            "reservation_id": 1,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 2,
+            "reservation_id": 1,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 3,
+            "reservation_id": 1,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 4,
+            "reservation_id": 2,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 5,
+            "reservation_id": 2,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 6,
+            "reservation_id": 2,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          },
+          {
+            "id": 7,
+            "reservation_id": 3,
+            "state": "RESERVED",
+            "basis": "worst_case"
+          },
+          {
+            "id": 8,
+            "reservation_id": 3,
+            "state": "FORWARDED",
+            "basis": "before_transport"
+          },
+          {
+            "id": 9,
+            "reservation_id": 3,
+            "state": "SETTLED",
+            "basis": "estimated_from_provider_reported_usage"
+          }
+        ]
+      }
+    },
+    "kill": {
+      "action": "kill",
+      "attempts": 4,
+      "classification": "OFFLINE_RECOVERY_TEST_DOUBLE",
+      "contacts": 4,
+      "default_restart_refused": true,
+      "explicit_resume_succeeded": true,
+      "ledger": {
+        "cap_micro_usd": 2000000,
+        "observations": [
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:2",
+            "id": 1,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 2
+          },
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:3",
+            "id": 2,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 3
+          },
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:4",
+            "id": 3,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 4
+          }
+        ],
+        "remaining_reservable_micro_usd": 1992298,
+        "reservations": [
+          {
+            "created_utc": "2026-11-09T06:35:10.958Z",
+            "id": 1,
+            "reserved_exposure_micro_usd": 1737,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:14.119Z",
+            "id": 2,
+            "reserved_exposure_micro_usd": 1737,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:14.226Z",
+            "id": 3,
+            "reserved_exposure_micro_usd": 1996,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:14.291Z",
+            "id": 4,
+            "reserved_exposure_micro_usd": 2232,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          }
+        ],
+        "reserved_exposure_micro_usd": 7702,
+        "transitions": [
+          {
+            "basis": "worst_case",
+            "id": 1,
+            "reservation_id": 1,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 2,
+            "reservation_id": 1,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "restart_unreconciled",
+            "id": 3,
+            "reservation_id": 1,
+            "state": "UNCERTAIN"
+          },
+          {
+            "basis": "worst_case",
+            "id": 4,
+            "reservation_id": 2,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 5,
+            "reservation_id": 2,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 6,
+            "reservation_id": 2,
+            "state": "SETTLED"
+          },
+          {
+            "basis": "worst_case",
+            "id": 7,
+            "reservation_id": 3,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 8,
+            "reservation_id": 3,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 9,
+            "reservation_id": 3,
+            "state": "SETTLED"
+          },
+          {
+            "basis": "worst_case",
+            "id": 10,
+            "reservation_id": 4,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 11,
+            "reservation_id": 4,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 12,
+            "reservation_id": 4,
+            "state": "SETTLED"
+          }
+        ]
+      },
+      "local_token_rotated": true,
+      "states": [
+        "UNCERTAIN",
+        "SETTLED",
+        "SETTLED",
+        "SETTLED"
+      ],
+      "uncertain_exposure_preserved": true
+    },
+    "abort": {
+      "action": "abort",
+      "attempts": 4,
+      "classification": "OFFLINE_RECOVERY_TEST_DOUBLE",
+      "contacts": 4,
+      "default_restart_refused": true,
+      "explicit_resume_succeeded": true,
+      "ledger": {
+        "cap_micro_usd": 2000000,
+        "observations": [
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:2",
+            "id": 1,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 2
+          },
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:3",
+            "id": 2,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 3
+          },
+          {
+            "estimated_provider_charge_micro_usd": 18,
+            "evidence_ref": "gateway-attempt:4",
+            "id": 3,
+            "measured_provider_charge_micro_usd": null,
+            "provider_reported_usage_json": "{\"completion_tokens\": 10, \"prompt_tokens\": 5, \"prompt_tokens_details\": {\"cached_tokens\": 0}, \"total_tokens\": 15}",
+            "reservation_id": 4
+          }
+        ],
+        "remaining_reservable_micro_usd": 1992298,
+        "reservations": [
+          {
+            "created_utc": "2026-11-09T06:35:18.361Z",
+            "id": 1,
+            "reserved_exposure_micro_usd": 1737,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:22.022Z",
+            "id": 2,
+            "reserved_exposure_micro_usd": 1737,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:22.131Z",
+            "id": 3,
+            "reserved_exposure_micro_usd": 1996,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          },
+          {
+            "created_utc": "2026-11-09T06:35:22.203Z",
+            "id": 4,
+            "reserved_exposure_micro_usd": 2232,
+            "run": "merge-intervals:A",
+            "stage": "coding"
+          }
+        ],
+        "reserved_exposure_micro_usd": 7702,
+        "transitions": [
+          {
+            "basis": "worst_case",
+            "id": 1,
+            "reservation_id": 1,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 2,
+            "reservation_id": 1,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "restart_unreconciled",
+            "id": 3,
+            "reservation_id": 1,
+            "state": "UNCERTAIN"
+          },
+          {
+            "basis": "worst_case",
+            "id": 4,
+            "reservation_id": 2,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 5,
+            "reservation_id": 2,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 6,
+            "reservation_id": 2,
+            "state": "SETTLED"
+          },
+          {
+            "basis": "worst_case",
+            "id": 7,
+            "reservation_id": 3,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 8,
+            "reservation_id": 3,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 9,
+            "reservation_id": 3,
+            "state": "SETTLED"
+          },
+          {
+            "basis": "worst_case",
+            "id": 10,
+            "reservation_id": 4,
+            "state": "RESERVED"
+          },
+          {
+            "basis": "before_transport",
+            "id": 11,
+            "reservation_id": 4,
+            "state": "FORWARDED"
+          },
+          {
+            "basis": "estimated_from_provider_reported_usage",
+            "id": 12,
+            "reservation_id": 4,
+            "state": "SETTLED"
+          }
+        ]
+      },
+      "local_token_rotated": true,
+      "states": [
+        "UNCERTAIN",
+        "SETTLED",
+        "SETTLED",
+        "SETTLED"
+      ],
+      "uncertain_exposure_preserved": true
+    }
+  },
+  "evidence_hashes": {
+    "/workspace/work/final-offline-preflight/hardened-security-3/summary.json": "3582dd3789947d7bad3b444954fc8fa2c6eb2a259f7f8084c4d50f5e9f2b4ee2",
+    "/tmp/fusion-native-offline-pe0t8uig/results/verification.json": "dc9a9c4c6185ce016b4a3d03f5a86d18dfd65913b7079ce6eb25ace349e47181",
+    "/tmp/fusion-native-offline-pe0t8uig/results/compaction.json": "6b6455ac75c27e85b01ce55d504ed51ec6b27576eeaa5feea1ac354ca2487035",
+    "/workspace/work/final-offline-preflight/final-coding-tests.log": "478952dbd55f299a5a68034731386be38b7c8b81afffa23ff5d4518e54cd7666",
+    "/workspace/work/final-offline-preflight/final-collector-tests.log": "7508c4714d6b458bad76337c665a6c80bdf4b7a4235d73c39e81a9395a0546df",
+    "/workspace/work/final-offline-preflight/final-persistence-tests.log": "77e3bb069e7825390a41a5e7cf6ca9aedf00c245f3c4fc97de7f18f27e4fe27f",
+    "/workspace/work/final-offline-preflight/coding-test-double-2/test-double-coding-observation.json": "b89c3effe6e43b63063cdce2d4247dbbd2824528880c9b7bc001434980060560",
+    "/workspace/work/final-offline-preflight/coding-wrong/test-double-coding-observation.json": "0ec9817bfab583c98e4a457ce8ca2df8e07caa98d37f2bca7f7e5f3f62cc148d",
+    "/workspace/work/final-offline-preflight/coding-tamper/test-double-coding-observation.json": "cb78a58fb5805b848adb1667b5151050747c7c8ee02e41242371aeda47f42e88"
+  },
+  "unverified": [
+    "second_identical_arm_A_repeat_review_service_blocked",
+    "native_compaction_not_completed",
+    "protocol_identical_positive_controls",
+    "integrated_live_planning_approval_gateway_pipeline",
+    "real_provider_schema_and_availability",
+    "sensitive_off_VM_backup"
+  ],
+  "provider_spend_usd": "0.00",
+  "real_provider_host_contacts": 0
+}

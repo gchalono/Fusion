@@ -1,0 +1,162 @@
+import "./TaskResetDialog.css";
+
+import { getErrorMessage } from "@fusion/core";
+import { useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+
+import type { ToastType } from "../hooks/useToast";
+import { nextFloatingZ } from "./floatingWindowStack";
+
+export interface TaskResetDialogProps {
+  taskId: string;
+  initialDescription?: string;
+  onReset: (id: string, options?: { description?: string }) => Promise<unknown>;
+  addToast: (message: string, type?: ToastType) => void;
+  onClose: () => void;
+  onResetCompleted?: () => void;
+}
+
+/*
+FNXC:TaskReset 2026-08-28-16:31:
+Reset uses a dedicated dialog because it collects corrected task intent rather than simple agreement. `ConfirmOptions` cannot carry free text, and skip-confirmations would otherwise auto-resolve the destructive action without showing the description. Edited text travels in the options object at argument two to preserve the client transport contract.
+*/
+export function TaskResetDialog({
+  taskId,
+  initialDescription,
+  onReset,
+  addToast,
+  onClose,
+  onResetCompleted,
+}: TaskResetDialogProps) {
+  const { t } = useTranslation("app");
+  const [description, setDescription] = useState(initialDescription ?? "");
+  const resetStartedRef = useRef(false);
+  /*
+  FNXC:TaskResetOverlay 2026-09-19-20:20:
+  The reset dialog is shared by Board cards, ListView, and task details, whose local stacking contexts can paint over an inline overlay. Portal it to the application root and claim the established floating stack so every host opens the blocking reset flow above its launcher rather than adding a Board-specific z-index.
+  */
+  const [overlayZ, setOverlayZ] = useState<number | undefined>(undefined);
+  useLayoutEffect(() => {
+    setOverlayZ(nextFloatingZ());
+  }, []);
+  const trimmedDescription = description.trim();
+  const trimmedInitialDescription = (initialDescription ?? "").trim();
+  const titleId = `task-reset-title-${taskId}`;
+  const helpId = `task-reset-help-${taskId}`;
+
+  /*
+  FNXC:TaskReset 2026-09-19-20:16:
+  Reset cleanup can take several seconds, so confirmation dismisses the dialog immediately and reports the background result by toast. Keep the one-shot ref because the dialog may not unmount until React processes the close state update.
+  */
+  const submit = () => {
+    if (!trimmedDescription || resetStartedRef.current) return;
+    resetStartedRef.current = true;
+    onClose();
+
+    void (async () => {
+      try {
+        if (trimmedDescription === trimmedInitialDescription) {
+          await onReset(taskId);
+        } else {
+          await onReset(taskId, { description: trimmedDescription });
+        }
+        addToast(
+          t("taskDetail.reset.resetSuccess", "Reset {{id}} — fresh run will be allocated", { id: taskId }),
+          "success",
+        );
+        onResetCompleted?.();
+      } catch (error) {
+        addToast(getErrorMessage(error), "error");
+      }
+    })();
+  };
+
+  return createPortal(
+    <div
+      className="modal-overlay open task-reset-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      data-testid="task-reset-dialog"
+      style={overlayZ ? { zIndex: overlayZ } : undefined}
+      onPointerDown={(event) => event.stopPropagation()}
+      onPointerMove={(event) => event.stopPropagation()}
+      onPointerUp={(event) => event.stopPropagation()}
+      onPointerCancel={(event) => event.stopPropagation()}
+      onTouchStart={(event) => event.stopPropagation()}
+      onTouchMove={(event) => event.stopPropagation()}
+      onTouchEnd={(event) => event.stopPropagation()}
+      onTouchCancel={(event) => event.stopPropagation()}
+      onFocus={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation();
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="modal modal-md task-reset-dialog" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-header">
+          <h3 id={titleId}>{t("taskDetail.reset.confirmTitle", "Reset this task?")}</h3>
+          <button
+            type="button"
+            className="modal-close"
+            onClick={onClose}
+            aria-label={t("common.close", "Close")}
+          >
+            &times;
+          </button>
+        </div>
+        <div className="task-reset-dialog__body">
+          <p className="task-reset-dialog__warning">
+            {t(
+              "taskDetail.reset.confirmMessage",
+              "Restart this task from nothing but the original request. Its plan, worktree, branch and commits, and reviews are permanently deleted and cannot be recovered.",
+            )}
+          </p>
+          <label className="task-reset-dialog__label" htmlFor={`task-reset-description-${taskId}`}>
+            {t("taskDetail.reset.descriptionLabel", "Original description")}
+          </label>
+          <textarea
+            id={`task-reset-description-${taskId}`}
+            className="input task-reset-dialog__textarea"
+            data-testid="task-reset-description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            aria-describedby={helpId}
+            rows={8}
+            autoFocus
+          />
+          <p
+            id={helpId}
+            className={trimmedDescription ? "task-reset-dialog__help" : "task-reset-dialog__help task-reset-dialog__help--required"}
+          >
+            {trimmedDescription
+              ? t("taskDetail.reset.descriptionHelp", "Edit the request Fusion will re-plan from, then confirm.")
+              : t("taskDetail.reset.descriptionRequired", "A description is required.")}
+          </p>
+        </div>
+        <div className="modal-actions task-reset-dialog__actions">
+          <button
+            type="button"
+            className="btn btn-sm"
+            data-testid="task-reset-cancel"
+            onClick={onClose}
+          >
+            {t("common.cancel", "Cancel")}
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger btn-sm"
+            data-testid="task-reset-submit"
+            onClick={submit}
+            disabled={!trimmedDescription}
+          >
+            {t("taskDetail.reset.btn", "Reset")}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}

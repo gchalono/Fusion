@@ -1,0 +1,4 @@
+/** FNXC:TaskManagerOfflineValidation 2026-11-09-20:38: Real minimal Chromium diagnosis under unchanged outer controls. */
+process.env.DEBUG='pw:browser*';const {chromium}=await import('/opt/task-playwright/index.mjs');
+const events=[];let b;
+try {b=await chromium.launch({executablePath:'/usr/lib/chromium/chromium',headless:true,args:['--no-sandbox','--disable-background-networking','--disable-component-update','--enable-logging=stderr','--v=1'],dumpio:true});events.push('launched');b.on('disconnected',()=>console.log('DISCONNECTED'));const c=await b.newContext();events.push('context');const p=await c.newPage();events.push('page');await p.setContent('<title>offline</title><h1>offline</h1>');console.log(JSON.stringify({events,title:await p.title()}));} finally {console.log(JSON.stringify({events,cleanup:true}));await b?.close();}

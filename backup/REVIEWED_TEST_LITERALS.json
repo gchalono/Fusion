@@ -1,0 +1,238 @@
+{
+  "packages/cli/src/commands/dashboard-tui/__tests__/log-sink.test.ts": {
+    "sha256": "e847048e428d8399fb96382144d8dc8bcf58956ffe8d1aa5bf941b049765914d",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=362",
+      "credential_pattern:line=366",
+      "credential_pattern:line=371",
+      "credential_pattern:line=401"
+    ]
+  },
+  "packages/core/src/__tests__/mission-status-event-metadata.test.ts": {
+    "sha256": "4e20ea2c82e59354fe3828cad61019730864a7458517796ec34e218a2c7d53cd",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=36"
+    ]
+  },
+  "packages/core/src/__tests__/mission-store.validation-diagnostics.test.ts": {
+    "sha256": "d22678fa2171d91f08e742abf9a7e78580bcdaf5bf78eda6dab04c1c40c3f0c1",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=25"
+    ]
+  },
+  "packages/core/src/__tests__/postgres/mission-store.pg.test.ts": {
+    "sha256": "4942460d8a9b4315ef06f0beee40851ec753223d9e95d09679b51449d00a7f10",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=181"
+    ]
+  },
+  "packages/core/src/__tests__/redact-secrets.test.ts": {
+    "sha256": "2fd3e97bdaa1262556ce3bea58fa640e0dfef0e5c01d1688020d1d9ddcb8e5c2",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=29",
+      "credential_pattern:line=8",
+      "credential_pattern:line=9"
+    ]
+  },
+  "packages/dashboard/app/utils/__tests__/activity-trace.test.ts": {
+    "sha256": "e56b39f1f9b9cd92755b3e6b0bbdb2937998e49c2b5b90442f4e9a075781aff6",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=26"
+    ]
+  },
+  "packages/dashboard/src/__tests__/chat-cli-sessions.test.ts": {
+    "sha256": "476b5c36f31d53b27443f4dc5277e418382b524a16d28d3bea37e98525cc577c",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=325",
+      "credential_pattern:line=337",
+      "credential_pattern:line=341",
+      "credential_pattern:line=342",
+      "credential_pattern:line=354",
+      "credential_pattern:line=356",
+      "credential_pattern:line=364"
+    ]
+  },
+  "packages/dashboard/src/__tests__/github-webhooks.test.ts": {
+    "sha256": "337c1ac975aaa6a7bc8b5a72e096b7902514bf8403fdc1538446c13ac5673ec4",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=46"
+    ]
+  },
+  "packages/dashboard/src/__tests__/mesh-routes.test.ts": {
+    "sha256": "ae57fc3401968c896cb5869103a294028533b73d352dbf666adb000699d2ac68",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=703",
+      "credential_pattern:line=729"
+    ]
+  },
+  "packages/dashboard/src/__tests__/mission-validation-evidence.test.ts": {
+    "sha256": "13356719fb237532b29229316b509f8bcf9f0753bcfc644d12c307325eed98d8",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=46",
+      "credential_pattern:line=51"
+    ]
+  },
+  "packages/dashboard/src/__tests__/report-pipeline.test.ts": {
+    "sha256": "888185c145a8a6b3c03a9e369ceef21b1a8347038eb3de8398b34c7af9877073",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=225",
+      "credential_pattern:line=250",
+      "credential_pattern:line=298",
+      "credential_pattern:line=319",
+      "credential_pattern:line=349",
+      "credential_pattern:line=365",
+      "credential_pattern:line=53"
+    ]
+  },
+  "packages/dashboard/src/__tests__/report-routes.test.ts": {
+    "sha256": "dcf74afaf1870c60a7f59eb9922a37ce367557d82c57010367e71896362ac9ad",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=116",
+      "credential_pattern:line=234",
+      "credential_pattern:line=94"
+    ]
+  },
+  "packages/dashboard/src/__tests__/report-scrub.test.ts": {
+    "sha256": "d3acabd97a1585d6f33d284be8648a7afba524b2cf27e114b4089882e42f03ab",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=13",
+      "credential_pattern:line=15",
+      "credential_pattern:line=22",
+      "credential_pattern:line=23",
+      "credential_pattern:line=56"
+    ]
+  },
+  "packages/dashboard/src/__tests__/request-actor.test.ts": {
+    "sha256": "3881b03e9a71432857c3a687b943575aaf8d8903c0c2974017bfa5b8778ed43b",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=32"
+    ]
+  },
+  "packages/dashboard/src/__tests__/routes-auth.test.ts": {
+    "sha256": "60e5f1e686f1a08b0a4e9d32ab938133d81f407b3c48456df747da82dff7752e",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=1742",
+      "credential_pattern:line=1777",
+      "credential_pattern:line=4032"
+    ]
+  },
+  "packages/dashboard/src/__tests__/usage.test.ts": {
+    "sha256": "e0b54a74749022881d89ef6d3ae3a10f795b81012e02ca411be1d6fa2dbcff83",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=3383",
+      "credential_pattern:line=566"
+    ]
+  },
+  "packages/dashboard/src/routes/__tests__/custom-provider-routes.test.ts": {
+    "sha256": "a31bd28148be585334a9949b6a20b23158169f4fd2db2f4ba8c8c405d79d4816",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=130"
+    ]
+  },
+  "packages/engine/src/__tests__/agent-logger-diagnostics.test.ts": {
+    "sha256": "e0bf90123a1791ebd155ab8eca01e4f5e313538c96395dca8ae6616528c19d5c",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=19"
+    ]
+  },
+  "packages/engine/src/__tests__/agent-logger.test.ts": {
+    "sha256": "51fb0152def2035deda9a18a041fa3928f4fe9add13abf0ed4e44197334ab91f",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=220",
+      "credential_pattern:line=244"
+    ]
+  },
+  "packages/engine/src/__tests__/auth-storage-anthropic-preference.test.ts": {
+    "sha256": "6cb3c14a0d0be4a6d5ff993a2524987a333f61098304ba9a124550d0ccb01e1b",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=23",
+      "credential_pattern:line=24",
+      "credential_pattern:line=25",
+      "credential_pattern:line=42"
+    ]
+  },
+  "packages/engine/src/__tests__/auth-storage.test.ts": {
+    "sha256": "608c5c4167d7f9fc638549559c4b2b17775b03d3647096416baef2a722631973",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=1023",
+      "credential_pattern:line=1047",
+      "credential_pattern:line=1068",
+      "credential_pattern:line=1081",
+      "credential_pattern:line=1082",
+      "credential_pattern:line=411",
+      "credential_pattern:line=416",
+      "credential_pattern:line=417",
+      "credential_pattern:line=433",
+      "credential_pattern:line=446",
+      "credential_pattern:line=452",
+      "credential_pattern:line=455",
+      "credential_pattern:line=467",
+      "credential_pattern:line=830",
+      "credential_pattern:line=841",
+      "credential_pattern:line=860",
+      "credential_pattern:line=865"
+    ]
+  },
+  "packages/engine/src/__tests__/mission-execution-loop.test.ts": {
+    "sha256": "8cc9a86da1500900cb00f55b5d3fb0badf7f7bac02e4db51031dddb15fcb09fa",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=3287",
+      "credential_pattern:line=3291"
+    ]
+  },
+  "packages/engine/src/__tests__/mission-validation-evidence.test.ts": {
+    "sha256": "30d47cdb892de5fb8fd34de149cc158e57edbf085bd884e0456496594eb0f05f",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=45",
+      "credential_pattern:line=49"
+    ]
+  },
+  "packages/engine/src/__tests__/proactive-status.test.ts": {
+    "sha256": "c90fc0526f032cc4fa8a0c3ec2627ffde03b3c07f80a0a90656589f420021583",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=17"
+    ]
+  },
+  "plugins/fusion-plugin-acp-runtime/src/__tests__/fixtures/echo-agent.mjs": {
+    "sha256": "4417c2afcf874c49205268823230d160389779b7e0c34adfa316eff51f3b58b4",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=36"
+    ]
+  },
+  "plugins/fusion-plugin-acp-runtime/src/__tests__/process-manager.test.ts": {
+    "sha256": "e243e51982a292dc9419337fd6de2fd157b38922f67e7cdbc8e21d18ee8d4aa1",
+    "reason": "Manually reviewed public test literals: synthetic redaction/auth-storage/echo fixtures, not usable credentials or private data",
+    "allowed_findings": [
+      "credential_pattern:line=119",
+      "credential_pattern:line=126",
+      "credential_pattern:line=143",
+      "credential_pattern:line=93",
+      "credential_pattern:line=94"
+    ]
+  }
+}
