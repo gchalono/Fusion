@@ -51,3 +51,10 @@ passed with genuine ICU 60; full native interview awaits the retained rate windo
 Environment: Python 3.12.14, Git 2.52.0, Node 24.22.1, pinned pnpm 10.33.0.
 Manifest: evals/artifact-manifest.json. Evidence: persistence/REMOTE_RECOVERY.md.
 Raw sensitive artifacts remain VM-local; Phase 2M remains missing.
+
+## Validated checkpoint 2026-11-09T05:09:23.477540+00:00
+
+Implementation: `ab571b9aa0115079a8866e3e9b0348c82253a881`; branch `eval/phase2n`.
+Tests: controlled-coding, collector and persistence unittest suites passed; frozen inputs and manifest verified.
+Environment: Python 3.12.14; Git git version 2.52.0.
+Manifest: `evals/artifact-manifest.json`. Remote: pending independent verification; remote tip is authoritative.
