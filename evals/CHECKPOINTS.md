@@ -175,3 +175,18 @@ refetched as1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0. Public isolated recovery t
 pass; original objects/private data absent. Additional legacy-open bypass rejection,
 deterministic SQLite close and gateway timeout/failure checks expand gate to21+15
 focused passes. No Step6 execution before updated checkpoint is independently fetched.
+
+## Phase3C completed gate and authorization-boundary handoff
+
+Gate sourcee081c8450dc99de66c17ad59b72207e150aa4c10 independently refetched as
+5450193d44e03ce27c62acd2865718d4b7f2c031.21 adapter+15 regressions pass;134 public
+recovery passes,13 honest skips,0 failures. Only after that verified checkpoint,
+Step6 inspected signing configuration and stopped: no operator verifier or approved
+trust key,0 live authorizations; dev TEST keys cannot authorize live. Authoritative
+ledger0 new requests,11522 historical exposure,original47 hashes/bytes unchanged.
+Report-only terminal checkpoint follows. No new historical archives/private publication,
+no paid inference,production,evaluator,seed,prompt,approval or isolation changes.
+
+Phase3C reporting clarification: conservative headroom with full additional500000
+planning withholding is1488478 micro-USD; remaining-allocation headroom1500000.
+Neither is a second charge. Both exceed77416. Code/ledger/limits unchanged.

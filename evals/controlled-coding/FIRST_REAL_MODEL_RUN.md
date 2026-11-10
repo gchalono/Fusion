@@ -80,3 +80,23 @@ provider billing and conservative reservation. If unchanged accepted patch, reus
 browser attestation explicitly; a different viable candidate requires browser grading.
 No private raw records in the public backup. Provider spending remains$0.00 until an
 explicit paid authorization arrives and all blockers pass.
+
+## Phase3C amendment — ledger bound, integration pending
+
+This supersedes only the earlier missing-ledger-binding blocker. Original frozen
+task/seed/objective/limits remain unchanged; PHASE3_FROZEN.md is retained byte-exact as
+historical provenance, not silently edited to fit amended evaluation code.
+New adapter: HISTORY_PRESERVING_LEDGER_ADAPTER.md and LIVE_SUPERVISOR_INTEGRATION.md.
+Ledger7dd5b983cc7f32bc01201b8734da6233e171a09518ad9df7ad7cd7c49205d7e9;
+anchor9dd4a68447e9c2d5f55f75fd91d52936f5b3edc34e84518a5fcb10a2129271b7.
+Historical retained11522/unresolved0; run maximum77416; remaining-planning488478;
+headroom1500000 micro-USD. Current model access/prices remain UNVERIFIED;0 provider
+requests/$0 new spend. No operator verifier/trusted signing configuration is present.
+No live authorization minted; TEST fixtures never authorize live. Step6 stopped at
+this explicit trust boundary. Capture changes and full live-entry rehearsal remain
+pending. No paid command or approval artifact is fabricated. Failures only at the
+four-request cap are inconclusive: cap-limited unless transcript establishes a model
+error. A real future approval must bind the NEW source/config,ledger AND anchor digest;
+old Phase3 hashes alone cannot authorize the amended code.
+Conservative cross-check with full additional planning withholding:1488478 micro-USD
+headroom, still >=77416; not an additional charge or a limit change.

@@ -104,3 +104,11 @@ so a caller cannot silently omit history by using the old class. SQLite connecti
 close deterministically; corruption errors give fixed recovery guidance. Gateway
 failure/timeout accounting is also tested through its real wrapper, not only by
 manually marking uncertainty. All21 adapter +15 changed-module regressions pass.
+
+Conservative allocation cross-check: even withholding the ENTIRE500000 micro-USD
+planning allocation separately from historical retained11522 leaves
+2000000-11522-500000-0=1488478 micro-USD >=77416. This extra withholding is a
+headroom safety check, NOT another ledger charge. The1500000 figure above instead
+withholds only remaining planning488478 because historical charges are planning.
+Both interpretations fit the unchanged caps; actual exposure never double-counts
+historical planning or settled reservations. Use1488478 as the conservative receipt.

@@ -132,10 +132,18 @@
     },
     {
       "source_commit": "e081c8450dc99de66c17ad59b72207e150aa4c10",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "5450193d44e03ce27c62acd2865718d4b7f2c031",
       "previous_backup": "1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0",
       "event": "milestone",
       "milestone": "Phase3C complete ledger gate and bypass rejection",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "bde7035c3ffeb4fc342e9b8ad18547f07edd1827",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "5450193d44e03ce27c62acd2865718d4b7f2c031",
+      "event": "stop",
+      "milestone": "Phase3C ledger bound; operator signing integration pending",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

@@ -178,3 +178,15 @@ Phase3C gate hardening:21 adapter +15 changed-module tests now pass. Legacy budg
 constructor rejects an anchored continuation; actual gateway error/timeout paths
 retain full exposure. First sanitized milestone616a83e... ->1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0
 independently refetched. Updated gate checkpoint follows before any Step6 work.
+
+## Phase3C: LEDGER_BOUND_INTEGRATION_PENDING
+
+Completed gate sourcee081c8450dc99de66c17ad59b72207e150aa4c10 remotely verified as
+5450193d44e03ce27c62acd2865718d4b7f2c031 before Step6.21 new adapter tests +15 budget/
+lifecycle regressions pass; public isolated recovery134 pass/13 explicit skips/0 fail.
+Original journal47/677906/11522 unchanged; new authoritative continuation0 requests/
+charges/approvals. Single-use TEST signature scope tested; real operator verifier/trust
+is NOT configured. Step6 stopped at new signing-trust boundary as instructed. No full
+live-supervisor/capture/native/credential rehearsal claimed. See updated integration
+and first-run reports. Model access/current official rates remain UNVERIFIED from3B.
+Provider requests0,actual new spend$0.00; private recovery still local-only.
