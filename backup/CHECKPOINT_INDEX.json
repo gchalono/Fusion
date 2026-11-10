@@ -25,6 +25,14 @@
       },
       "history_commits_scanned": 4,
       "reachable_blobs_scanned": 7813
+    },
+    {
+      "source_commit": "4d96fd89186661e84dbd6725277414ecfc8df2c7",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "83b0bcabacf5a8278775a669f0af72cbeba8cc97",
+      "event": "start",
+      "milestone": "Phase 2N offline completion baseline",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
   "current_source": "b3bc7b0dc6c2751bb3b499d9ce6023b3e2c7284c",

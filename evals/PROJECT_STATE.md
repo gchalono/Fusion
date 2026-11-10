@@ -98,5 +98,3 @@ recreated. No production behavior changed and no paid/provider traffic occurred.
 ## Sanitized persistence and offline A/B/C milestone
 
 Original b3bc7b0 checkpoint preserved; public orphan b1542ac7 verified by independent fetch and fresh clone (84 passed, 8 private-dependent skipped). Remote descendants remain sanitized-only. See controlled-coding/POST_BACKUP_OFFLINE_REPORT.md. Explicit offline Experiment 2 token revision verified; native A/B/C local test-double loops and A repeat completed; incomplete candidates rejected. Chromium positive reference remains blocked. Provider spending $0.00. Public recovery still requires 32 protected input dependencies for full experiment reproduction.
-
-Published sanitized milestone `1c5404e19e42dc6ca1d65486c4fc591e5237bdf7` maps to development `4d96fd89186661e84dbd6725277414ecfc8df2c7`. Independent fresh-clone verification: 87 passed, 8 private-dependent skipped, 4 sanitized commits / 7813 blobs scanned. No original source-history objects included. New local recovery bundle verified and recovered; full private recovery remains external.
