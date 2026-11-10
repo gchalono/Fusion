@@ -33,18 +33,18 @@ def script(body,variant="coding"):
  return delta,finish
 
 
-def persist_checked_outputs(root, report, raw):
- # Preserve the original collector's fail-closed order: never persist a token
- # and then raise. Only generated local TEST DOUBLE keys are read here.
- root=Path(root)
+def reject_output_secrets(root,*values):
+ # Generated local TEST DOUBLE keys only; never provider credentials.
  for name in ('local-token','upstream-key'):
-  secret=(root/name).read_bytes().strip()
-  if secret and any(secret in v for v in (raw,report['stdout'],report['stderr'])):
-   raise ValueError('TEST_DOUBLE_token_in_collected_output')
+  secret=(Path(root)/name).read_bytes().strip()
+  if secret and any(secret in value for value in values):raise ValueError('TEST_DOUBLE_token_in_collected_output')
+
+def persist_checked_outputs(root, report, raw):
+ root=Path(root);reject_output_secrets(root,raw,report['stdout'],report['stderr'])
  for name in ('stdout','stderr'):(root/('agent-'+name+'.txt')).write_bytes(report[name])
 
 
-def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False):
+def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False):
  if arm not in "ABC" or len(arm)!=1 or (arm!="A" and not expanded_offline):raise ValueError("arm_requires_scoped_offline_revision")
  root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
  prompt=load_arm('/workspace/phase2m-genuine-success','/workspace/phase2n-evaluation/frozen',arm)
@@ -54,7 +54,7 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
  wires=[]
  def observe(body):
   wires.append(body);(root/f'native-wire-{len(wires):02}.json').write_bytes(canonical(body))
- server,contacts=start_stub(root,script=lambda body:script(body,variant),observe=observe,pause=pause)
+ server,contacts=start_stub(root,script=script_override or (lambda body:script(body,variant)),observe=observe,pause=pause)
  workspace=root/'workspace'
  subprocess.run(['git','-c','core.hooksPath=/dev/null','clone','--quiet','--no-local','/workspace/phase2n-evaluation/frozen/empty-seed',str(workspace)],check=True,capture_output=True,env={'PATH':os.environ['PATH'],'HOME':str(root)})
  process=None;log=None;watch_stop=threading.Event();abort=threading.Event();report=None
@@ -70,15 +70,27 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   candidate=workspace/'application.py';raw=candidate.read_bytes() if candidate.is_file() and not candidate.is_symlink() else b''
   persist_checked_outputs(root,report,raw)
   patch=''.join(difflib.unified_diff([],raw.decode().splitlines(True),fromfile='/dev/null',tofile='b/application.py'))
+  candidate_files={}
+  if capture_all:
+   if subprocess.check_output(['git','ls-tree','--name-only','HEAD'],cwd=workspace).strip():raise ValueError('capture_requires_frozen_empty_seed')
+   patch=''
+   for file in sorted(workspace.rglob('*')):
+    relative=file.relative_to(workspace)
+    if '.git' in relative.parts:continue
+    if file.is_symlink():raise ValueError('candidate_symlink')
+    if not file.is_file():continue
+    if file.suffix not in ('.py','.md','.html','.js','.css'):raise ValueError('unexpected_candidate_artifact:'+str(relative))
+    content=file.read_bytes();reject_output_secrets(root,content);candidate_files[str(relative)]=sha(content)
+    patch+=''.join(difflib.unified_diff([],content.decode().splitlines(True),fromfile='/dev/null',tofile='b/'+str(relative)))
   (root/'candidate.patch').write_text(patch)
-  if process.poll() is None:request_admin(root,'finish' if report['exit_code']==0 and len(contacts)==2 else 'abort')
+  if process.poll() is None:request_admin(root,'finish' if report['exit_code']==0 and len(contacts)==expected_requests else 'abort')
   else:
    recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':'+arm,'INCOMPLETE')
   result={'classification':'TEST DOUBLE native Pi run; incomplete implementation control; NOT model performance',
-    'arm':arm,'variant':variant,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
+    'arm':arm,'variant':variant,'candidate_files':candidate_files,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
     'local_model_wire_requests':len(contacts),'real_provider_requests':0,'provider_usage':None,'actual_provider_cost_usd':'0.00',
     'coding_tool_modified_files':bool(raw),'candidate_sha256':sha(raw),'patch_sha256':sha(patch.encode()),
-    'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':len(contacts)==2 and any(m['role']=='tool' for m in wires[-1]['messages']) and report['exit_code']==0,
+    'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':len(contacts)==expected_requests and any(m['role']=='tool' for m in wires[-1]['messages']) and report['exit_code']==0,
     'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':d['frozen_coding_token_limit'],'active_offline_output_bound':512,
     'full_task_completion':False,'browser_grading':'UNVERIFIED / independent gate',
     'wire_files':[str(root/f'native-wire-{i:02}.json') for i in range(1,len(wires)+1)]}

@@ -28,10 +28,18 @@
     },
     {
       "source_commit": "4d96fd89186661e84dbd6725277414ecfc8df2c7",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "e663e79c0c374803f4ed1e30216337deae4bf00a",
       "previous_backup": "83b0bcabacf5a8278775a669f0af72cbeba8cc97",
       "event": "start",
       "milestone": "Phase 2N offline completion baseline",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "d89ffc833c62e60fe78b4b7649e877c078726577",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "e663e79c0c374803f4ed1e30216337deae4bf00a",
+      "event": "milestone",
+      "milestone": "Exact local private recovery and bounded native positive A",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

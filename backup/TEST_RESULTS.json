@@ -3,11 +3,15 @@
   "results": [
     {
       "suite": "controlled-coding",
-      "run": 47,
-      "passed": 40,
+      "run": 52,
+      "passed": 44,
       "failed": 0,
-      "skipped": 7,
+      "skipped": 8,
       "skip_reasons": [
+        {
+          "test": "test_three_bounded_replies_reconstruct_source_and_use_all_native_tools (test_positive_completion.CompletionTests.test_three_bounded_replies_reconstruct_source_and_use_all_native_tools)",
+          "reason": "public js-tiktoken 1.0.21 utility not installed in recovery namespace"
+        },
         {
           "test": "test_actual_B_C_two_request_loop_exceeds_token_reservation_cap (test_task_manager_adapter.TaskManagerTests.test_actual_B_C_two_request_loop_exceeds_token_reservation_cap)",
           "reason": "original private evidence unavailable"

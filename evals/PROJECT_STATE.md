@@ -98,3 +98,7 @@ recreated. No production behavior changed and no paid/provider traffic occurred.
 ## Sanitized persistence and offline A/B/C milestone
 
 Original b3bc7b0 checkpoint preserved; public orphan b1542ac7 verified by independent fetch and fresh clone (84 passed, 8 private-dependent skipped). Remote descendants remain sanitized-only. See controlled-coding/POST_BACKUP_OFFLINE_REPORT.md. Explicit offline Experiment 2 token revision verified; native A/B/C local test-double loops and A repeat completed; incomplete candidates rejected. Chromium positive reference remains blocked. Provider spending $0.00. Public recovery still requires 32 protected input dependencies for full experiment reproduction.
+
+## Offline completion: private recovery and positive native A
+
+Baseline 95 tests passed. Exact 32-file private archive/restore verified locally; off-environment durability blocked. New bounded native positive A used four local TEST DOUBLE requests, generated application.py and README through tools, passed seven unchanged HTTP/SQLite checks; browser gate still fails. See controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md and related recovery/positive reports. Provider spending $0.00.
