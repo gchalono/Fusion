@@ -160,3 +160,16 @@ controlled-coding/. Frozen canonical SHA2569460ff7b9cbf1c794c0512f6df78f711bc3c3
 code ce51b94b6cfbfb6ba4c24527afd06909906c6bfd. Blockers: current provider metadata,
 live supervisor+historical ledger binding+credential handoff, essential private external
 recovery, and capture-interface neutrality. No provider calls or production changes.
+
+## Phase 3C ledger gate — VERIFIED, live integration pending
+
+Read-only original semantics and independent raw-wire recompute agree:47 journal
+records,677906 bytes,SHA2569e7953105d6cb33dee33b9982d351e3ee348f78d07096c03a28e9435675a4363,
+retained11522 micro-USD,unresolved0. Authorized SQLite continuation imports once,
+immutable anchored history, state-bound hash chain, external witness and exclusive
+process owner.19 new adapter tests +10 budget +5 lifecycle regressions pass. Separate
+process competition and actual SIGKILL tested; no history rewrite or test charges in
+real continuation. Headroom1500000 after remaining planning488478; max run77416.
+Ledger7dd5b983.../anchor9dd4a684...; private /workspace/phase3c-ledger/. All original
+bytes unchanged. Gate checkpoint next; Step6 may proceed only after remote verification.
+No provider requests/new spend/production/isolation/evaluator changes.

@@ -159,3 +159,13 @@ credential/private-external dependencies explicitly BLOCKED. Terminal source-onl
 sanitized checkpoint and independent fresh-clone receipts resolve final SHAs; original
 source history and private archives remain local, not merged into sanitized ancestry.
 No paid authorization inferred from proposed commands. Provider spending$0.00.
+
+## Phase 3C gate checkpoint
+
+Starting dev6fa149d5c9cb14ab03bdb1db7048ec460d2df9fb,backup961c128db722d5b7210eca01bb9d3a28081cdbe1.
+Original sealed journal all47 records verified before/after,11522 micro-USD retained;
+independent recompute matches. New history adapter extends existing budget admission
+without resetting/reopening original journal.19 new adapter +15 changed-module tests
+pass. Real continuation only bootstrap/anchor,0 new requests. No private DB/raw records
+in outgoing snapshot; source/hash receipts only. Gate permits Step6 only AFTER
+independently re-fetched remote checkpoint. Metadata unverified; no paid authority.

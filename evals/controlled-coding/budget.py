@@ -112,6 +112,18 @@ class AggregateBudget:
             if row and row[0]!=policy_hash:raise ValueError('run_policy_mismatch')
             if not row:db.execute('INSERT INTO run_policies VALUES (?,?,?)',(stage,run,policy_hash))
 
+    # FNXC:HistoricalLedger 2026-11-10-05:38: Default-preserving continuation
+    # hooks; the adapter validates and chains in this same reservation transaction.
+    def _exposure(self, db, stage=None, run=None):
+        where='';params=[]
+        if stage is not None:where=' WHERE stage=?';params.append(stage)
+        if run is not None:where+=' AND run=?';params.append(run)
+        return db.execute('SELECT COALESCE(SUM(upper_micro),0) FROM reservations'+where,params).fetchone()[0]
+
+    def _before_reservation(self, db, stage, run, amount, bounds):pass
+    def _after_reservation(self, db, ident):pass
+    def _reservation_persisted(self):pass
+
     def reserve(self, stage, run, upper_micro, *, token_bounds=None):
         if stage not in ('planning', 'coding') or not isinstance(run, str) or not run:
             raise ValueError('invalid_reservation')
@@ -120,15 +132,17 @@ class AggregateBudget:
         # A separate connection per attempt is necessary for threads/processes.
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            total = db.execute('SELECT COALESCE(SUM(upper_micro),0) FROM reservations').fetchone()[0]
-            used, calls = db.execute('SELECT COALESCE(SUM(upper_micro),0), COUNT(*) FROM reservations WHERE stage=? AND run=?', (stage, run)).fetchone()
+            self._before_reservation(db,stage,run,upper_micro,token_bounds)
+            total = self._exposure(db)
+            used = self._exposure(db,stage,run)
+            calls = db.execute('SELECT COUNT(*) FROM reservations WHERE stage=? AND run=?',(stage,run)).fetchone()[0]
             if self.contract:
                 allowed=self.contract['planning_run_ids' if stage=='planning' else 'coding_run_ids']
                 if run not in allowed:raise ValueError('unregistered_experiment_run')
                 control=db.execute('SELECT started,deadline,status FROM run_controls WHERE stage=? AND run=?',(stage,run)).fetchone()
                 now=time.time()
                 if not control or control[2]!='ACTIVE' or not control[0]<=now<control[1]:raise ValueError('run_deadline_or_inactive')
-                stage_used=db.execute('SELECT COALESCE(SUM(upper_micro),0) FROM reservations WHERE stage=?',(stage,)).fetchone()[0]
+                stage_used=self._exposure(db,stage)
                 from contract import micro
                 cap=micro(self.contract['planning_reserve_usd' if stage=='planning' else 'coding_allocation_usd'])
                 if stage_used+upper_micro>cap:raise ValueError('stage_allocation_cap')
@@ -153,6 +167,8 @@ class AggregateBudget:
             ident = db.execute('INSERT INTO reservations(stage,run,upper_micro) VALUES (?,?,?)', (stage, run, upper_micro)).lastrowid
             db.execute('INSERT INTO transitions(reservation_id,state,basis) VALUES (?,?,?)',(ident,'RESERVED','worst_case'))
             if token_bounds is not None:db.execute('INSERT INTO request_bounds VALUES (?,?,?)',(ident,*token_bounds))
+            self._after_reservation(db,ident)
+        self._reservation_persisted()
         # Return only AFTER commit. Failed/uncertain commits never reach transport.
         return ident
 

@@ -3,11 +3,15 @@
   "results": [
     {
       "suite": "controlled-coding",
-      "run": 78,
-      "passed": 67,
+      "run": 97,
+      "passed": 85,
       "failed": 0,
-      "skipped": 11,
+      "skipped": 12,
       "skip_reasons": [
+        {
+          "test": "test_real_47_replay (test_history_budget.HistoryTests.test_real_47_replay)",
+          "reason": "Private original journal intentionally absent in public recovery"
+        },
         {
           "test": "test_complete_contract_proposal_blocked_by_existing_output_and_call_caps (test_positive_completion.CompletionTests.test_complete_contract_proposal_blocked_by_existing_output_and_call_caps)",
           "reason": "public js-tiktoken 1.0.21 utility not installed in recovery namespace"
