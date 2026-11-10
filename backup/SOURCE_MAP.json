@@ -1,5 +1,5 @@
 {
-  "source_commit": "86e95a6e69af7921cbdb684296b36d40d9b7ad65",
+  "source_commit": "9610b3a8abbfdb219b4559aad1f3350ac08f8f06",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -516,8 +516,8 @@
     },
     {
       "path": "evals/controlled-coding/live_supervisor.py",
-      "sha256": "7b655aef5f3b2c4f87e25383812488e3425e8174903058e72e71ae04404d8f19",
-      "source_blob": "5530cf2afcdede9e97abf75d98499ffdf98a1cb4",
+      "sha256": "0abac0ebb7890cfbe6b58d1e5f6abb0ac44b5ec5f48905e095b8be78b8f47628",
+      "source_blob": "416e2d2565fee63c6a107bb64bccc9e229233db6",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -565,8 +565,8 @@
     },
     {
       "path": "evals/controlled-coding/pilot.py",
-      "sha256": "37de90fc62cbc7adfa603d9dbe75e41f9f22f228bc41a4ffd72a06d257f1022d",
-      "source_blob": "b51105fa8129f923ff5d1a953d324237d5a69f54",
+      "sha256": "87d73980cce07c80d08cad104ac9e3d927b92b60726317bb708bf0b0f991f1e4",
+      "source_blob": "9461dfb8532fc57f6e6b56dfc5bcaf75edb6b571",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -621,8 +621,8 @@
     },
     {
       "path": "evals/controlled-coding/real_transport.py",
-      "sha256": "f848374587ff75ba98db2897f20836a69bb69921eb67804a94477cf9e8348ba4",
-      "source_blob": "b49dee4cb62b7af4948ea80e76dbb5d84b41eafc",
+      "sha256": "a5d81b9d6ff0f649f8f3af169f2477c98177df4dfbfc29fad33e66f34f55735f",
+      "source_blob": "b0314cebc2a320d3891348f6e425abd52b8a3142",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -630,6 +630,13 @@
       "path": "evals/controlled-coding/recovery_checks.py",
       "sha256": "5b25342c205b87dd67f240b2aca62dace59f91c10412a5d61a5b766e7c3f2c01",
       "source_blob": "ad3ace1377603fe09b88589b13d04dc047626058",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/rehearse_live_supervisor.py",
+      "sha256": "eb7d54b230f3d954f3d348686a1b9f62c64f8b4f1b3d59c5bd5b33c7a09ef0ed",
+      "source_blob": "3f360ecde5cb911d49203bb32648cd9c71bbf90a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -705,8 +712,8 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_native.py",
-      "sha256": "23ba18525219dd9ae39ec8ef884dae9e7c21d6c2355f7e85851785b354c2904b",
-      "source_blob": "abfd240aaa71818bbbfbc6f0128fed5e4bf80797",
+      "sha256": "f1c28997ac1279ae52e80ff6550d31a2877a9895f77eafabdeef0652691f4b44",
+      "source_blob": "1aca4568a7e95383a9d444e638e8a58631c070a8",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -831,8 +838,8 @@
     },
     {
       "path": "evals/controlled-coding/test_operator_and_capture.py",
-      "sha256": "3603f5e0fe079d4bf946d5266897adba7e6975b7f8b048818d0d0996968d2a00",
-      "source_blob": "125516db8f14e99b9c271932e347773ab4ad2992",
+      "sha256": "77e04e7b1a532a8fcb5ee281f4db5698d6bc398643d46e5e00aa84e17236bbfe",
+      "source_blob": "231b7a3e08f5731260d375776cdc274e1b14ff5f",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

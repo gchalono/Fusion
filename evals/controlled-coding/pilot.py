@@ -57,6 +57,49 @@ def request_admin(root,action):
         s.settimeout(5);s.connect(str(Path(root)/'admin.sock'));s.sendall(canonical({'action':action})+b'\n');return json.loads(s.recv(4096))
 
 
+# FNXC:LiveCoding 2026-11-10-06:45: Share the actual native broker protocol;
+# no namespace/seccomp change. Approved mode rejects output-limit intervention.
+def make_inference_server(socket_path,*,c,transport,ledger,run,gateway,token,artifacts,output_limit,bounds=None,revoked=None,strict=False):
+    bounds=bounds or threading.local();revoked=revoked or threading.Event();events=[]
+    from http.server import BaseHTTPRequestHandler
+    class Inference(BaseHTTPRequestHandler):
+        def log_message(self,*_args):pass
+        def do_POST(self):
+            status=403;payload=b'{"error":"denied"}';kind='application/json';stage='headers'
+            try:
+                if revoked.is_set() or self.path!='/v1/chat/completions' or self.headers.get('Host','')!='127.0.0.1:39777':raise ValueError('endpoint_or_revoked')
+                if not hmac.compare_digest(self.headers.get('Authorization',''),'Bearer '+token):raise ValueError('client')
+                if self.headers.get('Transfer-Encoding'):raise ValueError('encoding')
+                lengths=self.headers.get_all('Content-Length',[])
+                if len(lengths)!=1 or not lengths[0].isdigit() or not 0<int(lengths[0])<=32000:raise ValueError('request_length')
+                stage='request_schema';raw=self.rfile.read(int(lengths[0]));c.prepare(raw);body=json.loads(raw)
+                requested=body.get('max_tokens',body.get('max_completion_tokens',4096))
+                for field in ('max_tokens','max_completion_tokens'):body.pop(field,None)
+                if type(requested) is not int or requested<=0:raise ValueError('output_limit')
+                if strict and requested>output_limit:raise ValueError('output_limit_intervention_forbidden')
+                body['max_tokens']=min(requested,output_limit);body['temperature']=0
+                events.append({'requested_max_tokens':requested,'forwarded_max_tokens':body['max_tokens']})
+                normalized,metadata=c.prepare(canonical(body));metadata['input_token_upper_bound']=max(len(raw),metadata['input_token_upper_bound'])
+                from decimal import Decimal,ROUND_CEILING
+                metadata['reserved_micro_usd']=int((Decimal(metadata['input_token_upper_bound'])*Decimal('.40')+Decimal(metadata['output_token_upper_bound'])*Decimal('1.60')).to_integral_value(rounding=ROUND_CEILING))
+                bounds.value=metadata
+                stage='deadline';transport.timeout=min(60,ledger.remaining_seconds('coding',run))
+                stage='gateway';status,kind,payload=gateway.handle(normalized)
+            except Exception as error:
+                # FNXC:RealModelReadiness 2026-11-10-05:09: Fixed denial codes,
+                # never raw exceptions/credentials; evidence cannot authorize retry.
+                code=str(error)
+                if code not in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling'}:code='request_denied'
+                artifacts.write('denied-'+secrets.token_hex(8)+'.json',canonical({'code':code,'stage':stage,'error_type':type(error).__name__}))
+            self.send_response(status);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(payload)));self.end_headers()
+            try:self.wfile.write(payload)
+            except OSError:
+                ledger.control_run('coding',run,'INCOMPLETE')
+    server=UnixServer(str(socket_path),Inference)
+    server.events=events;server.revoked=revoked
+    return server
+
+
 def broker(root,run,action,stub_url,ca,key):
     root=Path(root)
     if not (root/'.offline-test').is_file():raise ValueError('offline_experiment_required')
@@ -81,39 +124,7 @@ def broker(root,run,action,stub_url,ca,key):
     bounds=threading.local()
     gateway=guard_gateway(Gateway(policy,artifacts,transport),ledger,'coding',run,cost_bound=lambda _:bounds.value['reserved_micro_usd'],estimator=c.estimate,token_bound=lambda _:(bounds.value['input_token_upper_bound'],bounds.value['output_token_upper_bound']))
     revoked=threading.Event();stop=threading.Event()
-    from http.server import BaseHTTPRequestHandler
-    class Inference(BaseHTTPRequestHandler):
-        def log_message(self,*_args):pass
-        def do_POST(self):
-            status=403;payload=b'{"error":"denied"}';kind='application/json'
-            try:
-                if revoked.is_set() or self.path!='/v1/chat/completions' or self.headers.get('Host','')!='127.0.0.1:39777':raise ValueError('endpoint_or_revoked')
-                if not hmac.compare_digest(self.headers.get('Authorization',''),'Bearer '+token):raise ValueError('client')
-                if self.headers.get('Transfer-Encoding'):raise ValueError('encoding')
-                lengths=self.headers.get_all('Content-Length',[])
-                if len(lengths)!=1 or not lengths[0].isdigit() or not 0<int(lengths[0])<=32000:raise ValueError('request_length')
-                raw=self.rfile.read(int(lengths[0]));c.prepare(raw);body=json.loads(raw)
-                requested=body.get('max_tokens',body.get('max_completion_tokens',4096))
-                for field in ('max_tokens','max_completion_tokens'):body.pop(field,None)
-                if type(requested) is not int or requested<=0:raise ValueError('output_limit')
-                body['max_tokens']=min(requested,output_limit);body['temperature']=0
-                normalized,metadata=c.prepare(canonical(body));metadata['input_token_upper_bound']=max(len(raw),metadata['input_token_upper_bound'])
-                from decimal import Decimal,ROUND_CEILING
-                metadata['reserved_micro_usd']=int((Decimal(metadata['input_token_upper_bound'])*Decimal('.40')+Decimal(metadata['output_token_upper_bound'])*Decimal('1.60')).to_integral_value(rounding=ROUND_CEILING))
-                bounds.value=metadata
-                transport.timeout=min(60,ledger.remaining_seconds('coding',run))
-                status,kind,payload=gateway.handle(normalized)
-            except Exception as error:
-                # FNXC:RealModelReadiness 2026-11-10-05:09: Fixed denial codes,
-                # never raw exceptions/credentials; evidence cannot authorize retry.
-                code=str(error)
-                if code not in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling'}:code='request_denied'
-                artifacts.write('denied-'+secrets.token_hex(8)+'.json',canonical({'code':code}))
-            self.send_response(status);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(payload)));self.end_headers()
-            try:self.wfile.write(payload)
-            except OSError:
-                ledger.control_run('coding',run,'INCOMPLETE')
-    server=UnixServer(str(root/'gateway.sock'),Inference)
+    server=make_inference_server(root/'gateway.sock',c=c,transport=transport,ledger=ledger,run=run,gateway=gateway,token=token,artifacts=artifacts,output_limit=output_limit,bounds=bounds,revoked=revoked)
     class Admin(socketserver.StreamRequestHandler):
         def handle(self):
             message=json.loads(self.rfile.readline(4096))

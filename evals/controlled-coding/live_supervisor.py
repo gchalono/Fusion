@@ -11,8 +11,8 @@ from gateway import Gateway,Policy,Artifacts
 from history_budget import HistoryBudget,bind_anchored_gateway,sha
 from operator_auth import ApprovalVerifier,strict,clean_env,LIVE_TRUST,TEST_DOMAIN,LIVE_DOMAIN
 from execution import run_command,runtime_mounts,coding_command
-from isolation import inference_socket
-from real_transport import RealTransport
+from pilot import make_inference_server
+from real_transport import RealTransport,sealed_credential
 from source_capture import capture,no_secrets
 from task_manager_adapter import load_arm
 from original_evaluator_adapter import evaluate,verify_original
@@ -78,7 +78,7 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
  root=Path(out).resolve()
  if root.is_relative_to(REPO) or root.exists():raise ValueError('new_private_output_outside_repository_required')
  root.mkdir(mode=0o700,parents=True);(root/'approval.json').write_bytes(canonical(envelope));(root/'objective.txt').write_bytes(prompt)
- ledger=None;server=None;transport=None;provider_key=None;token=secrets.token_hex(32);secret_values=[token];report=None;result=None;denials=[]
+ ledger=None;server=None;transport=None;credential_fd=None;provider_key=None;token=secrets.token_hex(32);secret_values=[token];report=None;result=None;denials=[]
  try:
   ledger=open_ledger(test_state,verifier);ledger.authorize_run(spec,envelope['signature'])
   isolation_preflight(root,secret_values)
@@ -87,21 +87,27 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
   profile={'profile':'phase3d-approved-gateway','model':MODEL,'arm':'A','requests':4,'output':4096,'synthetic':synthetic};(root/'profile.json').write_bytes(canonical(profile))
   if synthetic:
    tr=synthetic_transport;secret_values.append(Path(tr['key']).read_text().strip())
-   transport=RealTransport(test_mode=True,test_root=tr['root'],test_url=tr['url'],test_ca=tr['ca'],test_key_file=tr['key'])
+   credential_fd=sealed_credential(secret_values[-1]);transport=RealTransport(test_mode=True,test_root=tr['root'],test_url=tr['url'],test_ca=tr['ca'],test_key_file=tr['key'],credential_fd=credential_fd)
   else:
    # Only this TRUSTED GATEWAY process accesses the real key, after all gates.
    # It is removed from the environment; descendants receive explicit clean env.
    provider_key=os.environ.pop('OPENAI_API_KEY',None)
    if not provider_key:raise ValueError('gateway_provider_credential_missing')
    secret_values.append(provider_key);credentials=root/'gateway-private';credentials.mkdir(mode=0o700)
-   keyfile=credentials/'provider-key';keyfile.write_text(provider_key);keyfile.chmod(0o600)
+   credential_fd=sealed_credential(provider_key)
    cfg=dict(ledger.contract);cfg.update(provider_spend_authorized_usd='0.12',model_availability='VERIFIED')
    cfgpath=credentials/'transport-contract.json';cfgpath.write_bytes(canonical(cfg));c=Contract(cfgpath)
-   permit={'live_authorized':True,'model':MODEL,'contract_sha256':c.sha256,'approved_hosts':['api.openai.com'],'expires_at':spec['expires_at'],'provider_side_cap_confirmed':True,'authorized_spend_usd':.12,'key_file':str(keyfile),'model_availability_verified':True,'model_availability_evidence':envelope['payload']['transport']['metadata_sha256']}
+   permit={'live_authorized':True,'model':MODEL,'contract_sha256':c.sha256,'approved_hosts':['api.openai.com'],'expires_at':spec['expires_at'],'provider_side_cap_confirmed':True,'authorized_spend_usd':.12,'credential_fd':credential_fd,'model_availability_verified':True,'model_availability_evidence':envelope['payload']['transport']['metadata_sha256']}
    permitpath=credentials/'transport-permit.json';permitpath.write_bytes(canonical(permit));permitpath.chmod(0o600)
-   transport=RealTransport(live=True,authorization_file=permitpath,contract_path=cfgpath)
+   transport=RealTransport(live=True,authorization_file=permitpath,contract_path=cfgpath,credential_fd=credential_fd)
   audit=root/'gateway';audit.mkdir();artifacts=Artifacts(audit,secrets=tuple(secret_values));policy=Policy('OpenAI',MODEL,transport.url,('localhost',) if synthetic else ('api.openai.com',),4,120000,400000,1600000,32000,4096,4096)
-  gateway=bind_anchored_gateway(Gateway(policy,artifacts,transport),ledger,RUN,synthetic=synthetic)
+  raw_attempts=[]
+  def checked_transport(url,raw):
+   if server is not None and server.revoked.is_set():raise OSError('gateway_revoked')
+   status,kind,body=transport(url,raw);raw_attempts.append(status);artifacts.write(f'transport-response-{len(raw_attempts):04}.raw',body)
+   if status==200 and 'text/event-stream' in kind and not body.replace(b'\r\n',b'\n').rstrip().endswith(b'data: [DONE]'):raise OSError('incomplete_provider_stream')
+   return status,kind,body
+  gateway=bind_anchored_gateway(Gateway(policy,artifacts,checked_transport),ledger,RUN,synthetic=synthetic)
   c=Contract()
   class RoutedGateway:
    policy=gateway.policy
@@ -109,11 +115,11 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
     if server.revoked.is_set():raise ValueError('gateway_revoked')
     try:
      if any(e['requested_max_tokens']!=e['forwarded_max_tokens'] for e in server.events):raise ValueError('output_limit_intervention_rejected')
-     normalized,_=c.prepare(raw);transport.timeout=min(60,ledger.remaining_seconds('coding',RUN));return gateway.handle(normalized)
+     body=json.loads(raw);body['temperature']=0;normalized,_=c.prepare(canonical(body));transport.timeout=min(60,ledger.remaining_seconds('coding',RUN));return gateway.handle(normalized)
     except Exception as e:
-     code=str(e) if str(e) in ('aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap') else 'request_denied'
+     code=str(e) if str(e) in ('aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','call_cap','spend_ceiling') else 'request_denied'
      denials.append(code);raise
-  server=inference_socket(root/'gateway.sock',RoutedGateway(),token);threading.Thread(target=server.serve_forever,daemon=True).start()
+  server=make_inference_server(root/'gateway.sock',c=c,transport=transport,ledger=ledger,run=RUN,gateway=RoutedGateway(),token=token,artifacts=artifacts,output_limit=4096,strict=True);threading.Thread(target=server.serve_forever,daemon=True).start()
   mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(root/'local-token','/run/local-token'),(root/'objective.txt','/run/objective.txt'),(root/'profile.json','/run/supervisor-profile.json'),*runtime_mounts(RUNTIME)]
   report=run_command(root/'gateway.sock',workspace,coding_command(RUNTIME,MODEL),mounts=mounts,timeout=min(300,ledger.remaining_seconds('coding',RUN)),app_alias=True)
   server.revoked.set();transport.abort();no_secrets(report['stdout']+report['stderr'],secret_values)
@@ -125,7 +131,7 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
   (root/'full-native-result.json').write_bytes(canonical(result))
   ledger.recover_uncertain();ledger.control_run('coding',RUN,'COMPLETE' if clean else 'INCOMPLETE')
   # Always invoke the original evaluator after a started native run, even partial.
-  reference=json.loads(Path('/workspace/full768-native-A-current/full-native-result.json').read_text());same=collected['candidate_files']==reference['candidate_files'] and collected['candidate_modes']==reference['candidate_modes']
+  same=result['patch_sha256']=='df383ba28a82be9f2a07b36d188a4f4bec11f551f1013634186c3752c2b0ba6c'
   result['evaluator_invoked']=True
   try:
    grading=evaluate(root,root/'independent-evaluator',browser_dependency=None if same else Path('/workspace/trusted-browser-dependencies/google-official'))
@@ -137,6 +143,7 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
  finally:
   if server:server.revoked.set();server.shutdown();server.server_close()
   if transport:transport.abort()
+  if credential_fd is not None:os.close(credential_fd)
   if ledger:
    try:ledger.close()
    finally:

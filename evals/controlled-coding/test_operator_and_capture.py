@@ -40,3 +40,34 @@ class CaptureTests(unittest.TestCase):
     elif case=='binary':(r/'x.js').write_bytes(b'\x00ELF')
     else:(r/'x.db').write_text('not a SQLite database')
     with self.assertRaises(ValueError):capture(r,secrets=('SYNTHETIC_SECRET_VALUE',))
+class CredentialDescriptorTests(unittest.TestCase):
+ def test_sealed_private_descriptor(self):
+  import fcntl
+  from real_transport import sealed_credential,validate_credential_fd
+  fd=sealed_credential('SYNTHETIC_GATEWAY_CREDENTIAL')
+  try:
+   self.assertEqual(validate_credential_fd({'credential_fd':fd}),fd);self.assertEqual(os.pread(fd,100,0),b'SYNTHETIC_GATEWAY_CREDENTIAL')
+   with self.assertRaises(OSError):os.write(fd,b'changed')
+  finally:os.close(fd)
+class BrokerProtocolTests(unittest.TestCase):
+ def test_native_completion_limit_and_bound_run(self):
+  import http.client,socket,threading,secrets
+  from pilot import make_inference_server
+  from contract import Contract,canonical
+  from gateway import Artifacts
+  with tempfile.TemporaryDirectory() as t:
+   r=Path(t);token=secrets.token_hex(32);calls=[]
+   class Ledger:
+    def remaining_seconds(self,stage,run):
+     if (stage,run)!=('coding','BOUND_RUN'):raise ValueError('run_not_bound')
+     return 30
+   class Transport:timeout=60
+   class Gateway:
+    def handle(self,raw):calls.append(json.loads(raw));return 200,'application/json',b'{"local":true}'
+   server=make_inference_server(r/'gateway.sock',c=Contract(),transport=Transport(),ledger=Ledger(),run='BOUND_RUN',gateway=Gateway(),token=token,artifacts=Artifacts(r),output_limit=4096,strict=True)
+   threading.Thread(target=server.serve_forever,daemon=True).start()
+   try:
+    c=http.client.HTTPConnection('127.0.0.1:39777',timeout=5)
+    def connect():c.sock=socket.socket(socket.AF_UNIX);c.sock.connect(str(r/'gateway.sock'))
+    c.connect=connect;c.request('POST','/v1/chat/completions',canonical({'model':Contract().data['model'],'messages':[{'role':'user','content':'LOCAL'}],'max_completion_tokens':4096}),{'Authorization':'Bearer '+token});response=c.getresponse();self.assertEqual(response.status,200);response.read();c.close();self.assertEqual(calls[0]['max_tokens'],4096)
+   finally:server.shutdown();server.server_close()

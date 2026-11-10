@@ -111,18 +111,12 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   persist_checked_outputs(root,report,raw)
   patch=''.join(difflib.unified_diff([],raw.decode().splitlines(True),fromfile='/dev/null',tofile='b/application.py'))
   candidate_files={};candidate_modes={}
+  runtime_data=[]
   if capture_all:
-   patch=''
-   for file in sorted(workspace.rglob('*')):
-    relative=file.relative_to(workspace)
-    if '.git' in relative.parts:continue
-    if file.is_symlink():raise ValueError('candidate_symlink')
-    if not file.is_file():continue
-    if file.suffix not in ('.py','.md','.html','.js','.css','.sh') and str(relative) not in ('run-app','run-tests'):raise ValueError('unexpected_candidate_artifact:'+str(relative))
-    content=file.read_bytes();reject_output_secrets(root,content);candidate_files[str(relative)]=sha(content)
-    mode='100755' if file.stat().st_mode&0o111 else '100644';candidate_modes[str(relative)]=mode
-    if any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_./-' for c in str(relative)):raise ValueError('unsafe_patch_path')
-    patch+=new_file_patch(str(relative),content,mode)
+   # FNXC:LiveCoding 2026-11-10-06:16: Shared safe capture for both entry points.
+   from source_capture import capture
+   collected=capture(workspace,secrets=((root/'local-token').read_text().strip(),(root/'upstream-key').read_text().strip()))
+   patch=collected['patch'];candidate_files=collected['candidate_files'];candidate_modes=collected['candidate_modes'];runtime_data=collected['runtime_data']
   (root/'candidate.patch').write_text(patch)
   # FNXC:RealModelReadiness 2026-11-10-04:59: Pi can exit0 after a model error;
   # HTTP403/final truncation is NOT a completed native loop or successful finish.
@@ -133,7 +127,7 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   else:
    recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':'+arm,'INCOMPLETE')
   result={'classification':'TEST DOUBLE native Pi run; incomplete implementation control; NOT model performance',
-    'arm':arm,'variant':variant,'candidate_files':candidate_files,'candidate_modes':candidate_modes,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
+    'arm':arm,'variant':variant,'runtime_data':runtime_data,'candidate_files':candidate_files,'candidate_modes':candidate_modes,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
     'local_model_wire_requests':len(contacts),'real_provider_requests':0,'provider_usage':None,'actual_provider_cost_usd':'0.00',
     'coding_tool_modified_files':bool(raw),'candidate_sha256':sha(raw),'patch_sha256':sha(patch.encode()),
     'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':complete and bool(wires) and any(m['role']=='tool' for m in wires[-1]['messages']),'termination':termination,'model_endings':endings,'gateway_denials':denials,

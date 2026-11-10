@@ -6,6 +6,7 @@ PDEATHSIG. No provider hosts are contacted by offline tests.
 """
 import base64
 import ctypes
+import fcntl
 import hashlib
 import json
 import os
@@ -16,14 +17,36 @@ import stat
 import subprocess
 import sys
 import time
+import threading
 from urllib.parse import urlsplit
 from urllib.request import build_opener,ProxyHandler,HTTPSHandler
 from contract import Contract,micro
 
 
+# FNXC:LiveCoding 2026-11-10-06:40: This Python omits Linux fcntl names;
+# use the published ABI numbers, without adding syscalls or bypassing any filter.
+ADD_SEALS=getattr(fcntl,'F_ADD_SEALS',1033);GET_SEALS=getattr(fcntl,'F_GET_SEALS',1034)
+SEAL_REQUIRED=0x01|0x02|0x04|0x08
+
+def sealed_credential(key):
+    # FNXC:LiveCoding 2026-11-10-06:16: No persistent provider-key file; only the
+    # gateway and explicitly inherited transport worker can reach this sealed FD.
+    fd=os.memfd_create('fusion-gateway-credential',os.MFD_ALLOW_SEALING|os.MFD_CLOEXEC)
+    try:
+        os.fchmod(fd,0o600);os.write(fd,key.encode());fcntl.fcntl(fd,ADD_SEALS,SEAL_REQUIRED);return fd
+    except BaseException:os.close(fd);raise
+
+def validate_credential_fd(config):
+    fd=config.get('credential_fd')
+    if type(fd) is not int or fd<3:raise ValueError('gateway_credential_descriptor')
+    required=SEAL_REQUIRED
+    if not stat.S_ISREG(os.fstat(fd).st_mode) or os.fstat(fd).st_mode&0o077 or fcntl.fcntl(fd,GET_SEALS)&required!=required:raise ValueError('sealed_gateway_credential_required')
+    return fd
+
 def validate(config):
     c=Contract(config.get('contract_path',Path(__file__).with_name('experiment-parameters.json')))
     if config.get('live') and config.get('test_mode'):raise ValueError('test_override_unavailable_live')
+    if 'credential_fd' in config:validate_credential_fd(config)
     if config.get('test_mode'):
         marker=Path(config['test_root'])/'.offline-test'
         if not marker.is_file():raise ValueError('test_marker_required')
@@ -42,16 +65,19 @@ def validate(config):
     if a.get('model_availability_verified') and a.get('model_availability_evidence'):errors=[e for e in errors if e!='MODEL_AVAILABILITY_UNVERIFIED']
     if errors:raise ValueError(','.join(errors))
     if not a.get('provider_side_cap_confirmed') or not 0<a.get('authorized_spend_usd',0)<=2:raise ValueError('dedicated_key_cap_required')
+    if 'credential_fd' in config:
+        if a.get('credential_fd')!=config['credential_fd']:raise ValueError('credential_descriptor_authorization_mismatch')
+        return c,'https://api.openai.com/v1/chat/completions'
     key=Path(a['key_file'])
     if key.is_symlink() or not key.is_file() or key.stat().st_mode & 0o077:raise ValueError('gateway_key_permissions')
     return c,'https://api.openai.com/v1/chat/completions'
 
 
 class RealTransport:
-    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60):
+    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60, credential_fd=None):
         self.config={k:str(v) if isinstance(v,Path) else v for k,v in locals().copy().items() if k not in ('self',) and v is not None}
         self.contract,self.url=validate(self.config)
-        self.timeout=min(timeout,self.contract.data['request_seconds']);self.active=set()
+        self.timeout=min(timeout,self.contract.data['request_seconds']);self.active=set();self._workers=threading.Lock();self._aborted=False
 
     def __call__(self, _ignored_policy_url, raw):
         validate(self.config)
@@ -62,8 +88,10 @@ class RealTransport:
         for name in ('HTTP_PROXY','HTTPS_PROXY','NO_PROXY','http_proxy','https_proxy','no_proxy','SSL_CERT_FILE','SSL_CERT_DIR'):
             if name in os.environ:env[name]=os.environ[name]
         request={'config':self.config,'raw':base64.b64encode(raw).decode(),'parent_pid':os.getpid()}
-        child=subprocess.Popen([sys.executable,'-B',str(Path(__file__).resolve()),'--worker'],env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,close_fds=True)
-        self.active.add(child)
+        with self._workers:
+            if self._aborted:raise OSError('transport_revoked')
+            child=subprocess.Popen([sys.executable,'-B',str(Path(__file__).resolve()),'--worker'],env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,close_fds=True,pass_fds=(self.config['credential_fd'],) if 'credential_fd' in self.config else ())
+            self.active.add(child)
         try:
             output,_=child.communicate(json.dumps(request).encode(),timeout=self.timeout)
             if child.returncode:raise OSError('transport_worker_failed')
@@ -72,11 +100,14 @@ class RealTransport:
             return result['status'],result['content_type'],base64.b64decode(result['body'])
         except subprocess.TimeoutExpired:
             child.kill();child.communicate();raise OSError('whole_request_deadline') from None
-        finally:self.active.discard(child)
+        finally:
+            with self._workers:self.active.discard(child)
 
     def abort(self):
-        for child in list(self.active):
-            if child.poll() is None:child.kill()
+        with self._workers:
+            self._aborted=True
+            for child in list(self.active):
+                if child.poll() is None:child.kill()
 
 
 def worker():
@@ -87,12 +118,13 @@ def worker():
         raw=base64.b64decode(request['raw'])
         normalized,_=c.prepare(raw)
         if normalized!=raw:raise ValueError('unprepared_request')
+        if 'credential_fd' in config:key=os.pread(validate_credential_fd(config),65536,0).decode().strip()
         if config.get('test_mode'):
-            key=Path(config['test_key_file']).read_text().strip()
+            key=key if 'credential_fd' in config else Path(config['test_key_file']).read_text().strip()
             context=ssl.create_default_context(cafile=config['test_ca'])
             opener=build_opener(ProxyHandler({}),HTTPSHandler(context=context))
         else:
-            approval=json.loads(Path(config['authorization_file']).read_text());key=Path(approval['key_file']).read_text().strip();opener=None
+            approval=json.loads(Path(config['authorization_file']).read_text());key=key if 'credential_fd' in config else Path(approval['key_file']).read_text().strip();opener=None
         # FNXC:OfflineFinal 2026-11-09-05:40: Reuse the existing destination,
         # redirect and response-size boundary; external worker supplies deadline.
         sys.path.insert(0,str(Path(__file__).parent.parent/'planning-collector'))

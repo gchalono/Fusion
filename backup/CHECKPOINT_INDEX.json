@@ -148,10 +148,18 @@
     },
     {
       "source_commit": "86e95a6e69af7921cbdb684296b36d40d9b7ad65",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "419d0ad60a29cc741c05f7fe21785ada8062dea8",
       "previous_backup": "b0c959d431fec3c512815286cb01a598c97a0c0f",
       "event": "milestone",
       "milestone": "Phase3D signed supervisor implementation before unpaid native rehearsal",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "9610b3a8abbfdb219b4559aad1f3350ac08f8f06",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "419d0ad60a29cc741c05f7fe21785ada8062dea8",
+      "event": "milestone",
+      "milestone": "Phase3D sealed credentials and shared native broker; rehearsal in progress",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
