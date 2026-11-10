@@ -60,10 +60,18 @@
     },
     {
       "source_commit": "4c2fff724ad016af28ba83f286be3d139a201ca4",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "4b15d117612602adb7a2e821fd1e6b999e7e380f",
       "previous_backup": "2e91d02f3317ffdba145112bd00f8946d5a88640",
       "event": "milestone",
       "milestone": "Native full-contract A2 passes all original non-browser categories",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "14074bf1055997897136ba2673d66022f3a2db8b",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "4b15d117612602adb7a2e821fd1e6b999e7e380f",
+      "event": "stop",
+      "milestone": "Original non-browser acceptance verified with native offline 768 implementation",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

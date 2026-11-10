@@ -1,3 +1,5 @@
+> Historical512-profile report. Current authorized offline768 native/non-browser result is in TASK_MANAGER_FULL_CONTRACT_RESULT.md; original failures and evidence below are preserved.
+
 # Phase 2N offline completion report
 
 **OFFLINE_FAILED:** required real-browser validation failed. The complete-contract

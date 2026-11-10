@@ -32,3 +32,22 @@ class Offline768Tests(unittest.TestCase):
   for flag in ('--unshare-user','--unshare-net','--unshare-pid','--unshare-ipc','--unshare-uts','--seccomp','--clearenv'):self.assertIn(flag,argv)
   self.assertIn('--cap-drop',argv);self.assertNotIn('/checks',argv)
   at=argv.index('/app');self.assertEqual(argv[at-2],'--ro-bind')
+ def test_shared_three_arm_768_reservations_and_restart(self):
+  import tempfile
+  from pathlib import Path
+  from budget import AggregateBudget
+  d=offline_contract();d['offline_output_profile']=NAME;self.assertEqual(ceiling(d,offline=True),768)
+  with tempfile.TemporaryDirectory() as t:
+   p=Path(t)/'shared.db';b=AggregateBudget(p,experiment_contract=d)
+   for arm in 'ABC':
+    run='phase2m-personal-task-manager:'+arm;b.control_run('coding',run,'start')
+    for _ in range(4):b.reserve('coding',run,14029,token_bounds=(32000,768))
+    with self.assertRaisesRegex(ValueError,'experiment_request_cap'):b.reserve('coding',run,14029,token_bounds=(32000,768))
+   self.assertEqual(AggregateBudget(p).snapshot()['reserved_exposure_micro_usd'],168348)
+ def test_profile_cannot_change_model_or_mutate_defaults(self):
+  import copy
+  d=offline_contract();before=copy.deepcopy(d);d['offline_output_profile']=NAME;ceiling(d,offline=True)
+  self.assertEqual({k:v for k,v in d.items() if k!='offline_output_profile'},before)
+  for key,value in (('model','unauthorized-model'),('provider','unauthorized-provider')):
+   bad=copy.deepcopy(d);bad[key]=value
+   with self.assertRaises(ValueError):ceiling(bad,offline=True)

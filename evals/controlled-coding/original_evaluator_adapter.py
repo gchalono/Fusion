@@ -43,6 +43,10 @@ def inside():
  original.subprocess=types.SimpleNamespace(run=remote_run)
  # Structural boundary evidence without exposing any credential contents.
  boundary={'provider_variables_absent':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'unrelated_workspace_absent':not Path('/workspace').exists(),'namespace_uid':os.getuid()}
+ status=Path('/proc/self/status').read_text()
+ boundary['no_new_privs']=next(x.split(':')[1].strip() for x in status.splitlines() if x.startswith('NoNewPrivs:'))=='1'
+ boundary['zero_effective_capabilities']=next(x.split(':')[1].strip() for x in status.splitlines() if x.startswith('CapEff:'))=='0000000000000000'
+ if not all(v for k,v in boundary.items() if k!='namespace_uid') or boundary['namespace_uid']!=65534:raise RuntimeError('assertion_boundary_failed')
  result=original.run(Path('/work'),Path('/checks/acceptance.mjs'),Path('/unused/browser-unavailable'))
  print(json.dumps({'result':result,'boundary':boundary}),flush=True)
 
@@ -124,6 +128,7 @@ def evaluate(native_root,out):
   if child.returncode:raise RuntimeError('assertions_process_failed')
   for name,h in expected.items():
    if digest(out/'app'/name)!=h:raise ValueError('graded_source_changed')
+   if bool((out/'app'/name).stat().st_mode&0o111)!=(captured['candidate_modes'][name]=='100755'):raise ValueError('graded_mode_changed')
   result.update(classification='BYTE-EXACT ORIGINAL ASSERTIONS under current isolated adapter',original_hashes=HASHES,source_patch_sha256=digest(native_root/'candidate.patch'))
   categories=result['result']['categories'];result['non_browser_passed']=all(c['passed'] for c in categories if c['category']!='browser_functionality')
   result['browser_status']='BLOCKED: known real runtime incompatibility; no substitute execution';result['complete_acceptance']=False

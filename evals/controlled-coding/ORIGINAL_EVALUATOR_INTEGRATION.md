@@ -34,3 +34,28 @@ Browser command returns a BLOCKED dependency result, not a mock browser success.
 Original unchanged assertions retain a false browser category and completion=false;
 adapter reports browser BLOCKED separately. Raw 90/100 with9 passed is NOT full
 acceptance. All nine non-browser categories pass for the regenerated native A2.
+
+## Final verified results and boundaries
+
+VERIFIED A2, A-final, its independent repeat, B and C pass all9 non-browser
+categories. Each invocation keeps the original10-category result structure and
+browser failure/completion=false, with explicit separate BLOCKED annotation. Local
+application tests run3 times with stable positive count1; executable launchers and
+calendar/type/error/restart cases are exercised, not inferred from source inspection.
+All assertion and application processes have separate user/net/PID/mount namespaces,
+current mandatory seccomp, no_new_privs and zero effective capabilities. The actual
+app probe also demonstrates capset/unshare/egress denial, source read-only and no
+hidden/host/credential visibility. Independent source modes/hashes verified after
+assertions. Raw outcomes remain outside public Git under /workspace/full768-original-*.
+
+The host lifecycle supervisor accepts only fixed start/stop/tests actions from the
+pinned original assertion code over anonymous pipes. It exposes no general shell,
+path, provider transport or administrative endpoint. Candidate stdout cannot enter
+those pipes. It is trusted host execution plumbing, not an evaluator assertion or
+application process with credential/file access. No app namespace contains /checks;
+only the evaluator namespace receives the read-only originals. No weaker legacy
+wrapper, browser syscall exception, network permission or additional broad host mount.
+
+Run:
+`python evals/controlled-coding/original_evaluator_adapter.py --native-root EXISTING_RECORDED_NATIVE_ROOT --out NEW_PRIVATE_EVALUATION_DIR`.
+The adapter applies the captured patch itself; no reference source or direct fix-up.

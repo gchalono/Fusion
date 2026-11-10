@@ -59,9 +59,12 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
  wires=[]
  def observe(body):
   wires.append(body);(root/f'native-wire-{len(wires):02}.json').write_bytes(canonical(body))
- server,contacts=start_stub(root,script=script_override or (lambda body:script(body,variant)),observe=observe,pause=pause)
  workspace=root/'workspace'
  subprocess.run(['git','-c','core.hooksPath=/dev/null','clone','--quiet','--no-local','/workspace/phase2n-evaluation/frozen/empty-seed',str(workspace)],check=True,capture_output=True,env={'PATH':os.environ['PATH'],'HOME':str(root)})
+ # Validate the trusted seed BEFORE untrusted tools can alter Git configuration.
+ # Never invoke host Git on the candidate's potentially modified .git afterward.
+ if capture_all and subprocess.check_output(['git','ls-tree','--name-only','HEAD'],cwd=workspace).strip():raise ValueError('capture_requires_frozen_empty_seed')
+ server,contacts=start_stub(root,script=script_override or (lambda body:script(body,variant)),observe=observe,pause=pause)
  process=None;log=None;watch_stop=threading.Event();abort=threading.Event();report=None
  try:
   process,log=spawn_broker(root,TASK+':'+arm)
@@ -78,7 +81,6 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   patch=''.join(difflib.unified_diff([],raw.decode().splitlines(True),fromfile='/dev/null',tofile='b/application.py'))
   candidate_files={};candidate_modes={}
   if capture_all:
-   if subprocess.check_output(['git','ls-tree','--name-only','HEAD'],cwd=workspace).strip():raise ValueError('capture_requires_frozen_empty_seed')
    patch=''
    for file in sorted(workspace.rglob('*')):
     relative=file.relative_to(workspace)

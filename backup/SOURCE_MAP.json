@@ -1,5 +1,5 @@
 {
-  "source_commit": "4c2fff724ad016af28ba83f286be3d139a201ca4",
+  "source_commit": "14074bf1055997897136ba2673d66022f3a2db8b",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "5d94e85ab2572b11050e1d639342f2fd3d569f5b297dee5fda4c48d24886b6f6",
-      "source_blob": "03e5596a23b169bc497a6057716290c67b2bd18b",
+      "sha256": "61099cd234beeb4b0858ea16f99f6c114e77a79408a5071ba04ddb11850454af",
+      "source_blob": "f7ac3ed6243f36ec56fb1975285f53e818d292bc",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "df347803eee9cdf383f737f3d962a948f968587d82c2c628f470b36c783079df",
-      "source_blob": "b865c11c75104f7543fba209f4cd007d9c46e6b8",
+      "sha256": "9dec64ffa739fc73532d826b17093c76fbca2101e71228014f370b53d950d450",
+      "source_blob": "fb33b715dfed3edc91e8d9b8d2ae96190ac24118",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -110,15 +110,15 @@
     },
     {
       "path": "evals/controlled-coding/OFFLINE_768_TOKEN_VALIDATION.md",
-      "sha256": "c427deb1835df851d2af18fd97e7d4301677a296db5e822ac26c480b453faf96",
-      "source_blob": "075c9a7cc68f2b820ae5d87a714133b0db3e6e21",
+      "sha256": "0c68695226448bc0f2d7ca815d0fc6f51cbbe303e36725d188d48b3ea2994669",
+      "source_blob": "99d50299ff91c8ecd179ce1843cf815eff1a849e",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/controlled-coding/ORIGINAL_EVALUATOR_INTEGRATION.md",
-      "sha256": "bea07178fb2850bc03ddb0e3a6fd9aab2b62f3ee0e6d9af54264a41a208a956e",
-      "source_blob": "4dfd7f975603729882b204be423d3e5caf3cf446",
+      "sha256": "b5d6e7b109f0856bea0a9f278ef01350f39ffff8debad14729068d6f0f34626d",
+      "source_blob": "e0dfbc261e128caf68722c26136011bf1a5ddd0a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -131,8 +131,8 @@
     },
     {
       "path": "evals/controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md",
-      "sha256": "a72a3cc6ffbf6553a09ec9f0cd3eeca6958b83202e5e1d89de6bdd28aa1e06a6",
-      "source_blob": "a7c173ae46849ea126d137d57999492ddbe7c793",
+      "sha256": "25f62d220b5596b70337a2a99c8efefc53cd663e1c913fb736392b0e423708eb",
+      "source_blob": "b7dae8c878cd553cf433b0448e85123af7491fd9",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -187,8 +187,8 @@
     },
     {
       "path": "evals/controlled-coding/TASK_MANAGER_FULL_CONTRACT_RESULT.md",
-      "sha256": "d53af408f2e1dc3829e1ffbb6acaba0aa3b4d662b5c38cf643fa05712bfb08c2",
-      "source_blob": "b44391ee4d1a1dcbd67d996a243dedf1057bf797",
+      "sha256": "4b88a028af344a48adcdce45c7df0981b01e93c776c7b6436de8eb9453978fc9",
+      "source_blob": "66bb4f047d3b19b3f7987afa2732463930efa21e",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -208,8 +208,8 @@
     },
     {
       "path": "evals/controlled-coding/TASK_MANAGER_POSITIVE_VALIDATION.md",
-      "sha256": "50d05f9ad6ba3ad7ef8df04256b54ec11f4bc0a71335d6a3155986754911b973",
-      "source_blob": "0272e8f1445de0ca1eb5526f1c00439c0686cad3",
+      "sha256": "c9b80b8e4c8782c79bcebd5249b936ed9b3545851014eede4c1af8d97542a7c8",
+      "source_blob": "d7622d35725ec543aad4416cf642e8a8a02c766a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -285,8 +285,8 @@
     },
     {
       "path": "evals/controlled-coding/coding-agent.mts",
-      "sha256": "c121ad9ec288adb654aabc63050db584f69229af7b06de767d04a022905bd6b5",
-      "source_blob": "5bcaeb3783a6aac973f550cf2f95938b054ee4e6",
+      "sha256": "c099045abdae168c737e7973e3aaa831477a375ba6c09762f7cea8ed76dc0994",
+      "source_blob": "d043aa8a5b01777fc0fbed989781c593436fe02c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -432,8 +432,8 @@
     },
     {
       "path": "evals/controlled-coding/original_evaluator_adapter.py",
-      "sha256": "ae12d6850d580605bbc671d69e2c4bece4ab927f52168e3f43fc593fc168e9d7",
-      "source_blob": "711ec4c89b4ded98d104eddd0a8a71c51fd50e23",
+      "sha256": "f776fa1dfc129277425406c3f5bbc0d76ab55c1be5a2962461041b59a26f5585",
+      "source_blob": "cc1aceae2028e4dfd8fdb5100e191bc298d7d9f0",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -551,8 +551,8 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_native.py",
-      "sha256": "d01679c020724641fa1f22ea498d7e26734fc132641ca181565ad04b09f7a354",
-      "source_blob": "71a57518981fd58006d0dc0d76f1b5339f01ab74",
+      "sha256": "4ceea854e9862444c6a0eb27925e174807c37dccb088f93f01cbaaf38a619ee0",
+      "source_blob": "e90ed17e785aca8a1cf89edc6a312e1ad833127e",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -572,8 +572,8 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_positive_security.py",
-      "sha256": "862def374f8d134558a155ef3dba40c6925ddd793f5f0b26146c15d6bcde15c9",
-      "source_blob": "5e41df4eb625cc14ad1e4bcf4996bf2f487526d2",
+      "sha256": "8f2ecafa0e581e7f4dcf61a6ecc4c37e619d2b203752bb8c61e42c5357b3fd04",
+      "source_blob": "b47d4513ad808daa7c9a61ff9f9e6eea0abafc5b",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -663,8 +663,8 @@
     },
     {
       "path": "evals/controlled-coding/test_offline_768.py",
-      "sha256": "1ebe7fffcff0b7d87ff90643874aa961eed914ff31f6a3e8a45bfcc226466746",
-      "source_blob": "e181cd4bc61309e83a38dbe3077336e0a9eb93de",
+      "sha256": "f22a18c7b626f4ad2120a8097baffef05f021f3943f160d408d1d770d302d488",
+      "source_blob": "95960350bffd9ae6a48f12cce33a1f3327802507",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

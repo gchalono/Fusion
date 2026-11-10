@@ -1,3 +1,5 @@
+> Historical512-profile report. Current authorized offline768 native/non-browser result is in TASK_MANAGER_FULL_CONTRACT_RESULT.md; original failures and evidence below are preserved.
+
 # Native TEST DOUBLE positive-control validation
 
 **FAILED full target / VERIFIED partial core.** The four native outputs below are
