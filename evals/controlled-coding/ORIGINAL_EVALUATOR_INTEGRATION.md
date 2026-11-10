@@ -1,3 +1,5 @@
+> Historical non-browser milestone. Current real-browser result is BROWSER_ACCEPTANCE_FINAL.md (all10 categories100/100 with verified alternative runtime); external private recovery remains blocked. Earlier dependency observations below are preserved.
+
 # Byte-exact original evaluator integration
 
 VERIFIED authoritative source at40a06aa5cb932ddc0ed9bf232aca00999b355d96. Original

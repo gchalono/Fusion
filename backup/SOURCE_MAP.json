@@ -1,5 +1,5 @@
 {
-  "source_commit": "d78dda6b2997a344f1527dcdee368e6dc83dc3a8",
+  "source_commit": "9afbac61342d18a59b0d1cdd1111d6ef736f82c5",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "66a81abd89c5740978b7a3bf70fc0ec85b03b971dd2a2508bb0e030d6650fa29",
-      "source_blob": "1a0ff01a7f76cc8c929e41cdc88ff0b1a43473aa",
+      "sha256": "87764ae65e17588a1566124e9ffeb4bdcae1d83242ed394eb6f84412fb53c81e",
+      "source_blob": "64e8d7e8755d38469eabd68bcc46e1a4623ad632",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "aa36781f602889c8f77e549031990fdcdbf0c657f3b5df44e15d20497bf2c6a5",
-      "source_blob": "0ab9af9db0374342e0e02c01dded64970bb60b3d",
+      "sha256": "104fb33f3087a35a701dad79ce526876c66099729eaa8b3af32bc6024ffb9967",
+      "source_blob": "3bc89687c4a4b7dc0913c94294cf62f2d8c50380",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -110,8 +110,8 @@
     },
     {
       "path": "evals/controlled-coding/BROWSER_ACCEPTANCE_FINAL.md",
-      "sha256": "a02a398fd091914ce3756a7e6b96d7f5fb07169d9fc1af5d1e3e0ddaea748aa6",
-      "source_blob": "d24fa5b213bc55afa6e6d61503120da65c118791",
+      "sha256": "06a76f97f5cbc9b6dc2fa7f1b36ab8ca211aae6f6b434fcd9c0d6d9221d9b5d4",
+      "source_blob": "535e0471f0bfd07876055c22e8014019331cdaba",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -131,8 +131,8 @@
     },
     {
       "path": "evals/controlled-coding/ORIGINAL_EVALUATOR_INTEGRATION.md",
-      "sha256": "a7c7d7ad86c29aaedec07a7b67445d4634b2020ea907d0b290e2af05f203c5bd",
-      "source_blob": "96b0cb5470bd266ce5b7048dd0b4f08a9fc56f5d",
+      "sha256": "b93926f552d6de3442f0b04552275db276218b517f9f23d85a2ae4627bb7db97",
+      "source_blob": "9846170734b97fccf3cd5ba73cb76d7afc0e981a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -180,8 +180,8 @@
     },
     {
       "path": "evals/controlled-coding/PRIVATE_REMOTE_RECOVERY_FINAL.md",
-      "sha256": "b724ad9f3b373147a9743dba9eedc666436c2a3af64cb1c8652f6bd3e57bb388",
-      "source_blob": "96d37c963101e8400d9745553eeecf31a01fbaaf",
+      "sha256": "5d196a6f4fd996190563a33c9acf2cbaa9034d49f220bc84b39b403ff04fb13e",
+      "source_blob": "46b0300611270d6cc4f27d4aaa9a58150af4ac3c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -208,8 +208,8 @@
     },
     {
       "path": "evals/controlled-coding/TASK_MANAGER_FULL_CONTRACT_RESULT.md",
-      "sha256": "4b88a028af344a48adcdce45c7df0981b01e93c776c7b6436de8eb9453978fc9",
-      "source_blob": "66bb4f047d3b19b3f7987afa2732463930efa21e",
+      "sha256": "588a29af02ffdd683ce3465a6f35a3a6d22b7072e6aa6d2a6c62b5b5b1909fa4",
+      "source_blob": "67e3ee4eb2b6cfdeb5e3b19401e3080f4bd9e1da",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

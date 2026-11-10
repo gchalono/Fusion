@@ -92,10 +92,18 @@
     },
     {
       "source_commit": "d78dda6b2997a344f1527dcdee368e6dc83dc3a8",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "b5335c10076a21a6f74577379e4cd7397f4f0b1d",
       "previous_backup": "0139e49f34185ed82e15f708e51d7531670986be",
       "event": "milestone",
       "milestone": "Verified full browser acceptance and safe isolated integrity tests",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "9afbac61342d18a59b0d1cdd1111d6ef736f82c5",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "b5335c10076a21a6f74577379e4cd7397f4f0b1d",
+      "event": "stop",
+      "milestone": "Real browser acceptance and security verified; private remote destination remains unapproved",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

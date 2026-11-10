@@ -1,3 +1,5 @@
+> Historical non-browser milestone. Current real-browser result is BROWSER_ACCEPTANCE_FINAL.md (all10 categories100/100 with verified alternative runtime); external private recovery remains blocked. Earlier dependency observations below are preserved.
+
 # NON_BROWSER_ACCEPTANCE_VERIFIED — native TEST DOUBLE
 
 VERIFIED: the five-file task manager was generated through genuine Fusion/Pi

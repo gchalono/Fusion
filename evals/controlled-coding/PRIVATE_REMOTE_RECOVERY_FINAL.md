@@ -59,3 +59,35 @@ objects or possession of an unbacked local encryption key do not satisfy the gat
 
 No external storage/model call, private GitHub upload or unauthorized repository
 creation occurred. Off-environment durability is still BLOCKED; browser work continued.
+
+## Final complete local recovery inventory
+
+VERIFIED the original32-file archive is a SELECTED dependency set, not the full
+closure required by verify_sources(). Its historical manifest references122 files.
+Those existing originals were located and hash-verified, never reconstructed.
+A separate additional local-only package now covers850 files including that closure,
+all newly located native/browser/evaluator/security evidence,13 closed diagnostic
+budget database images, exact frozen preparation manifest/prompts, exact evaluator,
+public software dependency/package metadata, and the original empty-seed Git bundle.
+
+Package: /workspace/final-blockers-private-inventory/additional-private-recovery.tar.gz
+SHA2564f8f7d982f0d315ab995ed075301994a1353e3193a432e73d03c75c6a5e9e11f.
+Inventory: /workspace/final-blockers-private-inventory/inventory-final.json
+SHA256146d1b803466795b57d3430017baed1ce9fa71d1c215dcf30af8cee5c715cd6c.
+Protected clean restore verified EVERY packaged hash and successfully reran original
+manifest122-file verification plus all8 genuine approval bindings. Restored exact
+empty-seed commit f2a49cb3fc7e02cd225053d4e2d07c589b4c808b from its original Git
+bundle, not a newly invented empty repository. All13 restored budget DB images pass
+SQLite integrity_check and match logical dumps of their consistent backup copies.
+The archive contains the closed original images; additional SQLite backup copies
+are retained locally. No credential/key or original operational-history DB is added.
+Root/archive/restore permissions are restricted0700/0600.
+
+VERIFIED original archives7fba... and5bd3... remain byte-exact and separate. No
+external upload was attempted, destination created, custody key invented or private
+payload committed. This stronger LOCAL recovery still does not satisfy independent
+OFF-ENVIRONMENT recovery: PRIVATE_REMOTE_RECOVERY_BLOCKED remains the final status.
+Future authenticated-encrypted packages must include these three original archive
+files plus the recovery receipts/checksum mapping, rather than assuming the first
+32 or553 selections cover every dependency. Authorized private full-history backup
+is a separate dependency because original Git bundles contain historical ops DBs.

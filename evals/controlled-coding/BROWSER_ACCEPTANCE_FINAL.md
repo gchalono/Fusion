@@ -70,3 +70,54 @@ Private raw evidence: /workspace/final-browser-probe/, /workspace/final-browser-
 /workspace/final-browser-original-A-repeat/. Public reports contain hashes/status,
 not raw private evidence or hidden assertion contents. Binary/provenance metadata
 remains /workspace/trusted-browser-dependencies/google-official/.
+
+## Final independent repetition, regressions and cleanup
+
+VERIFIED three fresh original-evaluator checkouts score100/100, every category
+passed, with the same df383ba2... native patch and unchanged executable modes. The
+terminal run includes the final no-host/no-hidden-source launch guard. No native
+candidate was regenerated in this phase and no coding-model/provider call occurred.
+Final browser security receipt passes ALL18 checks, including actual/dev/null masking
+of the privileged helper. Four real browser processes inherit seccomp mode2,
+no_new_privs and zero capabilities. Browser/proxy close in finally; evaluator service
+relays stop and source hashes/modes are rechecked after grading. No syscall policy
+or frozen assertion changed; normal multiprocess launch failure is preserved as an
+infrastructure diagnostic, not concealed by the working configuration.
+
+VERIFIED baseline110 local units, final114 (66+37+11), zero failures/skips locally.
+Four new synthetic units exercise identity/tamper/masking/hash guards; they do NOT
+mock real-browser acceptance. A new fixture initially tried to create setuid files
+inside recovery isolation and correctly hit EPERM. It was corrected to use regular
+synthetic files for integrity and test already-verified masking metadata separately;
+real signed-helper masking is independently checked by the actual browser probe.
+The outgoing checkpoint stopped before publication until that fixture issue was fixed.
+The20-minute remote target was exceeded during this validation block; verified local
+bundle/source/evidence were preserved and the exception recorded in CHECKPOINTS.md.
+
+Accepted milestone dev8f737b97c... plus recovery-unit fix d78dda6b2997a344f1527dcdee368e6dc83dc3a8
+maps to independently fetched remote b5335c10076a21a6f74577379e4cd7397f4f0b1d.
+Terminal development/backup SHAs and fresh-clone results are resolved by the backup
+SOURCE_MAP/CHECKPOINT_INDEX and final operator receipt; no self-hash is invented.
+Final status BROWSER_ACCEPTANCE_VERIFIED; external private recovery still BLOCKED.
+Provider spending EXACTLY$0.00. Production/native/default512/offline768/four-request/
+$0.12/$2 settings remain unchanged. This is real-browser validation of a native
+TEST DOUBLE implementation, not evidence of real-model coding quality or paid approval.
+
+## Dependency recovery and executable command
+
+Verified exact package URL:
+https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_157.0.8103.50-1_amd64.deb .
+Metadata: https://dl.google.com/linux/chrome/deb/dists/stable/Release plus
+Release.gpg and main/binary-amd64/Packages.gz; public software key:
+https://dl.google.com/linux/linux_signing_key.pub . Never skip TLS/signature/hash checks.
+Protected850-file recovery package includes this exact verified.deb, metadata and
+verified-runtime.json; no need to trust a mirror if the publisher rotates versions.
+Re-extract only with dpkg-deb -x into a dedicated directory; preserve the same
+chromium->chrome alias, remove write bits, restore the verified manifest, and call
+verified_browser_runtime.verify before mounting. Privileged helper is always masked.
+
+Run original evaluation in a NEW private directory:
+`python evals/controlled-coding/original_evaluator_adapter.py --native-root /workspace/full768-native-A-current --out NEW_PRIVATE_DIR --browser-dependency /workspace/trusted-browser-dependencies/google-official` .
+This requires separately restored private evaluator/native evidence, not public
+source alone. Source/base114-test verification and fresh-clone recovery receipts
+remain separate from real browser100/100 private results.
