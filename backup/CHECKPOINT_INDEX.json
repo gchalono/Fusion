@@ -76,10 +76,18 @@
     },
     {
       "source_commit": "d4c20b5d356e5d0aab8840c383bd1a8bb7db76ef",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "9de4f6d87867481af74895f43f8eccd94bb9c140",
       "previous_backup": "3de4852114792e6e921e46563b03ed05852ae4a1",
       "event": "stop",
       "milestone": "Final non-browser acceptance evidence and exact browser dependency",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "d4c20b5d356e5d0aab8840c383bd1a8bb7db76ef",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "9de4f6d87867481af74895f43f8eccd94bb9c140",
+      "event": "start",
+      "milestone": "Start final browser and private-recovery blocker resolution",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
