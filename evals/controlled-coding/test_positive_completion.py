@@ -46,3 +46,23 @@ class CompletionTests(unittest.TestCase):
     fragment=command.partition('\n')[2].partition('\nTEST_DOUBLE_CODE\n')[0]
     with (root/'application.py').open('ab') as f:f.write(fragment.encode())
    self.assertEqual((root/'application.py').read_bytes(),(ROOT/'task_manager_positive_source.py').read_bytes())
+ def test_partial_fixture_cannot_silently_enter_completion_path(self):
+  from task_manager_positive import validate_planned_paths
+  p={'planned_paths':['application.py','README.md']}
+  with self.assertRaisesRegex(ValueError,'frozen_contract_missing'):validate_planned_paths(p)
+  self.assertFalse(validate_planned_paths(p,allow_partial=True))
+ def test_proposed_contract_source_compiles_but_is_not_activated(self):
+  import ast
+  m=ast.parse((ROOT/'task_manager_contract_proposal.py').read_text());files=ast.literal_eval(next(n.value for n in m.body if isinstance(n,ast.Assign)))
+  self.assertTrue({'application.py','test_core.py','run-app','run-tests'}<=files.keys())
+  for name in ('application.py','test_core.py'):compile(files[name],name,'exec')
+  from task_manager_token_revision import offline_contract
+  self.assertEqual(offline_contract()['max_output_tokens'],4096) # original contract maximum; native remains 512
+  self.assertIn('maxTokens:512',(ROOT/'coding-agent.mts').read_text())
+ @unittest.skipUnless(TOKENIZER.is_file(),'public js-tiktoken 1.0.21 utility not installed in recovery namespace')
+ def test_complete_contract_proposal_blocked_by_existing_output_and_call_caps(self):
+  import ast
+  m=ast.parse((ROOT/'task_manager_contract_proposal.py').read_text());files=ast.literal_eval(next(n.value for n in m.body if isinstance(n,ast.Assign)))
+  p=json.loads(subprocess.check_output(['node',str(ROOT/'task_manager_contract_feasibility.mjs'),str(TOKENIZER)],input=json.dumps(files).encode()))
+  self.assertFalse(p['current_three_tool_replies']['fits']);self.assertEqual(p['minimum_underlying_requests_this_serialization'],6)
+  self.assertTrue(p['proposed_output_768_three_replies']['fits']);self.assertFalse(p['activated'])

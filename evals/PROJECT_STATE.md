@@ -102,3 +102,7 @@ Original b3bc7b0 checkpoint preserved; public orphan b1542ac7 verified by indepe
 ## Offline completion: private recovery and positive native A
 
 Baseline 95 tests passed. Exact 32-file private archive/restore verified locally; off-environment durability blocked. New bounded native positive A used four local TEST DOUBLE requests, generated application.py and README through tools, passed seven unchanged HTTP/SQLite checks; browser gate still fails. See controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md and related recovery/positive reports. Provider spending $0.00.
+
+## Phase 2N final offline validation: FAILED target, useful partial evidence
+
+Private 32-file archive/restore verified locally only. A/B/C partial core controls + A repeat used four local requests each; patch/wires identical for repeat. Original full contract has missing launchers/validation/UI hooks; seven legacy partial checks are not full acceptance. Complete proposed serialization requires six requests at512 or three replies at765+; limits NOT changed. Real Chromium profiles fail; official alternatives blocked HTTP403. Full original grader requires security-preserving integration, not reuse of older weak wrapper. Final103 local unit tests pass; browser failures separate. See controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md. Provider spending $0.00.

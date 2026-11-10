@@ -19,6 +19,7 @@ const created=await createResolvedAgentSession({cwd:'/work',sessionPurpose:'merg
 if(created.runtimeId!=='pi')throw new Error('unexpected_runtime');
 const unsubscribe=created.session.subscribe((event:any)=>{
  if(event.type==='tool_execution_start'||event.type==='tool_execution_end')events.push({type:event.type,tool:event.toolName,isError:event.isError,result:event.result});
+ if(event.type==='message_end'&&event.message?.role==='assistant')events.push({type:'model_end',stopReason:event.message.stopReason,errorMessage:event.message.errorMessage});
 });
 try {
  await created.session.prompt(fs.readFileSync(objectivePath,'utf8'));

@@ -1,5 +1,5 @@
 {
-  "source_commit": "d89ffc833c62e60fe78b4b7649e877c078726577",
+  "source_commit": "0e0a3f8b1da721b00325dd94e05208a3aa5f31df",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "d88b5013f8c2a1c8c4b2a12dd9c412577de39be97c8cdd5d2984ad20dccf1504",
-      "source_blob": "8ce2ca36dc56a7a6ff238ea7c09cb79ac65debd8",
+      "sha256": "e067362d000ffc2b8ecf57bcb59be8db8d0f74fda26a7d901fe83f8d66833970",
+      "source_blob": "69edb516ffd8b811546140d1254164dd4122442a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "fc779362cd2e870c12fd388dc13557b2b73d445d2a67aacbcf615a4ef5585ae8",
-      "source_blob": "e28e8493e8a6d17165d6d483f58f340040bfbc80",
+      "sha256": "c07755cfd6f540e31c0a0f621ce48c9f453363f43c3da10616c438eb5c912e79",
+      "source_blob": "0bb6f183c92951ba31a9bea5d27d80d140586b21",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -117,8 +117,8 @@
     },
     {
       "path": "evals/controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md",
-      "sha256": "20458d882675a99033d97c6336c77f46fa3aa66fc88607a4b3015c6caa05098b",
-      "source_blob": "857d3b0714f5524a2053245e6cfc512e28654ee4",
+      "sha256": "a72a3cc6ffbf6553a09ec9f0cd3eeca6958b83202e5e1d89de6bdd28aa1e06a6",
+      "source_blob": "a7c173ae46849ea126d137d57999492ddbe7c793",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -187,8 +187,8 @@
     },
     {
       "path": "evals/controlled-coding/TASK_MANAGER_POSITIVE_VALIDATION.md",
-      "sha256": "9d69a7d452e312dc53a32eaebafe16e5a6375bbd81a02cd49ec4dc632b315f77",
-      "source_blob": "72eae3d19ea01320de026a9e61076daedc4d4b51",
+      "sha256": "50d05f9ad6ba3ad7ef8df04256b54ec11f4bc0a71335d6a3155986754911b973",
+      "source_blob": "0272e8f1445de0ca1eb5526f1c00439c0686cad3",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -264,8 +264,8 @@
     },
     {
       "path": "evals/controlled-coding/coding-agent.mts",
-      "sha256": "f83d5cb8bedbe75dac1d7053e0327792b368054ee96c4442c2c3d39a9764a7d2",
-      "source_blob": "bde46f46e60c47908ebb7217ba7816bd6b7a1602",
+      "sha256": "4cbe0079a5c69b4b9a9e79140a30762fa0243b695e3f5069eebb5855b0551f6f",
+      "source_blob": "c42de163bc35f330ee381606a6ef1db3b60749d2",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -480,6 +480,20 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/task_manager_contract_feasibility.mjs",
+      "sha256": "147170f94bd46406d5f4e13e1fd28533120c9f6cea881c3edd3b088511918e37",
+      "source_blob": "803343ccf0fdf2bfbd497e6dcee217c7416f62b5",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/task_manager_contract_proposal.py",
+      "sha256": "94fa19a0c4b2a183deb761a426f306a6005a2243473f5ee2e83dc552b8b2f545",
+      "source_blob": "561b3edac2445a52a2903f2049d1185b5061906b",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
       "path": "evals/controlled-coding/task_manager_controls.py",
       "sha256": "5312b6fdf450bd0b7ee7f3222afbbd5efefd78ea929f0c379df37776e3ae3ca6",
       "source_blob": "c11ef0fa91847efbbfb71a4289953d471850d6f5",
@@ -502,15 +516,22 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_positive.py",
-      "sha256": "806de4b84103d5015a6aa1193fec7bc876167af326a2e7f9f078a2aa009cb260",
-      "source_blob": "791c18a2bccbb03496a188dfe41f30ca457e9ead",
+      "sha256": "4c828a100e69bb1f615821a18f64a6f89bd7b7b0545520415cbf9bc5eac322ce",
+      "source_blob": "725377f59bb0d770ae15a0c8f55dbe70bb913b72",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/controlled-coding/task_manager_positive_plan.mjs",
-      "sha256": "4d1a0ab7d56b3643214d208f5a85e7ec9001be6da0d3ddb1dab2d629eb930273",
-      "source_blob": "d88bff40e4deab039501d410cfeea372ce9e00a6",
+      "sha256": "978441b99314204a21076bbf7bb038c9a230f8d99b635e97c82c0f80cb3f2f00",
+      "source_blob": "68a86dffc46091b43a7b27ba2b4bb2c3a61b88f8",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/task_manager_positive_security.py",
+      "sha256": "862def374f8d134558a155ef3dba40c6925ddd793f5f0b26146c15d6bcde15c9",
+      "source_blob": "5e41df4eb625cc14ad1e4bcf4996bf2f487526d2",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -600,8 +621,8 @@
     },
     {
       "path": "evals/controlled-coding/test_positive_completion.py",
-      "sha256": "c63e3f1a86d0ed1fc66d626505440c1ac5d48b8e0c4997b71181af2dc5d36f05",
-      "source_blob": "09e90bd700191748399d76ab631034681da68480",
+      "sha256": "b37341e43a423c6a477d5de603a868eed79701d3d12e2dc3baeb699bfff0bd45",
+      "source_blob": "92569a697bff43d3ef9b44b17b407c03602837f8",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

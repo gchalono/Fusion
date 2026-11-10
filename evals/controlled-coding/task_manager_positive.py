@@ -8,10 +8,18 @@ from task_manager_native import run
 from contract import canonical
 ROOT=Path(__file__).resolve().parent
 
-def execute(root,runtime,tokenizer,*,arm='A',timeout=90):
+def validate_planned_paths(plan,allow_partial=False):
+ names=set(plan.get('planned_paths',[]))
+ missing={'run-app','run-tests'}-names
+ if not any('test' in Path(n).name and Path(n).suffix in ('.py','.js','.mjs') for n in names):missing.add('assertion-bearing-test-source')
+ if missing and not allow_partial:raise ValueError('frozen_contract_missing:'+','.join(sorted(missing)))
+ return not missing
+
+def execute(root,runtime,tokenizer,*,arm='A',timeout=90,allow_partial=False):
  root=Path(root)
  planned=subprocess.check_output([__import__('shutil').which('node'),str(ROOT/'task_manager_positive_plan.mjs'),str(Path(tokenizer).resolve())])
  p=json.loads(planned)
+ validate_planned_paths(p,allow_partial)
  if p['output_ceiling']!=512 or p['serialization_headroom']!=16 or any(n+16>512 for n in p['counts']):raise ValueError('fixture_output_bound')
  if p['source_sha256']!=hashlib.sha256((ROOT/'task_manager_positive_source.py').read_bytes()).hexdigest():raise ValueError('fixture_source_changed')
  if p['rank_sha256']!='a9e8a0c1f332c58f1a9cef2f8d7be59b31bb4b42531a3a0a64d9ad3b3d19033b':raise ValueError('encoding_ranks_changed')
@@ -38,4 +46,4 @@ def execute(root,runtime,tokenizer,*,arm='A',timeout=90):
  observation={'classification':'TEST DOUBLE native implementation; no treatment effectiveness claim','arm':arm,'native':result,'fixture_counts_o200k':p['counts'],'native_output_ceiling_unchanged':512,'patch_apply_verified':True,'acceptance':acceptance,'real_provider_requests':0,'actual_provider_cost_usd':'0.00'}
  (root/'positive-result.json').write_bytes(canonical(observation));return observation
 if __name__=='__main__':
- p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--tokenizer',type=Path,required=True);p.add_argument('--arm',choices=list('ABC'),default='A');a=p.parse_args();r=execute(a.root,a.runtime,a.tokenizer,arm=a.arm);print(json.dumps({'arm':a.arm,'native_completed':r['native']['native_loop_completed'],'requests':r['native']['local_model_wire_requests'],'acceptance':r['acceptance'],'cost':r['actual_provider_cost_usd']},indent=2))
+ p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--tokenizer',type=Path,required=True);p.add_argument('--partial-diagnostic',action='store_true');p.add_argument('--arm',choices=list('ABC'),default='A');a=p.parse_args();r=execute(a.root,a.runtime,a.tokenizer,arm=a.arm,allow_partial=a.partial_diagnostic);print(json.dumps({'arm':a.arm,'native_completed':r['native']['native_loop_completed'],'requests':r['native']['local_model_wire_requests'],'acceptance':r['acceptance'],'cost':r['actual_provider_cost_usd']},indent=2))

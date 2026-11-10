@@ -36,10 +36,18 @@
     },
     {
       "source_commit": "d89ffc833c62e60fe78b4b7649e877c078726577",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "beacd5ea69e35e4ca314e2761ddc5f12e12d5483",
       "previous_backup": "e663e79c0c374803f4ed1e30216337deae4bf00a",
       "event": "milestone",
       "milestone": "Exact local private recovery and bounded native positive A",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "0e0a3f8b1da721b00325dd94e05208a3aa5f31df",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "beacd5ea69e35e4ca314e2761ddc5f12e12d5483",
+      "event": "stop",
+      "milestone": "Phase 2N final offline evidence and explicit contract/browser blockers",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
