@@ -1,5 +1,5 @@
 {
-  "source_commit": "aab233755ca008eea05e4ea210554772192c47ba",
+  "source_commit": "dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "6890b660e428bc50b22ed9a81c92b707738d3c4586867d8014eb2ff679fb1af0",
-      "source_blob": "1944e688fc0fe99c723d5ebc93f827452a518a5d",
+      "sha256": "c4caad033ff65c795fd4320b9345c00297575440f9e1161ecc3c0592d40693e0",
+      "source_blob": "4fb403e4cdb9f960829497bf18fa7402ff7d1f2c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "04e85d807920eb0d8b9da5d363eb1e68daceee0893714ba9e8ff03f71d90eb11",
-      "source_blob": "49c520c3c7b29973403b1d86a63a54280b263279",
+      "sha256": "cb5744e5306100ba1dbd0dfdfeb9712611751485cc2d490a286071dbea0b7526",
+      "source_blob": "7f3d4cdcb82818b1d12876ca73e8ea2964052b9e",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -124,8 +124,8 @@
     },
     {
       "path": "evals/controlled-coding/FIRST_REAL_MODEL_RUN.md",
-      "sha256": "46c78123cc5aa4ee26cad7f32fe790ca0dafecc9e3b4736b28833faeea1ac629",
-      "source_blob": "6453d018cfec4ef78019c817212841920d2c72fa",
+      "sha256": "9daa15d67d2fe082bca9851b8e1aad6797042467af4e2d6ce46dd22e61bc69c6",
+      "source_blob": "8b3b684949e65c7f318c8c5affbe3b2c909572be",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -138,8 +138,8 @@
     },
     {
       "path": "evals/controlled-coding/LIVE_SUPERVISOR_INTEGRATION.md",
-      "sha256": "dfad275e388ca1a82cc87a16e445d04c6cecb69b8d0f14c4dbe72bf8b9427643",
-      "source_blob": "6714fdba0b32a5c8c7949e3a45e3e421edbbc0e5",
+      "sha256": "ebed385b53bdcedf292e4e80463e5e3429b4c402d31d95a6b8139fe90c5a7018",
+      "source_blob": "0908756709be56bcf95e67a9161d1a9fd29542eb",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -161,6 +161,20 @@
       "path": "evals/controlled-coding/PHASE3C_SOURCE_FREEZE.md",
       "sha256": "5cb7374906894d7d6132aa1ed014e8da07fe1d90791941748d2510e039c78ec7",
       "source_blob": "8d7d52030c8bc4546166f12e0b22d0c7df0456ba",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/PHASE3D_LIVE_INTEGRATION.md",
+      "sha256": "0dd5be26f0b68faad3b01a77514077d0853b469a8c19b80481be579c78b40285",
+      "source_blob": "29b28b68e05ebf7ce7e7de8612db11095ac574ba",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/PHASE3D_SOURCE_FREEZE.md",
+      "sha256": "a9e24d19ac74e9ffe0c8a59e5b6225d7dea8c508448b08ac70182f3750dae0d3",
+      "source_blob": "ca4c8e0709053ad4587e8d734ae401e4121f1fa7",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -224,6 +238,13 @@
       "path": "evals/controlled-coding/README.md",
       "sha256": "71d62e37f21609ff208eb1effaf755163c3f9e437899d845ab1524a6a69dda9c",
       "source_blob": "23e055c6590f102ae996dd4ae79f886f4697ed7c",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/REAL_MODEL_METADATA.md",
+      "sha256": "3ce7081d4109dc838c3e6c4e8e05cfc4945fbb0c65048884f04c7e116bc39d95",
+      "source_blob": "77868c4f2ee24824a25b5b3bcde9c6aa13d48f45",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

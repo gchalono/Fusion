@@ -164,10 +164,18 @@
     },
     {
       "source_commit": "aab233755ca008eea05e4ea210554772192c47ba",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "4c6a61a9978cf70e051964dc543d93097201e4e4",
       "previous_backup": "a15a41f3038311d2cf3550b000936ad5fa64e360",
       "event": "milestone",
       "milestone": "Phase3D actual supervisor passes 15-case unpaid acceptance",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "4c6a61a9978cf70e051964dc543d93097201e4e4",
+      "event": "stop",
+      "milestone": "Phase3D tested executable live command; operator enrollment and pricing pending",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

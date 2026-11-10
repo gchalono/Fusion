@@ -1,3 +1,5 @@
+> Historical Phase3C handoff. Current working command and verification: PHASE3D_LIVE_INTEGRATION.md. Original journal evidence remains unchanged.
+
 # LEDGER_BOUND_INTEGRATION_PENDING — Phase3C
 
 VERIFIED: the Phase3B ledger incompatibility is resolved through the newly authorized

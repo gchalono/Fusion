@@ -200,3 +200,18 @@ RealTransport, anchored ledger, execution isolation and original evaluator. Sour
 capture supports requested text formats and hashes SQLite runtime data separately.
 Focused approval/capture4 tests pass; ledger seam21 regressions pass. Full actual-entry
 synthetic rehearsal next; no readiness claim or provider inference authorization.
+
+## Phase3D: CONDITIONALLY_READY — working signed command, unpaid rehearsal passes
+
+Code aab233755ca008eea05e4ea210554772192c47ba: real live_supervisor.py entry with
+operator-controlled root-owned Ed25519 trust,history adapter,shared native broker,
+RealTransport sealed key FD,native Pi/tools,isolation,capture and original evaluator.
+61 focused methods pass;15 actual-entry TEST scenarios pass. Full run4 local requests
+constructs exact accepted patch and passes9 non-browser checks; unchanged browser
+attestation reused. Native security probe all6 checks true; crash/recovery/replay and
+concurrent admission tested. One legacy full-native run still produces same5 files.
+47 original records/11522 retained/0 unresolved and authoritative0 new requests remain
+unchanged. Metadata GET200 confirms snapshot visibility; pricing docs unreachable.
+Operator enrollment NOT performed; no live signing material/approval created. Current
+pricing and explicit signed paid approval remain external prerequisites. Metadata1,
+inference0,actual new spend$0.00. See PHASE3D_LIVE_INTEGRATION and executable FIRST_REAL_MODEL_RUN.

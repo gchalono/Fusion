@@ -1,102 +1,120 @@
-# First Arm A real-model run — BLOCKED, NOT AUTHORIZED
+# First real-model Arm A run — executable, CONDITIONALLY_READY
 
-Model OpenAI gpt-4.1-mini-2025-04-14 only; one native Pi coding run, Arm A,
-phase2m-personal-task-manager:A. No planning interview or automatic task/mission.
-Exact objective/common instructions and empty seed unchanged; hashes and66 reviewed
-source/config hashes: PHASE3_FROZEN.md. Canonical configuration SHA256
-9460ff7b9cbf1c794c0512f6df78f711bc3c36877a40561971de143dbf9a5bb7.
-Code checkpoint ce51b94b6cfbfb6ba4c24527afd06909906c6bfd; report-only descendants
-are recorded in sanitized backup SOURCE_MAP and terminal operator receipt.
+No paid inference is authorized yet. Technical rehearsal passed; operator enrollment,
+current pricing verification and explicit signed paid-run approval remain required.
 
-Objective SHA2564edc93814c7a6ad5c43445ad07f853ca3350ed0e3f6dc7764e1c04e0c4cdffe0.
-Common SHA256f6807d6bd0f165b0f4bcc97b0331a067adea348cb715a8c4335a970a36b4d6fa.
-Combined Arm A SHA256eeb98f4c68aa3ae99907cc8475b2e9ab97a4945cb7acf0942b72c033083f9495.
-Empty seed commit f2a49cb3fc7e02cd225053d4e2d07c589b4c808b.
-Original evaluator acceptance.py SHA2569bafe8c124fe97dfe6280220228d27a21366ef379673d9dfdab30d7d061bb753,
-acceptance.mjs SHA256708c0230d42fb518a5f3442992241bdd9e5023b1c7f41505d4f0a5795a44d88a.
+Frozen task: `phase2m-personal-task-manager:A`; model `gpt-4.1-mini-2025-04-14`.
+Objective SHA256 `4edc93814c7a6ad5c43445ad07f853ca3350ed0e3f6dc7764e1c04e0c4cdffe0`.
+Common instructions SHA256 `f6807d6bd0f165b0f4bcc97b0331a067adea348cb715a8c4335a970a36b4d6fa`.
+Arm A prompt SHA256 `eeb98f4c68aa3ae99907cc8475b2e9ab97a4945cb7acf0942b72c033083f9495`.
+Empty seed commit `f2a49cb3fc7e02cd225053d4e2d07c589b4c808b`.
+Original evaluator hashes: acceptance.py `9bafe8c124fe97dfe6280220228d27a21366ef379673d9dfdab30d7d061bb753`;
+acceptance.mjs `708c0230d42fb518a5f3442992241bdd9e5023b1c7f41505d4f0a5795a44d88a`.
+The previous historical proposal/incomplete-command notes remain in Git history;
+the procedure below is the current implementation.
 
-Limits:4 underlying requests TOTAL (retries/format/compaction included),32000
-conservative input bound/request,4096 output ceiling,300s total,60s/request,
-$0.12/run,$2 aggregate incl historical11522 micro-USD. No cached discounts assumed.
-Configured-rate worst $0.077416/run; combined $0.088938. Actual current prices/access
-UNVERIFIED. No limit increase/substitution/retry replacement. Offline768 cannot be paid.
-No automatic resolver, MCP, mission, task execution framework or autopilot.
 
-## Available exact commands — offline only
+Status CONDITIONALLY_READY. The real supervisor entry has passed15 TEST-domain
+synthetic scenarios,including actual native Pi/read/write/bash,anchored accounting,
+capture,evaluation,cap stop and crash/replay/security negatives. No paid run occurred.
+Code checkpoint aab233755ca008eea05e4ea210554772192c47ba; final report-only descendants
+are mapped in backup SOURCE_MAP. Prepare fresh specs from the actual approved clean HEAD;
+do not reuse old Phase3/3C signatures/hashes. Original task/seed/evaluator unchanged.
 
-From /workspace/Fusion-phase2n-integration, with a clean committed tree:
+### Enrollment — OPERATOR ONLY, outside the development-agent trust boundary
+
+On a trusted operator machine,using reviewed operator_auth.py and OpenSSL:
 
 ```bash
-python -B evals/controlled-coding/readiness_preflight.py --out /workspace/phase3-next-preflight.json
-python -B evals/controlled-coding/readiness_rehearsal.py --out /workspace/phase3-next-rehearsal --runtime /workspace/Fusion --tokenizer /workspace/fusion-offline-tokenizer/node_modules/js-tiktoken/dist/index.js
-python -B evals/controlled-coding/readiness_rehearsal.py --out /workspace/phase3-next-money-stop --runtime /workspace/Fusion --tokenizer /workspace/fusion-offline-tokenizer/node_modules/js-tiktoken/dist/index.js --case aggregate-mid-run
+umask 077
+mkdir -m 700 operator-private
+openssl genpkey -algorithm ED25519 -out operator-private/operator.key
+openssl pkey -in operator-private/operator.key -pubout -out operator.pub
+python -B evals/controlled-coding/operator_auth.py trust-config --public operator.pub --out operator-trust.json
+openssl pkey -pubin -in operator.pub -outform DER | sha256sum
 ```
 
-Use NEW output paths; scripts refuse replacement. Run namespace/TLS tests from the
-outer executor; no network permissions change. Preflight cannot dispatch inference
-and reports paid_readiness BLOCKED even when offline integrity passes. Rehearsal uses
-strict loopback TLS and synthetic authorization; cannot be promoted by a live flag.
-Prepared scripted success is not evidence of real-model capability.
+Keep operator-private/operator.key on that trusted machine. NEVER send it to Codex,
+copy it into the coding environment,or publish it. Transfer ONLY the public files;
+the operator/cloud administrator installs them OUTSIDE the agent session:
 
-## Required authorization and live command status
+```bash
+sudo install -d -o root -g root -m 755 /etc/fusion-eval
+sudo install -o root -g root -m 444 operator.pub /etc/fusion-eval/operator.pub
+sudo install -o root -g root -m 444 operator-trust.json /etc/fusion-eval/operator-trust.json
+```
 
-Exact next metadata authorization string: `AUTHORIZE_METADATA_CHECK`.
-Scope: current official pricing/context/API docs and project GET model metadata for
-this exact dated ID; no inference or model substitution. If unavailable, stop and
-report before proposing any smallest alternative/config diff. No silent fallback.
+Verify the DER fingerprint against the operator's trusted copy. These commands were
+NOT executed by Codex. No live key or trust anchor has been generated/selected by it.
+TEST-domain material is rejected for live use,even with a valid TEST signature.
 
-Prospective paid authorization, ONLY after all blockers are closed:
-`AUTHORIZE_ARM_A_REAL_MODEL_RUN model=gpt-4.1-mini-2025-04-14 requests=4 input=32000 output=4096 seconds=300 request_seconds=60 per_run_usd=0.12 aggregate_usd=2.00 arm=A`.
-This text in a file is not approval. Operator must approve exact final source/config,
-live gateway credential handoff/ledger identity and private recovery evidence.
+### Prepare, sign, and authorize ONE run
 
-**No safe live CLI exists yet.** pilot.py gateway requires .offline-test and binds
-RealTransport(test_mode=True). RealTransport(live=True) is only a transport primitive,
-not a coding supervisor or an authorization mechanism. A fabricated paid command would
-be unsafe. Minimal remaining implementation: reuse existing broker/isolation with a
-separately reviewed fail-closed live approval binding and authoritative existing ledger;
-verify no simultaneous unrelated session, exact credential ownership and capture
-neutrality. Preserve historical records; no new ledger erasing charges. Rehearse this
-actual live-supervisor path with a local transport before paid approval. Until then,
-the exact first paid-run command is BLOCKED/UNAVAILABLE.
+On cloud,from /workspace/Fusion-phase2n-integration,with a clean reviewed HEAD:
 
-## Stop conditions and expected evidence
+```bash
+python -B evals/controlled-coding/live_supervisor.py metadata --out /workspace/fresh-model-metadata.json
+python -B evals/controlled-coding/live_supervisor.py prepare --out /workspace/arm-a-spec.json
+```
 
-Stop BEFORE inference on hash/clean-tree/seed/approval/budget mismatch, unknown current
-pricing/model access, missing private recovery, credential/egress uncertainty or ledger
-history discrepancy. Stop during run on auth/quota/billing/provider errors, requested
-fallback/endpoint/model change, request/input/output/time/$ exhaustion, truncation,
-worker/gateway failure, tool/security violation or evidence-write failure. Native retries
-remain native but consume the same four admissions. Never restart/replay/replace a paid
-run automatically. Always retain partials, revoke admission and clean owned processes;
-run independent evaluator even on budget-terminated partial candidate.
+Metadata is non-inference,within AUTHORIZE_METADATA_CHECK. The present receipt has
+pricing_verified=false and will NOT arm live execution. Obtain current official
+verification; never edit a flag to bypass it. Exact model must remain
+ gpt-4.1-mini-2025-04-14. GET visibility is not billing/inference proof.
 
-Expected PRIVATE outputs: frozen provenance; request/raw SSE response files; provider
-input/cached/output usage if supplied (null if missing); reserve/forward/settle/uncertain
-ledger events; retained prior charges; tool args/results; source/modes/applicable patch;
-termination reason; independent original evaluator raw result; before/after isolation,
-process cleanup and secret-redaction receipts. Distinguish estimated rate cost from
-provider billing and conservative reservation. If unchanged accepted patch, reuse prior
-browser attestation explicitly; a different viable candidate requires browser grading.
-No private raw records in the public backup. Provider spending remains$0.00 until an
-explicit paid authorization arrives and all blockers pass.
+Transfer spec and metadata bytes to the trusted operator machine. After separate
+EXPLICIT paid authorization for this exact spec,operator signs there:
 
-## Phase3C amendment — ledger bound, integration pending
+```bash
+python -B evals/controlled-coding/operator_auth.py sign --spec arm-a-spec.json --metadata fresh-model-metadata.json --private operator-private/operator.key --public operator.pub --confirm-provider-side-cap --out operator-approval.json
+```
 
-This supersedes only the earlier missing-ledger-binding blocker. Original frozen
-task/seed/objective/limits remain unchanged; PHASE3_FROZEN.md is retained byte-exact as
-historical provenance, not silently edited to fit amended evaluation code.
-New adapter: HISTORY_PRESERVING_LEDGER_ADAPTER.md and LIVE_SUPERVISOR_INTEGRATION.md.
-Ledger7dd5b983cc7f32bc01201b8734da6233e171a09518ad9df7ad7cd7c49205d7e9;
-anchor9dd4a68447e9c2d5f55f75fd91d52936f5b3edc34e84518a5fcb10a2129271b7.
-Historical retained11522/unresolved0; run maximum77416; remaining-planning488478;
-headroom1500000 micro-USD. Current model access/prices remain UNVERIFIED;0 provider
-requests/$0 new spend. No operator verifier/trusted signing configuration is present.
-No live authorization minted; TEST fixtures never authorize live. Step6 stopped at
-this explicit trust boundary. Capture changes and full live-entry rehearsal remain
-pending. No paid command or approval artifact is fabricated. Failures only at the
-four-request cap are inconclusive: cap-limited unless transcript establishes a model
-error. A real future approval must bind the NEW source/config,ledger AND anchor digest;
-old Phase3 hashes alone cannot authorize the amended code.
-Conservative cross-check with full additional planning withholding:1488478 micro-USD
-headroom, still >=77416; not an additional charge or a limit change.
+Use --confirm-provider-side-cap ONLY if the existing RealTransport's dedicated key/
+project cap requirement is truthfully verified. It is a signed attestation,not an
+automatic assumption. If unmet,stop and obtain separate review; do not waive the check.
+Return ONLY operator-approval.json; keep it in a private directory. Spec expires in30
+minutes and is single-use. Rejected/expired approvals do not justify an automatic retry
+or replacement paid run. Source/config/ledger/anchor/model/task/limits are signed.
+
+The actual authorized cloud run command is:
+
+```bash
+python -B evals/controlled-coding/live_supervisor.py run --approval /workspace/operator-approval.json --metadata /workspace/fresh-model-metadata.json --out /workspace/first-real-arm-a
+```
+
+DO NOT execute now: paid inference remains unauthorized. There is no --live shortcut.
+Only the gateway accesses OPENAI_API_KEY after gates; it uses sealed anonymous FD
+inheritance to the real worker,not a provider-key file. Sandbox receives a distinct
+run token only. No model fallback,mission,TaskExecutor,autopilot or planning interview.
+
+Limits remain4 requests incl retries/compaction,32000 conservative input/4096 output,
+300s coding/60s request,$0.12 run,$2 aggregate incl11522 retained;planning$0.50.
+Default service tier only. At configured rates,max77416 micro-USD. Unknown/missing
+usage retains full reservation; verified settlements replace reservations,no double
+charge. On provider auth/quota/billing errors,the gateway revokes. Native rate retries
+remain native within the same request budget. Real dispatch count is marked unknown
+when transport failure makes it unmeasurable; reservation upper bound is separate.
+
+Expected private outputs: approval/spec,raw request/transport/response artifacts,
+provider usage/ledger lifecycle,tool transcript,source hashes+modes+patch,runtime DB
+hashes,size,isolation receipt,evaluator raw output and cleanup/terminal-state receipt.
+Always inspect result.json. Cap-only failures are inconclusive: cap-limited unless
+transcript shows a model error. Scripted rehearsal is not real-model performance.
+Original evaluator still runs after a budget stop. Reuse browser attestation only for
+identical accepted patch; other candidates use original full browser grading.
+
+After gateway/process crash,NO native replay/restart. An operator may classify retained
+outstanding exposure and terminalize the old run without inference:
+
+```bash
+python -B evals/controlled-coding/live_supervisor.py recover
+```
+
+Recovery does not create an approval or a replacement run. Missing/corrupt ledger or
+witness requires restoring the exact verified continuation+witness; never initialize
+a new ledger or re-import spending. Private recovery is local-only,not claimed verified
+externally. Rehearsal command (TEST state/keys/local transport only):
+
+```bash
+python -B evals/controlled-coding/rehearse_live_supervisor.py --out /workspace/new-phase3d-rehearsal
+```

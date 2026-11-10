@@ -200,3 +200,16 @@ stdin signing initially failed because OpenSSL needs a seekable one-shot input;
 fixed with a private temporary payload file.4 focused tests +21 ledger regressions
 pass. Checkpoint before real-entry synthetic native rehearsal. No live key/approval
 created, no paid/provider inference. Detailed logs /workspace/phase3d-evidence/.
+
+## Phase3D working-code acceptance and final handoff
+
+Actual supervisor code aab233755ca008eea05e4ea210554772192c47ba passes15 TEST scenarios,
+61 focused methods. Original ledger/journal/frozen inputs/evaluator/isolation unchanged;
+no new authoritative request/charge. First intermediate source86e95a6... independently
+backed up as419d0ad60a29cc741c05f7fe21785ada8062dea8; broker milestone9610b3a...
+backed up asa15a41f3038311d2cf3550b000936ad5fa64e360. Final working code and report
+checkpoints follow via scanned sanitized-only history. Raw TEST keys/approvals/ledgers/
+provider artifacts remain outside Git. An automatic-review usage limit blocked a test
+command without executing it; authorized resumed validation passes. One metadata GET200,
+zero provider inference,$0 new spend. Pricing/enrollment remain external; no model
+substitution,cap increase,global config or deployment. Private recovery not claimed.
