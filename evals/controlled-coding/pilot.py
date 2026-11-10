@@ -78,6 +78,7 @@ def make_inference_server(socket_path,*,c,transport,ledger,run,gateway,token,art
                 if type(requested) is not int or requested<=0:raise ValueError('output_limit')
                 if strict and requested>output_limit:raise ValueError('output_limit_intervention_forbidden')
                 body['max_tokens']=min(requested,output_limit);body['temperature']=0
+                if strict:body['service_tier']='default'
                 events.append({'requested_max_tokens':requested,'forwarded_max_tokens':body['max_tokens']})
                 normalized,metadata=c.prepare(canonical(body));metadata['input_token_upper_bound']=max(len(raw),metadata['input_token_upper_bound'])
                 from decimal import Decimal,ROUND_CEILING
@@ -89,7 +90,7 @@ def make_inference_server(socket_path,*,c,transport,ledger,run,gateway,token,art
                 # FNXC:RealModelReadiness 2026-11-10-05:09: Fixed denial codes,
                 # never raw exceptions/credentials; evidence cannot authorize retry.
                 code=str(error)
-                if code not in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling'}:code='request_denied'
+                if code not in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling','unknown_model_or_unpriced_feature','input_byte_bound_exceeded','unpriced_modality','unpriced_tool','ambiguous_output_limit','duplicate_key','messages_required','invalid_message','store_not_authorized','output_limit_intervention_forbidden','invalid_output_limit','output_limit'}:code='request_denied'
                 artifacts.write('denied-'+secrets.token_hex(8)+'.json',canonical({'code':code,'stage':stage,'error_type':type(error).__name__}))
             self.send_response(status);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(payload)));self.end_headers()
             try:self.wfile.write(payload)

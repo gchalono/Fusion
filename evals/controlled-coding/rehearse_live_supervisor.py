@@ -45,7 +45,7 @@ def process_tree(parent):
 PROBE="""python3 - <<'LOCAL_PROBE'
 import os,pathlib,socket,json
 P=pathlib.Path
-c={'no_provider_env':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'no_host_files':not P('/workspace').exists(),'no_hidden_evaluator':not P('/checks').exists(),'no_provider_proc':True,'no_provider_descriptor':True}
+c={'no_provider_env':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'no_host_files':set(p.name for p in P('/workspace').iterdir())=={'Fusion'} and not P('/workspace/phase3c-ledger').exists() and not P('/workspace/Fusion/.env').exists() and not P('/workspace/Fusion/.fusion').exists(),'no_hidden_evaluator':not P('/checks').exists(),'no_provider_proc':True,'no_provider_descriptor':True}
 for f in P('/proc').glob('[0-9]*/environ'):
  try:
   if b'OPENAI_API_KEY=' in f.read_bytes():c['no_provider_proc']=False
@@ -73,7 +73,7 @@ def execute(root,case,tokenizer):
   if case=='budget':return {'role':'assistant','tool_calls':[{'index':0,'id':'TEST_CAP','type':'function','function':{'name':'read','arguments':'{"path":"README.md"}'}}]},'tool_calls'
   return {'role':'assistant','content':'SYNTHETIC completion; not real-model ability'},'stop'
  def interrupted(body,n):return 200,'text/event-stream',('data: '+json.dumps({'model':body['model'],'choices':[{'index':0,'delta':{'content':'SYNTHETIC partial'},'finish_reason':None}]})+'\n\n').encode()
- server,contacts=start_stub(tls,script=reply,response=interrupted if case=='interrupted' else None)
+ server,contacts=start_stub(tls,script=reply,response=interrupted if case=='interrupted' else (lambda body,n:(401,'application/json',b'{"error":{"code":"invalid_api_key"}}')) if case=='auth-failure' else None)
  transport={'root':str(tls),'url':f'https://localhost:{server.server_port}/v1/chat/completions','ca':str(tls/'tls.crt'),'key':str(tls/'upstream-key')}
  if case=='wrong-endpoint':transport['url']='https://api.openai.com/v1/chat/completions'
  if case=='missing-credential':(tls/'upstream-key').unlink()
@@ -114,8 +114,10 @@ def execute(root,case,tokenizer):
      replay=subprocess.run(cli_args(root,state,trust,approval,tr,'replay'),cwd=REPO,env=clean_env(),capture_output=True,text=True,timeout=10);assert replay.returncode!=0 and len(contacts)==4
     if case=='budget':assert not r['native_loop_completed'] and r['request_count']==4 and r['evaluator_invoked'] and r['non_browser_passed'] and r['termination']=='inconclusive: cap-limited',r
     if case=='interrupted':assert not r['native_loop_completed'] and r['evaluator_invoked'];assert all(s[2]=='UNCERTAIN' for s in r['ledger']['settlements'])
+    if case=='auth-failure':assert not r['native_loop_completed'] and r['request_count']==1 and 'provider_auth_or_billing_error' in r['gateway_denials']
     if case=='security':
-     audit=(root/'job/agent-stdout.txt').read_text();assert 'no_provider_descriptor' in audit and 'false' not in audit.split('no_provider_descriptor',1)[1].split('LOCAL_PROBE',1)[0][:80],audit[-1000:]
+     audit=json.loads((root/'job/agent-stdout.txt').read_text().split('SUPERVISED_CODING_AUDIT ',1)[1].splitlines()[0]);ends=[e for e in audit['events'] if e['type']=='tool_execution_end'];assert ends and all(e['isError'] is False for e in ends)
+     checks=json.loads(ends[0]['result']['structuredContent']['output'].strip());assert all(checks.values());r['native_credential_probe']=checks
     receipt={k:r[k] for k in ('request_count','native_loop_completed','termination','evaluator_invoked','non_browser_passed','provider_inference_requests')};receipt['case']=case
     secret=(tls/'upstream-key').read_bytes().strip()
     for f in (root/'job').rglob('*'):
@@ -124,7 +126,7 @@ def execute(root,case,tokenizer):
  finally:release.set();server.shutdown();server.server_close()
 
 if __name__=='__main__':
- p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True);p.add_argument('--tokenizer',type=Path,default=Path('/workspace/fusion-offline-tokenizer/node_modules/js-tiktoken/dist/index.js'));p.add_argument('--cases',default='full,budget,interrupted,security,crash,invalid-approval,expired,wrong-source,wrong-config,wrong-ledger,wrong-model,wrong-endpoint,missing-credential,over-budget');a=p.parse_args();a.out.mkdir(mode=0o700,parents=True,exist_ok=False);receipts=[]
+ p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True);p.add_argument('--tokenizer',type=Path,default=Path('/workspace/fusion-offline-tokenizer/node_modules/js-tiktoken/dist/index.js'));p.add_argument('--cases',default='full,budget,interrupted,security,crash,invalid-approval,expired,wrong-source,wrong-config,wrong-ledger,wrong-model,wrong-endpoint,missing-credential,over-budget,auth-failure');a=p.parse_args();a.out.mkdir(mode=0o700,parents=True,exist_ok=False);receipts=[]
  for case in a.cases.split(','):
   r=execute(a.out/case,case,a.tokenizer);receipts.append(r);print(json.dumps(r),flush=True)
  (a.out/'rehearsal-receipts.json').write_bytes(canonical(receipts))

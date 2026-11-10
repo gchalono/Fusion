@@ -27,6 +27,11 @@ const {createResolvedAgentSession}=await import(pathToFileURL(runtime+'/packages
 const events:unknown[]=[];
 const created=await createResolvedAgentSession({cwd:'/work',sessionPurpose:'merger',tools:'coding',toolsAllowlist:['read','write','bash'],mcpServers:[],customTools:[],builtinToolsAllowlist:[],defaultProvider:'phase2n-offline',defaultModelId:model,defaultThinkingLevel:'off',systemPrompt:'Complete the supplied coding objective using the provided tools. All execution is inside the evaluation sandbox.',skillSelection:{projectRootDir:'/work',requestedSkillNames:[],sessionPurpose:'merger'}});
 if(created.runtimeId!=='pi')throw new Error('unexpected_runtime');
+// FNXC:LiveCoding 2026-11-10-06:54: Fusion's custom-provider registry hardcodes
+// 16384 despite settings.maxTokens. Apply the approved 4096 via Pi's PUBLIC API,
+// keeping the same snapshot/provider/context and native retry/compaction defaults.
+if(supervised){const session:any=created.session;const current=session.model;if(current?.id!==model||current?.provider!=='phase2n-offline')throw Error('unexpected_native_model');await session.setModel({...current,maxTokens:4096});if(session.model.maxTokens!==4096)throw Error('approved_output_limit_not_active');}
+
 const unsubscribe=created.session.subscribe((event:any)=>{
  if(event.type==='tool_execution_start'||event.type==='tool_execution_end')events.push({type:event.type,tool:event.toolName,args:event.args,isError:event.isError,result:event.result});
  if(event.type==='message_end'&&event.message?.role==='assistant')events.push({type:'model_end',stopReason:event.message.stopReason,errorMessage:event.message.errorMessage});

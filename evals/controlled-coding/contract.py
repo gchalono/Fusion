@@ -43,9 +43,12 @@ class Contract:
                 result[key]=value
             return result
         body=json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite')))
-        allowed={'model','messages','tools','tool_choice','parallel_tool_calls','stream','stream_options','max_tokens','max_completion_tokens','temperature','top_p','seed','store'}
+        allowed={'model','messages','tools','tool_choice','parallel_tool_calls','stream','stream_options','max_tokens','max_completion_tokens','temperature','top_p','seed','store','service_tier'}
         if not isinstance(body,dict) or set(body)-allowed or body.get('model')!=self.data['model']:
             raise ValueError('unknown_model_or_unpriced_feature')
+        # FNXC:LiveCoding 2026-11-10-09:47: Only published default-tier pricing
+        # is reserved; priority/flex/automatic billable routing is not authorized.
+        if 'service_tier' in body and body['service_tier']!='default':raise ValueError('unpriced_service_tier')
         if body.get('store',False):raise ValueError('store_not_authorized')
         if not isinstance(body.get('messages'),list) or not body['messages']:raise ValueError('messages_required')
         for message in body['messages']:

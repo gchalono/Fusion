@@ -178,7 +178,9 @@ def prepare_request(raw, policy):
     # Fail closed on modalities and provider-specific billable extensions.
     allowed = {"model", "messages", "tools", "tool_choice", "parallel_tool_calls", "stream",
                "stream_options", "max_tokens", "max_completion_tokens", "temperature", "top_p",
-               "reasoning_effort", "seed", "store", "user"}
+               "reasoning_effort", "seed", "store", "user", "service_tier"}
+    if "service_tier" in body and body["service_tier"] != "default":
+        raise Blocked("unpriced_service_tier")
     if set(body) - allowed or body.get("n", 1) != 1:
         raise Blocked("unsupported_request_shape")
     if "tools" in body and (not isinstance(body["tools"], list) or any(

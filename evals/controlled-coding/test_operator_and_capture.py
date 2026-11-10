@@ -71,3 +71,28 @@ class BrokerProtocolTests(unittest.TestCase):
     def connect():c.sock=socket.socket(socket.AF_UNIX);c.sock.connect(str(r/'gateway.sock'))
     c.connect=connect;c.request('POST','/v1/chat/completions',canonical({'model':Contract().data['model'],'messages':[{'role':'user','content':'LOCAL'}],'max_completion_tokens':4096}),{'Authorization':'Bearer '+token});response=c.getresponse();self.assertEqual(response.status,200);response.read();c.close();self.assertEqual(calls[0]['max_tokens'],4096)
    finally:server.shutdown();server.server_close()
+class MissingApprovalTests(unittest.TestCase):
+ def test_missing_approval_never_arms_live(self):
+  import subprocess,sys
+  root=Path(__file__).resolve().parent
+  r=subprocess.run([sys.executable,'-B',str(root/'live_supervisor.py'),'run','--approval','/nonexistent/operator-approval.json','--out','/nonexistent/job'],capture_output=True,text=True,env={'PATH':os.defpath})
+  self.assertNotEqual(r.returncode,0);self.assertIn('REFUSED_OR_FAILED',r.stdout)
+ def test_provider_descriptor_abort_is_terminal(self):
+  from real_transport import RealTransport
+  # Actual local transport tests cover dispatch; this checks the terminal latch.
+  from unittest.mock import patch
+  import threading
+  t=object.__new__(RealTransport);t.active=set();t._workers=threading.Lock();t._aborted=False;t.abort();self.assertTrue(t._aborted)
+class DefaultTierTests(unittest.TestCase):
+ def test_only_default_priced_tier_is_accepted(self):
+  from contract import Contract,canonical
+  c=Contract();body={'model':c.data['model'],'messages':[{'role':'user','content':'LOCAL'}],'max_tokens':4096,'service_tier':'default'}
+  self.assertEqual(json.loads(c.prepare(canonical(body))[0])['service_tier'],'default')
+  for tier in ('auto','priority','flex',None):
+   body['service_tier']=tier
+   with self.assertRaisesRegex(ValueError,'unpriced_service_tier'):c.prepare(canonical(body))
+class TerminalProviderErrorTests(unittest.TestCase):
+ def test_auth_billing_stop_but_native_rate_retry_preserved(self):
+  from live_supervisor import terminal_provider_error
+  for status,body in ((401,b'{}'),(403,b'{}'),(429,b'{"error":{"code":"insufficient_quota"}}')):self.assertTrue(terminal_provider_error(status,body))
+  self.assertFalse(terminal_provider_error(429,b'{"error":{"code":"rate_limit_exceeded"}}'));self.assertFalse(terminal_provider_error(500,b'{}'))

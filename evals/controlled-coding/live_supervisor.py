@@ -44,10 +44,14 @@ def isolation_preflight(root,secrets_):
  work=root/'isolation-probe';work.mkdir()
  code='''import os,pathlib,socket,json
 P=pathlib.Path
-c={'provider_env_absent':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'host_absent':not P('/workspace').exists(),'hidden_absent':not P('/checks').exists(),'proc_provider_absent':True}
+c={'provider_env_absent':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'protected_host_absent':not P('/workspace/phase3c-ledger').exists() and not P('/workspace/Fusion/.env').exists() and not P('/workspace/Fusion/.fusion').exists(),'runtime_only_workspace':set(p.name for p in P('/workspace').iterdir())=={'Fusion'},'provider_descriptor_absent':True,'hidden_absent':not P('/checks').exists(),'proc_provider_absent':True}
 for f in P('/proc').glob('[0-9]*/environ'):
  try:
   if b'OPENAI_API_KEY=' in f.read_bytes():c['proc_provider_absent']=False
+ except OSError:pass
+for f in P('/proc/self/fd').iterdir():
+ try:
+  if 'fusion-gateway-credential' in os.readlink(f):c['provider_descriptor_absent']=False
  except OSError:pass
 s=socket.socket();s.settimeout(.1)
 try:s.connect(('192.0.2.1',443));c['egress_denied']=False
@@ -55,7 +59,7 @@ except OSError:c['egress_denied']=True
 finally:s.close()
 print(json.dumps(c));assert all(c.values())
 '''
- r=run_command(None,work,['python3','-c',code],timeout=5)
+ r=run_command(None,work,['python3','-c',code],mounts=runtime_mounts(RUNTIME),timeout=5)
  no_secrets(r['stdout']+r['stderr'],secrets_)
  if r['exit_code']!=0:raise ValueError('isolation_preflight_failed')
  receipt=json.loads(r['stdout']);(root/'isolation.json').write_bytes(canonical(receipt));return receipt
@@ -64,9 +68,16 @@ def approved_metadata(path,payload):
  raw=Path(path).read_bytes()
  if sha(raw)!=payload['transport'].get('metadata_sha256'):raise ValueError('metadata_not_bound_to_approval')
  m=strict(raw)
- if m.get('model_access')!='VERIFIED' or m.get('http_status')!=200 or m.get('model',{}).get('id')!=MODEL or m.get('pricing_verified') is not True or time.time()-m.get('timestamp',0)>86400:raise ValueError('current_model_access_and_pricing_required')
+ if m.get('model_access')!='VERIFIED' or m.get('http_status')!=200 or m.get('model',{}).get('id')!=MODEL or m.get('pricing_verified') is not True or not 0<=time.time()-m.get('timestamp',0)<=86400:raise ValueError('current_model_access_and_pricing_required')
  if payload['transport'].get('provider_side_cap_confirmed') is not True:raise ValueError('existing_transport_requires_operator_provider_cap_confirmation')
  return m
+
+def terminal_provider_error(status,body):
+ if status in (401,403):return True
+ try:
+  error=json.loads(body).get('error',{})
+  return isinstance(error,dict) and error.get('code') in ('insufficient_quota','billing_hard_limit_reached','invalid_api_key','account_deactivated')
+ except (ValueError,AttributeError):return False
 
 def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None,metadata=None):
  envelope=strict(Path(approval).read_bytes());synthetic=test_state is not None
@@ -81,7 +92,6 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
  ledger=None;server=None;transport=None;credential_fd=None;provider_key=None;token=secrets.token_hex(32);secret_values=[token];report=None;result=None;denials=[]
  try:
   ledger=open_ledger(test_state,verifier);ledger.authorize_run(spec,envelope['signature'])
-  isolation_preflight(root,secret_values)
   workspace=root/'workspace';subprocess.run(['git','-c','core.hooksPath=/dev/null','clone','--quiet','--no-local','/workspace/phase2n-evaluation/frozen/empty-seed',str(workspace)],env=clean_env(),check=True,capture_output=True)
   (root/'local-token').write_text(token);(root/'local-token').chmod(0o600)
   profile={'profile':'phase3d-approved-gateway','model':MODEL,'arm':'A','requests':4,'output':4096,'synthetic':synthetic};(root/'profile.json').write_bytes(canonical(profile))
@@ -100,11 +110,15 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
    permit={'live_authorized':True,'model':MODEL,'contract_sha256':c.sha256,'approved_hosts':['api.openai.com'],'expires_at':spec['expires_at'],'provider_side_cap_confirmed':True,'authorized_spend_usd':.12,'credential_fd':credential_fd,'model_availability_verified':True,'model_availability_evidence':envelope['payload']['transport']['metadata_sha256']}
    permitpath=credentials/'transport-permit.json';permitpath.write_bytes(canonical(permit));permitpath.chmod(0o600)
    transport=RealTransport(live=True,authorization_file=permitpath,contract_path=cfgpath,credential_fd=credential_fd)
+  isolation_preflight(root,secret_values)
   audit=root/'gateway';audit.mkdir();artifacts=Artifacts(audit,secrets=tuple(secret_values));policy=Policy('OpenAI',MODEL,transport.url,('localhost',) if synthetic else ('api.openai.com',),4,120000,400000,1600000,32000,4096,4096)
   raw_attempts=[]
   def checked_transport(url,raw):
    if server is not None and server.revoked.is_set():raise OSError('gateway_revoked')
    status,kind,body=transport(url,raw);raw_attempts.append(status);artifacts.write(f'transport-response-{len(raw_attempts):04}.raw',body)
+   if terminal_provider_error(status,body):
+    if server is not None:server.revoked.set()
+    denials.append('provider_auth_or_billing_error')
    if status==200 and 'text/event-stream' in kind and not body.replace(b'\r\n',b'\n').rstrip().endswith(b'data: [DONE]'):raise OSError('incomplete_provider_stream')
    return status,kind,body
   gateway=bind_anchored_gateway(Gateway(policy,artifacts,checked_transport),ledger,RUN,synthetic=synthetic)
@@ -137,7 +151,7 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
    grading=evaluate(root,root/'independent-evaluator',browser_dependency=None if same else Path('/workspace/trusted-browser-dependencies/google-official'))
    result['non_browser_passed']=grading['non_browser_passed'];result['raw_complete_acceptance']=grading['complete_acceptance'];result['browser_attestation']='REUSED unchanged candidate/evaluator/isolation/browser: BROWSER_ACCEPTANCE_FINAL.md' if same else grading['browser_status']
   except Exception as e:result['evaluation_error']=type(e).__name__;result['non_browser_passed']=False
-  result['ledger']=ledger.snapshot();result['request_count']=result['ledger']['requests'];result['provider_inference_requests']=0 if synthetic else result['request_count'];result['synthetic']=synthetic;result['new_provider_spend_usd']='0.00' if synthetic else None
+  result['ledger']=ledger.snapshot();result['request_count']=result['ledger']['requests'];result['provider_inference_requests']=0 if synthetic else (result['request_count'] if clean and len(raw_attempts)==result['request_count'] and all(s==200 for s in raw_attempts) else None);result['provider_request_upper_bound']=0 if synthetic else result['request_count'];result['completed_transport_responses']=len(raw_attempts);result['synthetic']=synthetic;result['new_provider_spend_usd']='0.00' if synthetic else None
   result['cleanup']={'namespace_returned':True,'gateway_revoked':server.revoked.is_set(),'approval_run_terminal':all(r[4]!='ACTIVE' for r in result['ledger']['runs'])}
   (root/'result.json').write_bytes(canonical(result));return result
  finally:
