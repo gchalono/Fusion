@@ -44,8 +44,30 @@ def persist_checked_outputs(root, report, raw):
  for name in ('stdout','stderr'):(root/('agent-'+name+'.txt')).write_bytes(report[name])
 
 
-def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False,offline_768=False,readiness=False,response_override=None):
+def new_file_patch(name,content,mode):
+ # FNXC:RealModelReadiness 2026-11-10-05:12: A budget stop may leave a valid
+ # partial file without trailing newline; preserve bytes in an applicable patch.
+ text='diff --git a/'+name+' b/'+name+'\nnew file mode '+mode+'\n'
+ if not content:return text+'index 0000000..e69de29\n'
+ for line in difflib.unified_diff([],content.decode().splitlines(True),fromfile='/dev/null',tofile='b/'+name):
+  text+=line if line.endswith('\n') else line+'\n\\ No newline at end of file\n'
+ return text
+
+
+def native_outcome(stdout,exit_code,requests,expected):
+ audit_lines=[line.split(b'OFFLINE_AUDIT_ONLY ',1)[1] for line in stdout.splitlines() if b'OFFLINE_AUDIT_ONLY ' in line]
+ events=json.loads(audit_lines[-1])['events'] if audit_lines else []
+ endings=[event for event in events if event['type']=='model_end']
+ clean_end=bool(endings) and endings[-1].get('stopReason')=='stop'
+ complete=exit_code==0 and requests==expected and clean_end
+ termination='completed' if complete else ('terminated-by-budget' if requests==4 and any('403' in str(e.get('errorMessage','')) for e in endings) else 'incomplete-or-model-error')
+ return endings,complete,termination
+
+
+def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False,offline_768=False,readiness=False,response_override=None,compaction_probe=False,aggregate_exhaustion=False):
  if arm not in "ABC" or len(arm)!=1 or (arm!="A" and not expanded_offline):raise ValueError("arm_requires_scoped_offline_revision")
+ if aggregate_exhaustion and not readiness:raise ValueError('aggregate_control_local_only')
+ if compaction_probe and not readiness:raise ValueError('compaction_control_requires_readiness')
  if readiness and (arm!='A' or offline_768 or not expanded_offline):raise ValueError('readiness_requires_expanded_A_without_768')
  if offline_768 and not expanded_offline:raise ValueError('profile_requires_expanded_experiment2')
  root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
@@ -58,7 +80,11 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
  if offline_768:d['offline_output_profile']=NAME
  if readiness:d['readiness_profile']=READINESS_NAME
  output_limit=ceiling(d,offline=True)
- (root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
+ (root/'experiment.json').write_bytes(canonical(d))
+ # FNXC:RealModelReadiness 2026-11-10-05:09: Synthetic historical exposure
+ # exercises aggregate exhaustion without changing caps or a real history ledger.
+ if aggregate_exhaustion:AggregateBudget(root/'experiment.db').reserve('planning','LOCAL-historical-aggregate-control',1980000)
+ AggregateBudget(root/'experiment.db',experiment_contract=d)
  wires=[]
  def observe(body):
   wires.append(body);(root/f'native-wire-{len(wires):02}.json').write_bytes(canonical(body))
@@ -79,6 +105,7 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(root/'local-token','/run/local-token'),(root/'objective.txt','/run/objective.txt'),*runtime_mounts(runtime)]
   if offline_768:mounts.append((root/'experiment.json','/run/offline-profile.json'))
   if readiness:mounts.append((root/'experiment.json','/run/readiness-profile.json'))
+  if compaction_probe:mounts.append((root/'.offline-test','/run/local-compaction-control'))
   report=run_command(root/'gateway.sock',workspace,coding_command(runtime,d['model']),mounts=mounts,timeout=min(timeout,300),abort_event=abort,app_alias=offline_768 or readiness)
   candidate=workspace/'application.py';raw=candidate.read_bytes() if candidate.is_file() and not candidate.is_symlink() else b''
   persist_checked_outputs(root,report,raw)
@@ -95,17 +122,21 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
     content=file.read_bytes();reject_output_secrets(root,content);candidate_files[str(relative)]=sha(content)
     mode='100755' if file.stat().st_mode&0o111 else '100644';candidate_modes[str(relative)]=mode
     if any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_./-' for c in str(relative)):raise ValueError('unsafe_patch_path')
-    patch+='diff --git a/'+str(relative)+' b/'+str(relative)+'\nnew file mode '+mode+'\n'
-    patch+=''.join(difflib.unified_diff([],content.decode().splitlines(True),fromfile='/dev/null',tofile='b/'+str(relative)))
+    patch+=new_file_patch(str(relative),content,mode)
   (root/'candidate.patch').write_text(patch)
-  if process.poll() is None:request_admin(root,'finish' if report['exit_code']==0 and len(contacts)==expected_requests else 'abort')
+  # FNXC:RealModelReadiness 2026-11-10-04:59: Pi can exit0 after a model error;
+  # HTTP403/final truncation is NOT a completed native loop or successful finish.
+  endings,complete,termination=native_outcome(report['stdout'],report['exit_code'],len(contacts),expected_requests)
+  denials=[json.loads(p.read_bytes())['code'] for p in root.glob('gateway-*/denied-*.json')]
+  if any(code in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling'} for code in denials):complete=False;termination='terminated-by-budget'
+  if process.poll() is None:request_admin(root,'finish' if complete else 'abort')
   else:
    recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':'+arm,'INCOMPLETE')
   result={'classification':'TEST DOUBLE native Pi run; incomplete implementation control; NOT model performance',
     'arm':arm,'variant':variant,'candidate_files':candidate_files,'candidate_modes':candidate_modes,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
     'local_model_wire_requests':len(contacts),'real_provider_requests':0,'provider_usage':None,'actual_provider_cost_usd':'0.00',
     'coding_tool_modified_files':bool(raw),'candidate_sha256':sha(raw),'patch_sha256':sha(patch.encode()),
-    'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':len(contacts)==expected_requests and any(m['role']=='tool' for m in wires[-1]['messages']) and report['exit_code']==0,
+    'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':complete and bool(wires) and any(m['role']=='tool' for m in wires[-1]['messages']),'termination':termination,'model_endings':endings,'gateway_denials':denials,
     'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':d['frozen_coding_token_limit'],'active_offline_output_bound':output_limit,
     'full_task_completion':False,'browser_grading':'UNVERIFIED / independent gate',
     'wire_files':[str(root/f'native-wire-{i:02}.json') for i in range(1,len(wires)+1)]}

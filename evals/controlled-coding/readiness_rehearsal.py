@@ -19,7 +19,8 @@ def execute(out,runtime,tokenizer,case):
  files,p=plan(tokenizer)
  def reply(body):
   i=sum(bool(m.get('tool_calls')) for m in body['messages'] if m['role']=='assistant');steps.append(i)
-  if case in ('full','budget-mid-run'):
+  if case=='compaction':return {'role':'assistant','content':('LOCAL context for compaction. '*600 if len(steps)==1 else 'LOCAL compacted summary')},'stop'
+  if case in ('full','budget-mid-run','aggregate-mid-run'):
    if i<3:return p['deltas'][i],'tool_calls'
    if case=='full':return {'role':'assistant','content':'LOCAL scripted completion; not real-model ability'},'stop'
    calls=[tool('read',{'path':'README.md'})]
@@ -35,13 +36,15 @@ def execute(out,runtime,tokenizer,case):
  response=None
  if case in ('429','500'):
   response=lambda body,n:(int(case),'application/json',b'{"error":{"message":"LOCAL wire failure","type":"rate_limit_error"}}')
- r=run(out,runtime,expanded_offline=True,readiness=True,script_override=reply,response_override=response,expected_requests=4 if case in ('full','budget-mid-run','nonterminating') else 2,capture_all=True,timeout=45)
+ r=run(out,runtime,expanded_offline=True,readiness=True,script_override=reply,response_override=response,expected_requests=4 if case in ('full','budget-mid-run','nonterminating') else 2,capture_all=True,timeout=45,compaction_probe=case=='compaction',aggregate_exhaustion=case=='aggregate-mid-run')
  assert r['local_model_wire_requests']<=4
- assert len(r['ledger']['reservations'])==r['local_model_wire_requests']
- assert r['ledger']['reserved_exposure_micro_usd']<=120000
+ assert len([x for x in r['ledger']['reservations'] if x['stage']=='coding'])==r['local_model_wire_requests']
+ assert sum(x['reserved_exposure_micro_usd'] for x in r['ledger']['reservations'] if x['stage']=='coding')<=120000
+ assert r['ledger']['reserved_exposure_micro_usd']<=2000000
  assert r['active_offline_output_bound']==4096
  wires=[json.loads(Path(p).read_text()) for p in r['wire_files']]
- assert all(w['max_tokens']==4096 for w in wires)
+ assert all(0<w['max_tokens']<=4096 for w in wires)
+ if case!='compaction':assert all(w['max_tokens']==4096 for w in wires)
  summary={k:r[k] for k in ('exit_code','local_model_wire_requests','timed_out','patch_sha256','native_loop_completed')}
  summary.update(case=case,real_provider_requests=0,exposure_micro_usd=r['ledger']['reserved_exposure_micro_usd'])
  if case in ('full','budget-mid-run'):
@@ -53,16 +56,26 @@ def execute(out,runtime,tokenizer,case):
   grading=evaluate(out,out/'independent-evaluator')
   assert grading['non_browser_passed']
   summary.update(non_browser_passed=True,browser='NOT_RERUN: unchanged verified patch/evaluator/runtime/isolation; BROWSER_ACCEPTANCE_FINAL.md',termination='terminated-by-budget' if case=='budget-mid-run' else 'completed')
+  if case=='budget-mid-run':assert not r['native_loop_completed'] and r['termination']=='terminated-by-budget'
  if case in ('budget-mid-run','nonterminating'):
   audit=(out/'agent-stdout.txt').read_text();assert '403' in audit or 'error' in audit
   assert r['local_model_wire_requests']==4
+ if case=='aggregate-mid-run':
+  assert r['termination']=='terminated-by-budget' and not r['native_loop_completed']
+  assert 'aggregate_spend_cap' in r['gateway_denials']
+  (out/'full-native-result.json').write_bytes(canonical(r))
+  grading=evaluate(out,out/'independent-evaluator')
+  summary.update(termination=r['termination'],evaluator_ran=True,non_browser_passed=grading['non_browser_passed'],synthetic_historical_exposure_micro_usd=1980000)
+ if case=='compaction':
+  audit=(out/'agent-stdout.txt').read_text();assert '"synthetic":"completed"' in audit;assert r['local_model_wire_requests']==2
+  summary['compaction']='default SESSION_TOO_SMALL; synthetic eligible control completed; settings not used for paid runs'
  if case=='parallel':assert set(r['candidate_files'])=={'one.py','two.py'}
  (out/'readiness-receipt.json').write_bytes(canonical(summary))
  return summary
 
 if __name__=='__main__':
- p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--tokenizer',type=Path,required=True);p.add_argument('--case',choices=['full','budget-mid-run','parallel','malformed','partial','length','oversized-tool','nonterminating','429','500','all'],default='all');a=p.parse_args()
- cases=['full','budget-mid-run','parallel','malformed','partial','length','oversized-tool','nonterminating','429','500'] if a.case=='all' else [a.case]
+ p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True);p.add_argument('--runtime',type=Path,required=True);p.add_argument('--tokenizer',type=Path,required=True);p.add_argument('--case',choices=['full','budget-mid-run','parallel','malformed','partial','length','oversized-tool','nonterminating','429','500','compaction','aggregate-mid-run','all'],default='all');a=p.parse_args()
+ cases=['full','budget-mid-run','parallel','malformed','partial','length','oversized-tool','nonterminating','429','500','compaction'] if a.case=='all' else [a.case]
  a.out.mkdir(parents=True,exist_ok=False);a.out.chmod(0o700)
  receipts=[]
  for case in cases:

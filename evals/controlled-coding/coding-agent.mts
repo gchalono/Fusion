@@ -29,6 +29,15 @@ const unsubscribe=created.session.subscribe((event:any)=>{
 });
 try {
  await created.session.prompt(fs.readFileSync(objectivePath,'utf8'));
+ // FNXC:RealModelReadiness 2026-11-10-04:59: Synthetic eligibility control only;
+ // default compaction is tried first. Override never enters a normal/paid run.
+ if(fs.existsSync('/run/local-compaction-control')){
+  if(outputTokens!==4096||!fs.existsSync('/run/readiness-profile.json'))throw Error('compaction_control_local_only');
+  const session:any=created.session;
+  try{await session.compact('LOCAL default compaction eligibility probe');events.push({type:'local_compaction_control',default:'completed'});}
+  catch(error){if((error as Error).message!=='Nothing to compact (session too small)')throw error;events.push({type:'local_compaction_control',default:'SESSION_TOO_SMALL'});session.settingsManager.applyOverrides({compaction:{keepRecentTokens:512,reserveTokens:4096}});await session.compact('LOCAL synthetic compaction routing probe; summarize briefly');events.push({type:'local_compaction_control',synthetic:'completed',keepRecentTokens:512});}
+ }
+
  const audit=JSON.stringify({test_double:true,runtime:created.runtimeId,model,events});
  if(audit.includes(token))throw new Error('gateway_token_in_audit');
  console.log('OFFLINE_AUDIT_ONLY '+audit);

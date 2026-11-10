@@ -245,7 +245,10 @@ def guard_gateway(gateway, ledger, stage, run, *, cost_bound=None, estimator=Non
         try:
             status, content_type, response=transport(url,raw)
             usage=validate_response(response,content_type,gateway.policy.model) if status==200 else []
-            if status!=200 or not usage or length_truncated(response,content_type):
+            # FNXC:RealModelReadiness 2026-11-10-04:59: Usage in an interrupted
+            # SSE response is not completion evidence. No reservation is refunded.
+            stream_complete='text/event-stream' not in content_type or response.rstrip().endswith(b'data: [DONE]')
+            if status!=200 or len(usage)!=1 or not stream_complete or length_truncated(response,content_type):
                 ledger.transition(ident,'UNCERTAIN','missing_usage_or_incomplete_response')
             else:
                 u=usage[-1]

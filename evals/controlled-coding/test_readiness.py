@@ -11,6 +11,21 @@ from real_transport import RealTransport
 from offline_eval import start_stub
 
 class ReadinessTests(unittest.TestCase):
+ def test_partial_and_empty_candidate_patch_roundtrip(self):
+  import subprocess
+  from task_manager_native import new_file_patch
+  for body in (b'partial shell content',b'',b'complete\n'):
+   with self.subTest(body=body),tempfile.TemporaryDirectory() as t:
+    root=Path(t);subprocess.run(['git','init','-q',str(root)],check=True)
+    subprocess.run(['git','-c','core.hooksPath=/dev/null','apply','-'],cwd=root,input=new_file_patch('partial.sh',body,'100755').encode(),check=True,capture_output=True)
+    self.assertEqual((root/'partial.sh').read_bytes(),body);self.assertTrue((root/'partial.sh').stat().st_mode&0o111)
+ def test_zero_exit_after_native_error_is_incomplete(self):
+  from task_manager_native import native_outcome
+  for reason,expected in (('error',False),('length',False),('stop',True)):
+   raw=b'OFFLINE_AUDIT_ONLY '+canonical({'events':[{'type':'model_end','stopReason':reason,'errorMessage':'403 LOCAL budget' if reason=='error' else None}]})
+   endings,complete,termination=native_outcome(raw,0,4,4)
+   self.assertEqual(complete,expected)
+   if reason=='error':self.assertEqual(termination,'terminated-by-budget')
  def test_profile_defaults_and_no_paid_promotion(self):
   self.assertEqual(ceiling({}),512)
   d=offline_contract();d['readiness_profile']=NAME
@@ -66,3 +81,57 @@ class ReadinessTests(unittest.TestCase):
      self.assertEqual(len(contacts),1);self.assertTrue(contacts[0]['gateway_auth_valid'])
      self.assertFalse(tr.active)
     finally:server.shutdown();server.server_close()
+ @unittest.skipUnless(Path('/workspace/Fusion/packages').is_dir(),'Outer executor required: sanitized recovery intentionally forbids nested namespace creation; native receipt tested separately')
+ def test_namespace_process_tree_cleanup(self):
+  import time
+  from execution import run_command
+  with tempfile.TemporaryDirectory() as t:
+   root=Path(t)
+   result=run_command(None,root,['/bin/bash','-c','(sleep 1.5; touch /work/late-child) & echo LOCAL_CHILD_STARTED; sleep 30'],timeout=.6)
+   self.assertTrue(result['timed_out']);self.assertIn(b'LOCAL_CHILD_STARTED',result['stdout'])
+   time.sleep(1.6);self.assertFalse((root/'late-child').exists())
+ @unittest.skipUnless(Path('/workspace/Fusion/packages').is_dir(),'Outer executor required: sanitized recovery intentionally forbids nested namespace creation; native receipt tested separately')
+ def test_actual_sandbox_credential_and_proc_boundary(self):
+  import os
+  from execution import run_command
+  with tempfile.TemporaryDirectory() as t:
+   code='''import os,json,pathlib,socket
+p=pathlib.Path
+checks={'provider_env_absent':all(k not in os.environ for k in ('OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN')),'host_workspace_absent':not p('/workspace').exists(),'hidden_absent':not p('/checks').exists(),'host_home_absent':not p('/root/.config').exists(),'proc_provider_names_absent':True}
+for f in p('/proc').glob('[0-9]*/environ'):
+ try:
+  if b'OPENAI_API_KEY=' in f.read_bytes():checks['proc_provider_names_absent']=False
+ except OSError:pass
+s=socket.socket();s.settimeout(.1)
+try:s.connect(('192.0.2.1',443));checks['direct_egress_denied']=False
+except OSError:checks['direct_egress_denied']=True
+finally:s.close()
+print(json.dumps(checks));assert all(checks.values())
+'''
+   result=run_command(None,Path(t),['python3','-c',code],timeout=5)
+   self.assertEqual(result['exit_code'],0,result['stderr']);self.assertTrue(all(json.loads(result['stdout']).values()))
+ def test_synthetic_credential_reflection_is_blocked(self):
+  with tempfile.TemporaryDirectory() as t:
+   root=Path(t);(root/'.offline-test').touch()
+   def response(body,n):return 200,'application/json',(root/'upstream-key').read_bytes()
+   server,contacts=start_stub(root,response=response)
+   try:
+    tr=RealTransport(test_mode=True,test_root=root,test_url=f'https://localhost:{server.server_port}/v1/chat/completions',test_ca=root/'tls.crt',test_key_file=root/'upstream-key')
+    raw,_=Contract().prepare(canonical({'model':Contract().data['model'],'messages':[{'role':'user','content':'LOCAL'}],'max_tokens':4096}))
+    with self.assertRaises(OSError):tr('https://api.openai.com/v1/chat/completions',raw)
+   finally:server.shutdown();server.server_close()
+ def test_stream_usage_and_interrupted_stream_settlement(self):
+  from budget import guard_gateway
+  from gateway import Gateway,Policy,Artifacts
+  for done in (False,True):
+   with self.subTest(done=done),tempfile.TemporaryDirectory() as t:
+    root=Path(t);(root/'.offline-test').touch();ledger=AggregateBudget(root/'ledger.db')
+    model='offline-model';policy=Policy('offline',model,'https://offline.invalid/v1/chat/completions',('offline.invalid',),4,120000,400000,1600000,100,100,100)
+    def transport(*_):
+     frames=[{'model':model,'choices':[{'finish_reason':'stop','delta':{'content':'LOCAL'}}]},{'model':model,'choices':[],'usage':{'prompt_tokens':5,'completion_tokens':3}}]
+     payload=b''.join(b'data: '+canonical(x)+b'\n\n' for x in frames)+(b'data: [DONE]\n\n' if done else b'')
+     return 200,'text/event-stream',payload
+    g=guard_gateway(Gateway(policy,Artifacts(root,offline=True),transport),ledger,'coding','A')
+    g.handle(canonical({'model':model,'messages':[{'role':'user','content':'LOCAL'}],'max_tokens':100}))
+    snap=ledger.snapshot();self.assertEqual(snap['transitions'][-1]['state'],'SETTLED' if done else 'UNCERTAIN')
+    self.assertGreater(snap['reserved_exposure_micro_usd'],0)

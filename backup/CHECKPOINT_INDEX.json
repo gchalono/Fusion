@@ -108,10 +108,18 @@
     },
     {
       "source_commit": "a8bfadda79117edb8a6e3a977f6358e6521cb5be",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "598d39f7a07ce63c507f7a5dabd678f7bc59deb2",
       "previous_backup": "2963d4771debf153690d125507db721e956a6a6b",
       "event": "milestone",
       "milestone": "Phase3 restore and bounded local 4096 readiness rehearsal",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "6fa149d5c9cb14ab03bdb1db7048ec460d2df9fb",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "598d39f7a07ce63c507f7a5dabd678f7bc59deb2",
+      "event": "stop",
+      "milestone": "Phase3 offline readiness frozen; paid pilot explicitly blocked",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

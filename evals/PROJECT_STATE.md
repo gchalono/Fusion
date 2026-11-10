@@ -133,3 +133,30 @@ archives checksum-verified, omitted from public publication. New explicit LOCAL
 plus6 new units:120 pass (72+37+11). Native full Arm A produced the exact accepted
 patch in4 local requests; matrix/evaluator validation ongoing. No provider calls;
 no live readiness claimed. Detailed private receipts: /workspace/phase3-readiness/.
+
+## Phase 3 adversarial native and budget checks
+
+VERIFIED:78 coding +37 collector +11 persistence units pass. Native local doubles
+exercise parallel tools, malformed/partial arguments, truncation, missing usage,
+429/500 native retries (four upstream maximum), oversized tool output and bounded
+nontermination. Default compaction is SESSION_TOO_SMALL; separate synthetic eligible
+control completes through actual SDK/gateway (native summary max2048). No paid
+settings override. Monetary aggregate exhaustion with explicitly synthetic1980000
+micro-USD prior exposure stops after2 requests at1998723, then unchanged evaluator
+runs on partial candidate and correctly fails acceptance. Request-cap mid-run case
+stops at4, evaluates unchanged accepted patch, passes9 non-browser checks; browser
+not rerun. Fixed evaluation-only zero-exit/model-error completion classification,
+partial-file patch newline serialization, and incomplete-SSE settlement evidence.
+Historical frozen retained11522 micro-USD reconciled read-only; live binding UNVERIFIED.
+Provider calls0, no production/frozen-result changes. Final readiness report follows.
+
+## Phase 3 final determination: BLOCKED for paid pilot
+
+Offline requirements validated with126 units and12 native local-double cases (11-case
+matrix plus actual monetary exhaustion). Full unchanged accepted patch and partial
+budget-stopped candidate both reach original evaluator. Signed browser attestation
+reused without rerun. Read REAL_MODEL_READINESS.md and FIRST_REAL_MODEL_RUN.md under
+controlled-coding/. Frozen canonical SHA2569460ff7b9cbf1c794c0512f6df78f711bc3c36877a40561971de143dbf9a5bb7,
+code ce51b94b6cfbfb6ba4c24527afd06909906c6bfd. Blockers: current provider metadata,
+live supervisor+historical ledger binding+credential handoff, essential private external
+recovery, and capture-interface neutrality. No provider calls or production changes.

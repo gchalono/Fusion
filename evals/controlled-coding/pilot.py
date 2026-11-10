@@ -103,7 +103,12 @@ def broker(root,run,action,stub_url,ca,key):
                 bounds.value=metadata
                 transport.timeout=min(60,ledger.remaining_seconds('coding',run))
                 status,kind,payload=gateway.handle(normalized)
-            except Exception:pass
+            except Exception as error:
+                # FNXC:RealModelReadiness 2026-11-10-05:09: Fixed denial codes,
+                # never raw exceptions/credentials; evidence cannot authorize retry.
+                code=str(error)
+                if code not in {'aggregate_spend_cap','experiment_request_cap','coding_run_cap','stage_allocation_cap','frozen_coding_token_limit','model_call_cap','spend_ceiling'}:code='request_denied'
+                artifacts.write('denied-'+secrets.token_hex(8)+'.json',canonical({'code':code}))
             self.send_response(status);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(payload)));self.end_headers()
             try:self.wfile.write(payload)
             except OSError:

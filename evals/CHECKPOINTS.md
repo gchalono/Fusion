@@ -135,3 +135,27 @@ profile and failure-double hooks preserve existing defaults and frozen inputs.
 local requests. New matrix initially failed because its collector omitted the
 full-native-result.json evaluator input; fixture receipt fixed, failed root retained.
 Checkpoint before continued adversarial native work. Spending authorization$0.00.
+
+## Phase 3 failure-handling code milestone
+
+Sourcea8bfadda79117edb8a6e3a977f6358e6521cb5be independently backed up as
+598d39f7a07ce63c507f7a5dabd678f7bc59deb2. Public source archive downloaded twice,
+SHA2564aba2da64a3c996b8bd6539b1d2e865fb80abe29c335840c01b1f56126fc8261.
+No private archive uploaded. Three original private archive checksums verified.
+New reporting defects caught by local doubles fixed minimally: native exit0 after
+model error; missing final newline in stopped candidate; usage without SSE DONE.
+Failed attempt roots preserved.78+37+11 units pass. Both request-cap and monetary-cap
+stops preserve evidence and still run original independent evaluator. Public nested
+namespace units explicitly require outer executor and skip under mandatory recovery
+filter; actual outer-executor probes pass. No security filter changes or paid traffic.
+
+## Phase 3 terminal reports/freeze
+
+Code ce51b94b6cfbfb6ba4c24527afd06909906c6bfd; original9afbac6 pin preserved ancestor.
+Frozen canonical SHA2569460ff7b9cbf1c794c0512f6df78f711bc3c36877a40561971de143dbf9a5bb7
+covers66 source/config hashes and unchanged objective/seed/limits.126 local units pass.
+Twelve native cases validated; original browser not rerun. Current-rate/live-ledger/
+credential/private-external dependencies explicitly BLOCKED. Terminal source-only
+sanitized checkpoint and independent fresh-clone receipts resolve final SHAs; original
+source history and private archives remain local, not merged into sanitized ancestry.
+No paid authorization inferred from proposed commands. Provider spending$0.00.
