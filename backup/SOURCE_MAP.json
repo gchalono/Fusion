@@ -1,5 +1,5 @@
 {
-  "source_commit": "0e0a3f8b1da721b00325dd94e05208a3aa5f31df",
+  "source_commit": "4c2fff724ad016af28ba83f286be3d139a201ca4",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "e067362d000ffc2b8ecf57bcb59be8db8d0f74fda26a7d901fe83f8d66833970",
-      "source_blob": "69edb516ffd8b811546140d1254164dd4122442a",
+      "sha256": "5d94e85ab2572b11050e1d639342f2fd3d569f5b297dee5fda4c48d24886b6f6",
+      "source_blob": "03e5596a23b169bc497a6057716290c67b2bd18b",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "c07755cfd6f540e31c0a0f621ce48c9f453363f43c3da10616c438eb5c912e79",
-      "source_blob": "0bb6f183c92951ba31a9bea5d27d80d140586b21",
+      "sha256": "df347803eee9cdf383f737f3d962a948f968587d82c2c628f470b36c783079df",
+      "source_blob": "b865c11c75104f7543fba209f4cd007d9c46e6b8",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -105,6 +105,20 @@
       "path": "evals/controlled-coding/.gitignore",
       "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
       "source_blob": "7a60b85e148f80966a550e5ab6a762a907c69ca6",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/OFFLINE_768_TOKEN_VALIDATION.md",
+      "sha256": "c427deb1835df851d2af18fd97e7d4301677a296db5e822ac26c480b453faf96",
+      "source_blob": "075c9a7cc68f2b820ae5d87a714133b0db3e6e21",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/ORIGINAL_EVALUATOR_INTEGRATION.md",
+      "sha256": "bea07178fb2850bc03ddb0e3a6fd9aab2b62f3ee0e6d9af54264a41a208a956e",
+      "source_blob": "4dfd7f975603729882b204be423d3e5caf3cf446",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -168,6 +182,13 @@
       "path": "evals/controlled-coding/TASK_MANAGER_FEASIBILITY_REPORT.md",
       "sha256": "011dd17df230b1aa92d81f0119a3502be6d706a2cb3108edea0289ea46b4b64c",
       "source_blob": "5f9cbe8c06ead13911bc55dd6b0d96f82eac842d",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/TASK_MANAGER_FULL_CONTRACT_RESULT.md",
+      "sha256": "d53af408f2e1dc3829e1ffbb6acaba0aa3b4d662b5c38cf643fa05712bfb08c2",
+      "source_blob": "b44391ee4d1a1dcbd67d996a243dedf1057bf797",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -264,8 +285,8 @@
     },
     {
       "path": "evals/controlled-coding/coding-agent.mts",
-      "sha256": "4cbe0079a5c69b4b9a9e79140a30762fa0243b695e3f5069eebb5855b0551f6f",
-      "source_blob": "c42de163bc35f330ee381606a6ef1db3b60749d2",
+      "sha256": "c121ad9ec288adb654aabc63050db584f69229af7b06de767d04a022905bd6b5",
+      "source_blob": "5bcaeb3783a6aac973f550cf2f95938b054ee4e6",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -278,8 +299,8 @@
     },
     {
       "path": "evals/controlled-coding/execution.py",
-      "sha256": "8810a39cdb5c20280cc0d150c76730d255370d8c9371c44640a44472e99cd46d",
-      "source_blob": "fba5f084d1d4a4fb2526cf968d78fc2df821204f",
+      "sha256": "dd0fdb34965f768cebca4eb418302265fa5c91905d3b7e388e1316d55e6f104c",
+      "source_blob": "a7e9b87c61299273724d140fc3eb68b956ca3c63",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -376,8 +397,8 @@
     },
     {
       "path": "evals/controlled-coding/isolation.py",
-      "sha256": "70c32c664b7de00771e9ef94f4f25d26bb1f00dc5ef1bec36bbb18dcf956523e",
-      "source_blob": "5f10b3e220b92107d5a6ba88f548a601d7acfca0",
+      "sha256": "afc7fc4d512f960b02131c5a33713ad29d3f2fb4fe1c0e4d6b9dea5cc1f5c894",
+      "source_blob": "831d187635877011ea16e40496a6205d6d54799f",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -403,9 +424,23 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/offline_output_profile.py",
+      "sha256": "27809eddbece633ad841f93a38f144507ec4895224344a2e6e7984cb341c83ad",
+      "source_blob": "c35085ffcea631a521c9b70addc87234e66e8810",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/original_evaluator_adapter.py",
+      "sha256": "ae12d6850d580605bbc671d69e2c4bece4ab927f52168e3f43fc593fc168e9d7",
+      "source_blob": "711ec4c89b4ded98d104eddd0a8a71c51fd50e23",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
       "path": "evals/controlled-coding/pilot.py",
-      "sha256": "4d05141923f432c038a1ab9d5907bfcc21e08be650f6d35c9d487c9f1e787a63",
-      "source_blob": "7afa8b68fdd7938a53543c83c2b61554d359190f",
+      "sha256": "4a5c14ce38293f177d3675cfb3629555676827ff060aa6c81293a52d8f97af65",
+      "source_blob": "b2676db04f37da6d6901fc10399b089948f95da9",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -481,15 +516,15 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_contract_feasibility.mjs",
-      "sha256": "147170f94bd46406d5f4e13e1fd28533120c9f6cea881c3edd3b088511918e37",
-      "source_blob": "803343ccf0fdf2bfbd497e6dcee217c7416f62b5",
+      "sha256": "42742cf97dc090a43803cc967aea88ff53213cbc45aba6a697953c9311f527ac",
+      "source_blob": "185fbb0d2fa850c9eedd57115d7bf928238e8fb4",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/controlled-coding/task_manager_contract_proposal.py",
-      "sha256": "94fa19a0c4b2a183deb761a426f306a6005a2243473f5ee2e83dc552b8b2f545",
-      "source_blob": "561b3edac2445a52a2903f2049d1185b5061906b",
+      "sha256": "052ee0ca5450c2f91361feec1e936d35866a767572ac795714ca973acf9655ff",
+      "source_blob": "5ff9efbf1f6640928697cc7901879337d8292677",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -497,6 +532,13 @@
       "path": "evals/controlled-coding/task_manager_controls.py",
       "sha256": "5312b6fdf450bd0b7ee7f3222afbbd5efefd78ea929f0c379df37776e3ae3ca6",
       "source_blob": "c11ef0fa91847efbbfb71a4289953d471850d6f5",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/task_manager_full_native.py",
+      "sha256": "6a48e7e6bd359beff49d1629b878a984a49f751a69b7070723bebafdad4e6878",
+      "source_blob": "88e9a89da51b8b153f53f82ba96b6de0c959e098",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -509,8 +551,8 @@
     },
     {
       "path": "evals/controlled-coding/task_manager_native.py",
-      "sha256": "8f4cb4c179e8c01921979a1702f4cd529b35cd54d81cebf21ca807f0af9d107b",
-      "source_blob": "c9feaf6e8fec821ee21e6bbbfdb9b8e6878aec69",
+      "sha256": "d01679c020724641fa1f22ea498d7e26734fc132641ca181565ad04b09f7a354",
+      "source_blob": "71a57518981fd58006d0dc0d76f1b5339f01ab74",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -616,6 +658,13 @@
       "path": "evals/controlled-coding/test_lifecycle.py",
       "sha256": "ef3960e9d17d0015ea5f2c8bf31749896d82398078d81505091727ea4d2a5155",
       "source_blob": "bcd398cabb24711d6e4d3e91620b56504ec7bcb4",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/test_offline_768.py",
+      "sha256": "1ebe7fffcff0b7d87ff90643874aa961eed914ff31f6a3e8a45bfcc226466746",
+      "source_blob": "e181cd4bc61309e83a38dbe3077336e0a9eb93de",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

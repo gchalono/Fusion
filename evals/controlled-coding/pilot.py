@@ -60,7 +60,8 @@ def request_admin(root,action):
 def broker(root,run,action,stub_url,ca,key):
     root=Path(root)
     if not (root/'.offline-test').is_file():raise ValueError('offline_experiment_required')
-    c=Contract();data=json.loads((root/'experiment.json').read_text());ledger=AggregateBudget(root/'experiment.db',experiment_contract=data)
+    from offline_output_profile import ceiling
+    c=Contract();data=json.loads((root/'experiment.json').read_text());output_limit=ceiling(data,offline=True);ledger=AggregateBudget(root/'experiment.db',experiment_contract=data)
     with ledger.connect() as db:old=db.execute('SELECT status FROM run_controls WHERE stage=? AND run=?',('coding',run)).fetchone()
     if old and action=='start':
         ledger.recover_uncertain();ledger.control_run('coding',run,'INCOMPLETE');raise ValueError('INCOMPLETE_EXPLICIT_RESUME_REQUIRED')
@@ -74,7 +75,7 @@ def broker(root,run,action,stub_url,ca,key):
     audit=root/('gateway-'+secrets.token_hex(4));audit.mkdir();(audit/'.offline-test').touch()
     # The offline fixture requests a stricter 512 output ceiling, identically
     # across arms, preserving the frozen 16000 total-token run limit.
-    policy=Policy('OpenAI',c.data['model'],'https://api.openai.com/v1/chat/completions',('api.openai.com',),4,micro(c.data['per_run_coding_cap_usd']),400000,1600000,32000,512,512)
+    policy=Policy('OpenAI',c.data['model'],'https://api.openai.com/v1/chat/completions',('api.openai.com',),4,micro(c.data['per_run_coding_cap_usd']),400000,1600000,32000,output_limit,output_limit)
     artifacts=Artifacts(audit,offline=False,secrets=(token,Path(key).read_text().strip()))
     artifacts.write('policy.json',canonical(asdict(policy)))
     bounds=threading.local()
@@ -95,7 +96,7 @@ def broker(root,run,action,stub_url,ca,key):
                 requested=body.get('max_tokens',body.get('max_completion_tokens',4096))
                 for field in ('max_tokens','max_completion_tokens'):body.pop(field,None)
                 if type(requested) is not int or requested<=0:raise ValueError('output_limit')
-                body['max_tokens']=min(requested,512);body['temperature']=0
+                body['max_tokens']=min(requested,output_limit);body['temperature']=0
                 normalized,metadata=c.prepare(canonical(body));metadata['input_token_upper_bound']=max(len(raw),metadata['input_token_upper_bound'])
                 from decimal import Decimal,ROUND_CEILING
                 metadata['reserved_micro_usd']=int((Decimal(metadata['input_token_upper_bound'])*Decimal('.40')+Decimal(metadata['output_token_upper_bound'])*Decimal('1.60')).to_integral_value(rounding=ROUND_CEILING))

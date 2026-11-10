@@ -106,3 +106,7 @@ Baseline 95 tests passed. Exact 32-file private archive/restore verified locally
 ## Phase 2N final offline validation: FAILED target, useful partial evidence
 
 Private 32-file archive/restore verified locally only. A/B/C partial core controls + A repeat used four local requests each; patch/wires identical for repeat. Original full contract has missing launchers/validation/UI hooks; seven legacy partial checks are not full acceptance. Complete proposed serialization requires six requests at512 or three replies at765+; limits NOT changed. Real Chromium profiles fail; official alternatives blocked HTTP403. Full original grader requires security-preserving integration, not reuse of older weak wrapper. Final103 local unit tests pass; browser failures separate. See controlled-coding/PHASE_2N_OFFLINE_COMPLETION.md. Provider spending $0.00.
+
+## Authorized offline768: native full-contract A2 passes9 non-browser categories
+
+Baseline103 tests passed. New explicit Experiment2-only output768 preserves defaults, four requests and all dollar/deadline/input bounds. Initial native candidate exposed SQLite commit-before-response defect; regenerated A2 fixes it and passes all9 original non-browser categories under isolated byte-exact evaluator assertions. Browser remains BLOCKED. Hidden evaluator contents remain outside Git; private archive unchanged/local-only. See new FULL_CONTRACT_RESULT, ORIGINAL_EVALUATOR_INTEGRATION and OFFLINE_768_TOKEN_VALIDATION reports.

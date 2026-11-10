@@ -16,12 +16,12 @@ from security_filter import export_filter
 ROOT=Path(__file__).resolve().parent
 
 
-def run_command(socket_path, workspace, command, *, mounts=(), timeout=300, stdin=None, abort_event=None):
+def run_command(socket_path, workspace, command, *, mounts=(), timeout=300, stdin=None, abort_event=None, app_alias=False):
     with tempfile.TemporaryFile() as policy:
         export_filter(policy)
         entries=[(ROOT/'sandbox_entry.py','/eval/sandbox_entry.py'),*mounts]
         actual=[sys.executable,'-B','/eval/sandbox_entry.py',*command] if socket_path else command
-        argv=namespace_command(socket_path,Path(workspace),[],seccomp_fd=policy.fileno(),command_override=actual,readonly_mounts=entries)
+        argv=namespace_command(socket_path,Path(workspace),[],seccomp_fd=policy.fileno(),command_override=actual,readonly_mounts=entries,app_alias=app_alias)
         env={'PATH':os.environ['PATH'],'HOME':tempfile.gettempdir()}
         process=subprocess.Popen(argv,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True,pass_fds=(policy.fileno(),),start_new_session=True)
         started=time.monotonic()

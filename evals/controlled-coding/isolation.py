@@ -19,7 +19,7 @@ import threading
 from http.server import BaseHTTPRequestHandler
 
 
-def namespace_command(socket_path, workspace, arguments, *, seccomp_fd, command_override=None, readonly_mounts=()):
+def namespace_command(socket_path, workspace, arguments, *, seccomp_fd, command_override=None, readonly_mounts=(), app_alias=False):
     command=['bwrap','--unshare-user','--unshare-net','--unshare-pid','--unshare-ipc','--unshare-uts',
              '--die-with-parent','--new-session','--uid','65534','--gid','65534','--cap-drop','ALL','--clearenv']
     for directory in ('/usr','/lib','/lib64','/bin'):
@@ -39,6 +39,7 @@ def namespace_command(socket_path, workspace, arguments, *, seccomp_fd, command_
                 '--setenv','HOME','/home/sandbox','--setenv','PATH',os.environ['PATH'],
                 '--setenv','PYTHONDONTWRITEBYTECODE','1','--chdir','/work',
                 ]
+    if app_alias:command += ['--symlink','/work','/app']
     if socket_path is not None:command += ['--ro-bind',str(socket_path),'/run/gateway.sock']
     for source,target in readonly_mounts:command += ['--ro-bind',str(source),str(target)]
     command += ['--remount-ro','/','--seccomp',str(seccomp_fd),'--',*(command_override or [sys.executable,'-B','/eval/isolation.py',*arguments])]

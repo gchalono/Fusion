@@ -44,13 +44,18 @@ def persist_checked_outputs(root, report, raw):
  for name in ('stdout','stderr'):(root/('agent-'+name+'.txt')).write_bytes(report[name])
 
 
-def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False):
+def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False,offline_768=False):
  if arm not in "ABC" or len(arm)!=1 or (arm!="A" and not expanded_offline):raise ValueError("arm_requires_scoped_offline_revision")
+ if offline_768 and not expanded_offline:raise ValueError('profile_requires_expanded_experiment2')
  root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
  prompt=load_arm('/workspace/phase2m-genuine-success','/workspace/phase2n-evaluation/frozen',arm)
  (root/'objective.txt').write_bytes(prompt)
  from task_manager_token_revision import offline_contract
- d=offline_contract() if expanded_offline else experiment_contract();(root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
+ d=offline_contract() if expanded_offline else experiment_contract()
+ from offline_output_profile import ceiling,NAME
+ if offline_768:d['offline_output_profile']=NAME
+ output_limit=ceiling(d,offline=True)
+ (root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
  wires=[]
  def observe(body):
   wires.append(body);(root/f'native-wire-{len(wires):02}.json').write_bytes(canonical(body))
@@ -66,11 +71,12 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
     if process.poll() is not None:abort.set();return
   thread=threading.Thread(target=watch,daemon=True);thread.start()
   mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(root/'local-token','/run/local-token'),(root/'objective.txt','/run/objective.txt'),*runtime_mounts(runtime)]
-  report=run_command(root/'gateway.sock',workspace,coding_command(runtime,d['model']),mounts=mounts,timeout=min(timeout,300),abort_event=abort)
+  if offline_768:mounts.append((root/'experiment.json','/run/offline-profile.json'))
+  report=run_command(root/'gateway.sock',workspace,coding_command(runtime,d['model']),mounts=mounts,timeout=min(timeout,300),abort_event=abort,app_alias=offline_768)
   candidate=workspace/'application.py';raw=candidate.read_bytes() if candidate.is_file() and not candidate.is_symlink() else b''
   persist_checked_outputs(root,report,raw)
   patch=''.join(difflib.unified_diff([],raw.decode().splitlines(True),fromfile='/dev/null',tofile='b/application.py'))
-  candidate_files={}
+  candidate_files={};candidate_modes={}
   if capture_all:
    if subprocess.check_output(['git','ls-tree','--name-only','HEAD'],cwd=workspace).strip():raise ValueError('capture_requires_frozen_empty_seed')
    patch=''
@@ -79,19 +85,22 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
     if '.git' in relative.parts:continue
     if file.is_symlink():raise ValueError('candidate_symlink')
     if not file.is_file():continue
-    if file.suffix not in ('.py','.md','.html','.js','.css'):raise ValueError('unexpected_candidate_artifact:'+str(relative))
+    if file.suffix not in ('.py','.md','.html','.js','.css','.sh') and str(relative) not in ('run-app','run-tests'):raise ValueError('unexpected_candidate_artifact:'+str(relative))
     content=file.read_bytes();reject_output_secrets(root,content);candidate_files[str(relative)]=sha(content)
+    mode='100755' if file.stat().st_mode&0o111 else '100644';candidate_modes[str(relative)]=mode
+    if any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_./-' for c in str(relative)):raise ValueError('unsafe_patch_path')
+    patch+='diff --git a/'+str(relative)+' b/'+str(relative)+'\nnew file mode '+mode+'\n'
     patch+=''.join(difflib.unified_diff([],content.decode().splitlines(True),fromfile='/dev/null',tofile='b/'+str(relative)))
   (root/'candidate.patch').write_text(patch)
   if process.poll() is None:request_admin(root,'finish' if report['exit_code']==0 and len(contacts)==expected_requests else 'abort')
   else:
    recovered=AggregateBudget(root/'experiment.db');recovered.recover_uncertain();recovered.control_run('coding',TASK+':'+arm,'INCOMPLETE')
   result={'classification':'TEST DOUBLE native Pi run; incomplete implementation control; NOT model performance',
-    'arm':arm,'variant':variant,'candidate_files':candidate_files,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
+    'arm':arm,'variant':variant,'candidate_files':candidate_files,'candidate_modes':candidate_modes,'input_sha256':sha(prompt),'exit_code':report['exit_code'],'timed_out':report['timed_out'],'aborted':report['aborted'],'elapsed_seconds':report['elapsed_seconds'],
     'local_model_wire_requests':len(contacts),'real_provider_requests':0,'provider_usage':None,'actual_provider_cost_usd':'0.00',
     'coding_tool_modified_files':bool(raw),'candidate_sha256':sha(raw),'patch_sha256':sha(patch.encode()),
     'tool_audit_present':b'OFFLINE_AUDIT_ONLY' in report['stdout'],'native_loop_completed':len(contacts)==expected_requests and any(m['role']=='tool' for m in wires[-1]['messages']) and report['exit_code']==0,
-    'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':d['frozen_coding_token_limit'],'active_offline_output_bound':512,
+    'ledger':AggregateBudget(root/'experiment.db').snapshot(),'active_cumulative_bound':d['frozen_coding_token_limit'],'active_offline_output_bound':output_limit,
     'full_task_completion':False,'browser_grading':'UNVERIFIED / independent gate',
     'wire_files':[str(root/f'native-wire-{i:02}.json') for i in range(1,len(wires)+1)]}
   (root/'result.json').write_bytes(canonical(result));return result
