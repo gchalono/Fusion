@@ -172,12 +172,14 @@ class HistoryBudget(AggregateBudget):
   if not row:raise ValueError('operator_signed_authorization_required')
   spec=json.loads(row[0]);sig=row[1]
   if self.identity['domain']=='LIVE' and spec.get('domain')!='FUSION_PHASE3C_LIVE':raise ValueError('test_domain_unavailable_live')
-  head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT.parents[1],text=True).strip()
+  head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT.parents[1],text=True,env={'PATH':os.defpath}).strip()
   if spec['source_commit']!=head:raise ValueError('authorization_source_mismatch')
-  if self.identity['domain']=='LIVE' and subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=ROOT.parents[1],text=True).strip():raise ValueError('live_source_dirty')
+  if self.identity['domain']=='LIVE' and subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=ROOT.parents[1],text=True,env={'PATH':os.defpath}).strip():raise ValueError('live_source_dirty')
   if (spec['ledger_id']!=self.identity['ledger_id'] or spec['anchor_sha256']!=self.identity['anchor_sha256'] or spec['config_sha256']!=sha(canonical(self.contract)) or time.time()>=spec['expires_at']):raise ValueError('authorization_stale_or_binding_mismatch')
   if self.identity['domain']=='TEST':
-   if spec['domain']!='FUSION_PHASE3C_TEST' or self.test_key is None or not hmac.compare_digest(sig,hmac.new(self.test_key,canonical(spec),'sha256').hexdigest()):raise ValueError('test_signature_invalid')
+   if spec['domain']!='FUSION_PHASE3C_TEST' or self.test_key is None:raise ValueError('test_signature_invalid')
+   valid=self.operator_verifier(spec,sig) if self.operator_verifier is not None else hmac.compare_digest(sig,hmac.new(self.test_key,canonical(spec),'sha256').hexdigest())
+   if valid is not True:raise ValueError('test_signature_invalid')
   elif spec['domain']!='FUSION_PHASE3C_LIVE' or self.operator_verifier is None or self.operator_verifier(spec,sig) is not True:raise ValueError('operator_signing_trust_not_configured')
   return spec
 

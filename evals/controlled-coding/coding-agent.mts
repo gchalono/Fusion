@@ -16,9 +16,13 @@ if(fs.existsSync('/run/offline-profile.json')){const p=JSON.parse(fs.readFileSyn
 // FNXC:RealModelReadiness 2026-11-10-04:59: Separate local 4096 rehearsal; no paid entry point.
 if(fs.existsSync('/run/readiness-profile.json')){const p=JSON.parse(fs.readFileSync('/run/readiness-profile.json','utf8'));if(fs.existsSync('/run/offline-profile.json')||p.readiness_profile!=='phase3-local-real-shape-4096'||p.offline_only!==true||p.provider_spend_authorized_usd!=='0.00'||p.max_output_tokens!==4096||p.coding_attempts_per_run!==4)throw Error('invalid_readiness_profile');outputTokens=4096;}
 
+// FNXC:LiveCoding 2026-11-10-06:16: Approved gateway profile; legacy defaults stay unchanged.
+let supervised=false,synthetic=true;
+if(fs.existsSync('/run/supervisor-profile.json')){const p=JSON.parse(fs.readFileSync('/run/supervisor-profile.json','utf8'));if(fs.existsSync('/run/offline-profile.json')||fs.existsSync('/run/readiness-profile.json')||p.profile!=='phase3d-approved-gateway'||p.model!==model||p.arm!=='A'||p.requests!==4||p.output!==4096)throw Error('invalid_supervisor_profile');outputTokens=4096;supervised=true;synthetic=p.synthetic===true;}
+
 fs.mkdirSync(path.join(home,'.fusion','agent'),{recursive:true});
 fs.writeFileSync(path.join(home,'.fusion','agent','auth.json'),'{}',{flag:'wx',mode:0o600});
-fs.writeFileSync(path.join(home,'.fusion','settings.json'),JSON.stringify({mcpServers:{enabled:false,servers:[]},customProviders:[{id:'phase2n-offline',name:'phase2n-offline',apiType:'openai-compatible',baseUrl:'http://127.0.0.1:39777/v1',apiKey:token,models:[{id:model,name:'OFFLINE WIRE TEST DOUBLE',contextWindow:32000,maxTokens:512,...(outputTokens!==512?{maxTokens:outputTokens}:{})}]}]}),{flag:'wx',mode:0o600});
+fs.writeFileSync(path.join(home,'.fusion','settings.json'),JSON.stringify({mcpServers:{enabled:false,servers:[]},customProviders:[{id:'phase2n-offline',name:'phase2n-offline',apiType:'openai-compatible',baseUrl:'http://127.0.0.1:39777/v1',apiKey:token,models:[{id:model,name:supervised?'APPROVED BUDGET GATEWAY':'OFFLINE WIRE TEST DOUBLE',contextWindow:32000,maxTokens:512,...(outputTokens!==512?{maxTokens:outputTokens}:{})}]}]}),{flag:'wx',mode:0o600});
 const {createResolvedAgentSession}=await import(pathToFileURL(runtime+'/packages/engine/src/agents/agent-session-helpers.ts').href);
 const events:unknown[]=[];
 const created=await createResolvedAgentSession({cwd:'/work',sessionPurpose:'merger',tools:'coding',toolsAllowlist:['read','write','bash'],mcpServers:[],customTools:[],builtinToolsAllowlist:[],defaultProvider:'phase2n-offline',defaultModelId:model,defaultThinkingLevel:'off',systemPrompt:'Complete the supplied coding objective using the provided tools. All execution is inside the evaluation sandbox.',skillSelection:{projectRootDir:'/work',requestedSkillNames:[],sessionPurpose:'merger'}});
@@ -38,7 +42,7 @@ try {
   catch(error){if((error as Error).message!=='Nothing to compact (session too small)')throw error;events.push({type:'local_compaction_control',default:'SESSION_TOO_SMALL'});session.settingsManager.applyOverrides({compaction:{keepRecentTokens:512,reserveTokens:4096}});await session.compact('LOCAL synthetic compaction routing probe; summarize briefly');events.push({type:'local_compaction_control',synthetic:'completed',keepRecentTokens:512});}
  }
 
- const audit=JSON.stringify({test_double:true,runtime:created.runtimeId,model,events});
+ const audit=JSON.stringify({test_double:synthetic,runtime:created.runtimeId,model,events});
  if(audit.includes(token))throw new Error('gateway_token_in_audit');
- console.log('OFFLINE_AUDIT_ONLY '+audit);
+ console.log((supervised?'SUPERVISED_CODING_AUDIT ':'OFFLINE_AUDIT_ONLY ')+audit);
 } finally {unsubscribe?.();await created.session.dispose?.();}

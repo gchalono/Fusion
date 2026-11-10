@@ -190,3 +190,13 @@ no paid inference,production,evaluator,seed,prompt,approval or isolation changes
 Phase3C reporting clarification: conservative headroom with full additional500000
 planning withholding is1488478 micro-USD; remaining-allocation headroom1500000.
 Neither is a second charge. Both exceed77416. Code/ledger/limits unchanged.
+
+## Phase3D first implementation milestone
+
+Baseline bde7035c3ffeb4fc342e9b8ad18547f07edd1827 and existing47/11522/0 journal/ledger
+restored without new authority or re-import. External operator trust implementation,
+real supervisor entry and safe capture complete for focused verification. Ed25519
+stdin signing initially failed because OpenSSL needs a seekable one-shot input;
+fixed with a private temporary payload file.4 focused tests +21 ledger regressions
+pass. Checkpoint before real-entry synthetic native rehearsal. No live key/approval
+created, no paid/provider inference. Detailed logs /workspace/phase3d-evidence/.

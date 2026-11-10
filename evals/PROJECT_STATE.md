@@ -190,3 +190,13 @@ is NOT configured. Step6 stopped at new signing-trust boundary as instructed. No
 live-supervisor/capture/native/credential rehearsal claimed. See updated integration
 and first-run reports. Model access/current official rates remain UNVERIFIED from3B.
 Provider requests0,actual new spend$0.00; private recovery still local-only.
+
+## Phase3D integration in progress
+
+Pinned ledger/journal restored unchanged. Implemented external root-owned Ed25519
+operator trust/enrollment CLI and signed approval verifier; dev creates TEST keys only.
+New supervisor entry reuses native Pi, existing inference socket, gateway wrapper,
+RealTransport, anchored ledger, execution isolation and original evaluator. Source
+capture supports requested text formats and hashes SQLite runtime data separately.
+Focused approval/capture4 tests pass; ledger seam21 regressions pass. Full actual-entry
+synthetic rehearsal next; no readiness claim or provider inference authorization.

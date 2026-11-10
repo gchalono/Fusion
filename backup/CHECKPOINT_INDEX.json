@@ -140,10 +140,18 @@
     },
     {
       "source_commit": "bde7035c3ffeb4fc342e9b8ad18547f07edd1827",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "b0c959d431fec3c512815286cb01a598c97a0c0f",
       "previous_backup": "5450193d44e03ce27c62acd2865718d4b7f2c031",
       "event": "stop",
       "milestone": "Phase3C ledger bound; operator signing integration pending",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "86e95a6e69af7921cbdb684296b36d40d9b7ad65",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "b0c959d431fec3c512815286cb01a598c97a0c0f",
+      "event": "milestone",
+      "milestone": "Phase3D signed supervisor implementation before unpaid native rehearsal",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
