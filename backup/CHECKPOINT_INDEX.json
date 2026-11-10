@@ -44,10 +44,18 @@
     },
     {
       "source_commit": "0e0a3f8b1da721b00325dd94e05208a3aa5f31df",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "af21d5408dabfccefdcdc15e92c6481abbc1f311",
       "previous_backup": "beacd5ea69e35e4ca314e2761ddc5f12e12d5483",
       "event": "stop",
       "milestone": "Phase 2N final offline evidence and explicit contract/browser blockers",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "0e0a3f8b1da721b00325dd94e05208a3aa5f31df",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "af21d5408dabfccefdcdc15e92c6481abbc1f311",
+      "event": "start",
+      "milestone": "Start authorized offline 768 full-contract implementation",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],
