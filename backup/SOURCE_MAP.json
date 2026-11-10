@@ -1,5 +1,5 @@
 {
-  "source_commit": "dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427",
+  "source_commit": "8459ba5c995901f131d0cb3fae1c5ff8284e8a37",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "c4caad033ff65c795fd4320b9345c00297575440f9e1161ecc3c0592d40693e0",
-      "source_blob": "4fb403e4cdb9f960829497bf18fa7402ff7d1f2c",
+      "sha256": "e616e77101cfebe0c641a96fb55b734e3f74045db19baa2937139f8f6b80b40a",
+      "source_blob": "806bd6d968f982422e14ae8a33e2df60dc4a7041",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "cb5744e5306100ba1dbd0dfdfeb9712611751485cc2d490a286071dbea0b7526",
-      "source_blob": "7f3d4cdcb82818b1d12876ca73e8ea2964052b9e",
+      "sha256": "d8ab0a5b74878cd7efe12556b51fdd224cc43f79604a83963e48fd054d25ff0d",
+      "source_blob": "0f67a3f09832d8bc9b74a8fca2f63a975adf8355",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -179,6 +179,13 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/PHASE3E_ACTIVATION.md",
+      "sha256": "44e0134e06a0a5b01c195c67aa081ee21b3309cd37bb21c9007bcfcfaa103cbd",
+      "source_blob": "8cb74e5a39e833559dcb47d564455c29d82bcba9",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
       "path": "evals/controlled-coding/PHASE3_FROZEN.md",
       "sha256": "0cecb7ec7b7a2e1b127179c2f58b5527033b3a3f900ec96500bd51555d1aa793",
       "source_blob": "bdb5cd433fc6d626051a2b37097e1538ece9b9f4",
@@ -243,8 +250,8 @@
     },
     {
       "path": "evals/controlled-coding/REAL_MODEL_METADATA.md",
-      "sha256": "3ce7081d4109dc838c3e6c4e8e05cfc4945fbb0c65048884f04c7e116bc39d95",
-      "source_blob": "77868c4f2ee24824a25b5b3bcde9c6aa13d48f45",
+      "sha256": "338ee40ad3df5b1ea5ad463d2f296ccfaaca8fd58e30c1cae504837ca01dc816",
+      "source_blob": "36a307832da1961244d37297fed5d924e7166a82",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -322,6 +329,13 @@
       "path": "evals/controlled-coding/acceptance_worker.py",
       "sha256": "c0490fef959696d187f12a7848fbc8cdc62c8cd19eeb0f8408ded60fce7cd64f",
       "source_blob": "822f56fbceb69974015da24e0edd36801af8d03e",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/activation_preflight.py",
+      "sha256": "657120073416a3db274699669749abfbc1d6f806f7f6eb54b06bcb54bbbc753a",
+      "source_blob": "786094f48e46962ae25c7926f206eb1ec1168a7d",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -791,6 +805,13 @@
       "path": "evals/controlled-coding/task_manager_tokens.py",
       "sha256": "7ac5960be7299e16312ece2ab19c676b3e8f9811f2c9a6e13f2ce9764e266c1e",
       "source_blob": "0c6605936e52e530c459a40e779813ad761d57cc",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/test_activation_preflight.py",
+      "sha256": "9c1dd60426acb71cdcf99dd83968c4e17e38d3cb420479b00a75da1d4dc0b566",
+      "source_blob": "0f57dc202b9450b2da122654379f59faa59b7626",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

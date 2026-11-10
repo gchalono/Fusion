@@ -215,3 +215,16 @@ unchanged. Metadata GET200 confirms snapshot visibility; pricing docs unreachabl
 Operator enrollment NOT performed; no live signing material/approval created. Current
 pricing and explicit signed paid approval remain external prerequisites. Metadata1,
 inference0,actual new spend$0.00. See PHASE3D_LIVE_INTEGRATION and executable FIRST_REAL_MODEL_RUN.
+
+## Phase3E — AWAITING_OPERATOR_SETUP
+
+Restored pinned dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427 with original private
+ledger/witness/journal/evidence; all35 frozen hashes/8 approval bindings/13 source
+freeze files verified. Retained11522 micro-USD/47 records/0 unresolved unchanged.
+Added read-only activation_preflight.py, not supervisor/ledger/runtime changes.
+5 focused activation +10 operator_auth tests pass; existing outer isolation probe
+all7 checks true. No full-suite/browser/coding rerun. Official docs unreachable;
+pricing unverified, live trust absent, provider hard cap unverified. No attestation
+fabricated. Conditional worst77416, post-history/planning/run headroom1411062.
+Operator procedure: evals/controlled-coding/PHASE3E_ACTIVATION.md. No paid inference,
+no new provider API calls, $0 new spend. Private evidence remains local-only.

@@ -1,85 +1,12 @@
 {
-  "classification": "PUBLIC_SNAPSHOT_OFFLINE_TESTS_PRIVATE_DEPENDENCIES_EXPLICIT",
-  "results": [
-    {
-      "suite": "controlled-coding",
-      "run": 109,
-      "passed": 97,
-      "failed": 0,
-      "skipped": 12,
-      "skip_reasons": [
-        {
-          "test": "test_real_47_replay (test_history_budget.HistoryTests.test_real_47_replay)",
-          "reason": "Private original journal intentionally absent in public recovery"
-        },
-        {
-          "test": "test_complete_contract_proposal_blocked_by_existing_output_and_call_caps (test_positive_completion.CompletionTests.test_complete_contract_proposal_blocked_by_existing_output_and_call_caps)",
-          "reason": "public js-tiktoken 1.0.21 utility not installed in recovery namespace"
-        },
-        {
-          "test": "test_three_bounded_replies_reconstruct_source_and_use_all_native_tools (test_positive_completion.CompletionTests.test_three_bounded_replies_reconstruct_source_and_use_all_native_tools)",
-          "reason": "public js-tiktoken 1.0.21 utility not installed in recovery namespace"
-        },
-        {
-          "test": "test_actual_sandbox_credential_and_proc_boundary (test_readiness.ReadinessTests.test_actual_sandbox_credential_and_proc_boundary)",
-          "reason": "Outer executor required: sanitized recovery intentionally forbids nested namespace creation; native receipt tested separately"
-        },
-        {
-          "test": "test_namespace_process_tree_cleanup (test_readiness.ReadinessTests.test_namespace_process_tree_cleanup)",
-          "reason": "Outer executor required: sanitized recovery intentionally forbids nested namespace creation; native receipt tested separately"
-        },
-        {
-          "test": "test_actual_B_C_two_request_loop_exceeds_token_reservation_cap (test_task_manager_adapter.TaskManagerTests.test_actual_B_C_two_request_loop_exceeds_token_reservation_cap)",
-          "reason": "original private evidence unavailable"
-        },
-        {
-          "test": "test_historical_inputs_and_approvals (test_task_manager_adapter.TaskManagerTests.test_historical_inputs_and_approvals)",
-          "reason": "original private evidence unavailable"
-        },
-        {
-          "test": "test_manifest_generation_no_inference (test_task_manager_adapter.TaskManagerTests.test_manifest_generation_no_inference)",
-          "reason": "original private evidence unavailable"
-        },
-        {
-          "test": "test_actual_native_security_and_unknown_tool_outcomes (test_task_manager_validation.ValidationTests.test_actual_native_security_and_unknown_tool_outcomes)",
-          "reason": "private native evidence unavailable"
-        },
-        {
-          "test": "test_measured_native_A_and_projected_B_C_fit_money_not_active_token_bound (test_task_manager_validation.ValidationTests.test_measured_native_A_and_projected_B_C_fit_money_not_active_token_bound)",
-          "reason": "private native evidence unavailable"
-        },
-        {
-          "test": "test_native_crash_keeps_exposure_without_Pi_replay (test_task_manager_validation.ValidationTests.test_native_crash_keeps_exposure_without_Pi_replay)",
-          "reason": "private native evidence unavailable"
-        },
-        {
-          "test": "test_native_repeat_has_equal_patch_and_actual_wires (test_task_manager_validation.ValidationTests.test_native_repeat_has_equal_patch_and_actual_wires)",
-          "reason": "private native evidence unavailable"
-        }
-      ]
-    },
-    {
-      "suite": "planning-collector",
-      "run": 37,
-      "passed": 37,
-      "failed": 0,
-      "skipped": 0,
-      "skip_reasons": []
-    },
-    {
-      "suite": "persistence",
-      "run": 11,
-      "passed": 10,
-      "failed": 0,
-      "skipped": 1,
-      "skip_reasons": [
-        {
-          "test": "test_modified_or_advanced_worktree_cannot_repass_original_gate (test_task_manager_local_gate0.LocalGateTests.test_modified_or_advanced_worktree_cannot_repass_original_gate)",
-          "reason": "Requires original private-history checkpoint, intentionally absent from sanitized orphan. Not a passed security test."
-        }
-      ]
-    }
-  ],
-  "isolation": "existing mandatory namespace + seccomp; original workspace unmounted; network isolated",
-  "exit_code": 0
+  "classification": "PHASE3E_TARGETED_ONLY",
+  "source_commit": "8459ba5c995901f131d0cb3fae1c5ff8284e8a37",
+  "private_original_environment": {
+    "activation_tests": 5,
+    "operator_auth_and_capture_tests": 10,
+    "failed": 0
+  },
+  "full_suite_rerun": false,
+  "native_isolation_checks": 7,
+  "historical_full_suite": "See previous sanitized checkpoint; not repeated or claimed for new utility."
 }

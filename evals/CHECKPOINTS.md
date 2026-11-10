@@ -213,3 +213,16 @@ provider artifacts remain outside Git. An automatic-review usage limit blocked a
 command without executing it; authorized resumed validation passes. One metadata GET200,
 zero provider inference,$0 new spend. Pricing/enrollment remain external; no model
 substitution,cap increase,global config or deployment. Private recovery not claimed.
+
+## Phase3E activation package milestone
+
+Preceding validated baseline dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427 maps to
+independently verified sanitized82428dc397d088264e03b04c7bc0f40abbb3f00c.
+Additive non-consuming preflight plus operator activation documentation:5 focused
+TEST cases and10 existing operator tests pass. Original35 hashes/47-record anchor/
+11522 retained and ledger+witness bytes preserved;7 isolation checks pass.
+No full-suite repeat; no browser/runtime/evaluator change. Current official pricing,
+provider hard-cap evidence and outside-agent live trust enrollment remain human
+prerequisites. Final sanitized mapping is recorded by backup/SOURCE_MAP.json and
+its independently fetched receipt. Generate unsigned spec only from final published
+clean source. No nonce consumed, new ledger row, live signature or provider inference.

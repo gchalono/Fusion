@@ -19,3 +19,15 @@ verified before dispatch. Never change the receipt's verification flag manually 
 make the preflight pass. Resolve official documentation access and repeat the authorized
 metadata procedure,or obtain separately reviewed official verification evidence.
 Provider metadata GETs1; inference requests0; new inference spend$0.00.
+
+## Phase3E activation review (2026-11-10)
+
+No new provider API requests or inference. Both official model documentation above
+and https://openai.com/api/pricing/ remained unreachable on a credential-free retry
+through the enforced proxy. pricing_verified remains false; no receipt modified.
+Prior HTTP200 is historical snapshot visibility only, not inference access/credits.
+Strict broker explicitly uses service_tier=default, rejects other tiers; uncached
+configured-rate reservation 19,354 micro-USD/request, four attempts 77,416.
+Headroom after history, $0.50 planning and this run: 1,411,062 micro-USD.
+These rate-based bounds remain conditional on official pricing verification.
+See PHASE3E_ACTIVATION.md for supported procedure and operator-only prerequisites.
