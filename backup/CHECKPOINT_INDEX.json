@@ -100,10 +100,18 @@
     },
     {
       "source_commit": "9afbac61342d18a59b0d1cdd1111d6ef736f82c5",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "2963d4771debf153690d125507db721e956a6a6b",
       "previous_backup": "b5335c10076a21a6f74577379e4cd7397f4f0b1d",
       "event": "stop",
       "milestone": "Real browser acceptance and security verified; private remote destination remains unapproved",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "a8bfadda79117edb8a6e3a977f6358e6521cb5be",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "2963d4771debf153690d125507db721e956a6a6b",
+      "event": "milestone",
+      "milestone": "Phase3 restore and bounded local 4096 readiness rehearsal",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

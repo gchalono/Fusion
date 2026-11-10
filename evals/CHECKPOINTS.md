@@ -124,3 +124,14 @@ Checkpoint exception: the browser milestone export correctly stopped before push
 ## BROWSER_ACCEPTANCE_VERIFIED; PRIVATE_REMOTE_RECOVERY_BLOCKED
 
 Unchanged native patch df383ba2... scores100/100 in3 independent original-evaluator fresh checkouts using signed Google Chrome157 with verified single-process/no-zygote configuration. All18 real-browser security checks pass; capset/seccomp/namespaces unchanged, helper masked. Baseline110 -> final114 local unit passes. Milestone d78dda6b2 remotely verified as b5335c10... after correcting unsafe synthetic setuid test fixture; checkpoint delay documented. Additional850-file PRIVATE package clean-restored, including122 historical manifest dependencies,8 approval bindings, exact seed and13 ledger integrity checks; original32/553 archives preserved. No approved external destination/recipient exists, no private upload. Pilot proposal is NOT approval; provider spend$0.00 and native/default/budget/frozen inputs unchanged.
+
+## Phase 3 initial restore / rehearsal milestone
+
+Original pinned dev9afbac61342d18a59b0d1cdd1111d6ef736f82c5 and independent remote
+2963d4771debf153690d125507db721e956a6a6b verified before changes. Original recovery
+bundle verified; original private archives unchanged/local-only. Separate4096 LOCAL
+profile and failure-double hooks preserve existing defaults and frozen inputs.
+120 offline units pass. Full native Arm A generated unchanged five-file patch in4
+local requests. New matrix initially failed because its collector omitted the
+full-native-result.json evaluator input; fixture receipt fixed, failed root retained.
+Checkpoint before continued adversarial native work. Spending authorization$0.00.

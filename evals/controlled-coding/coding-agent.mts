@@ -13,9 +13,12 @@ const home=process.env.HOME!;
 let outputTokens=512;
 if(fs.existsSync('/run/offline-profile.json')){const p=JSON.parse(fs.readFileSync('/run/offline-profile.json','utf8'));if(p.offline_output_profile!=='experiment2-offline-test-double-768'||p.experiment_id!=='phase2m-personal-task-manager'||p.offline_only!==true||p.provider_spend_authorized_usd!=='0.00'||p.coding_attempts_per_run!==4)throw Error('invalid_offline_profile');outputTokens=768;}
 
+// FNXC:RealModelReadiness 2026-11-10-04:59: Separate local 4096 rehearsal; no paid entry point.
+if(fs.existsSync('/run/readiness-profile.json')){const p=JSON.parse(fs.readFileSync('/run/readiness-profile.json','utf8'));if(fs.existsSync('/run/offline-profile.json')||p.readiness_profile!=='phase3-local-real-shape-4096'||p.offline_only!==true||p.provider_spend_authorized_usd!=='0.00'||p.max_output_tokens!==4096||p.coding_attempts_per_run!==4)throw Error('invalid_readiness_profile');outputTokens=4096;}
+
 fs.mkdirSync(path.join(home,'.fusion','agent'),{recursive:true});
 fs.writeFileSync(path.join(home,'.fusion','agent','auth.json'),'{}',{flag:'wx',mode:0o600});
-fs.writeFileSync(path.join(home,'.fusion','settings.json'),JSON.stringify({mcpServers:{enabled:false,servers:[]},customProviders:[{id:'phase2n-offline',name:'phase2n-offline',apiType:'openai-compatible',baseUrl:'http://127.0.0.1:39777/v1',apiKey:token,models:[{id:model,name:'OFFLINE WIRE TEST DOUBLE',contextWindow:32000,maxTokens:512,...(outputTokens===768?{maxTokens:768}:{})}]}]}),{flag:'wx',mode:0o600});
+fs.writeFileSync(path.join(home,'.fusion','settings.json'),JSON.stringify({mcpServers:{enabled:false,servers:[]},customProviders:[{id:'phase2n-offline',name:'phase2n-offline',apiType:'openai-compatible',baseUrl:'http://127.0.0.1:39777/v1',apiKey:token,models:[{id:model,name:'OFFLINE WIRE TEST DOUBLE',contextWindow:32000,maxTokens:512,...(outputTokens!==512?{maxTokens:outputTokens}:{})}]}]}),{flag:'wx',mode:0o600});
 const {createResolvedAgentSession}=await import(pathToFileURL(runtime+'/packages/engine/src/agents/agent-session-helpers.ts').href);
 const events:unknown[]=[];
 const created=await createResolvedAgentSession({cwd:'/work',sessionPurpose:'merger',tools:'coding',toolsAllowlist:['read','write','bash'],mcpServers:[],customTools:[],builtinToolsAllowlist:[],defaultProvider:'phase2n-offline',defaultModelId:model,defaultThinkingLevel:'off',systemPrompt:'Complete the supplied coding objective using the provided tools. All execution is inside the evaluation sandbox.',skillSelection:{projectRootDir:'/work',requestedSkillNames:[],sessionPurpose:'merger'}});

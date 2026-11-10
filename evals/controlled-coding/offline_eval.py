@@ -31,7 +31,7 @@ WRONG='def merge_intervals(intervals):\n    return []\n'
 
 
 # FNXC:TaskManagerOfflineValidation 2026-11-09-20:54: Optional local TEST DOUBLE callbacks preserve legacy defaults; scripted native validation deliberately omits usage so reservations remain uncertain.
-def start_stub(root, variant='correct', pause=None, *, script=None, observe=None):
+def start_stub(root, variant='correct', pause=None, *, script=None, observe=None, response=None):
     root=Path(root);key=secrets.token_hex(32);key_file=root/'upstream-key';key_file.write_text(key);key_file.chmod(0o600)
     subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(root/'tls.key'),'-out',str(root/'tls.crt'),'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     contract=Contract();contacts=[]
@@ -44,6 +44,13 @@ def start_stub(root, variant='correct', pause=None, *, script=None, observe=None
             if not valid:self.send_error(403);return
             if observe is not None:observe(body)
             if pause is not None and len(contacts)==1:pause[0].set();pause[1].wait(20)
+            # FNXC:RealModelReadiness 2026-11-10-04:59: Explicit LOCAL wire failure double; legacy replies unchanged.
+            if response is not None:
+                status,kind,payload=response(body,len(contacts))
+                try:
+                    self.send_response(status);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload)
+                except OSError:pass
+                return
             tool_messages=[m for m in body['messages'] if m['role']=='tool']
             already_tools=any(m.get('tool_call_id')=='OFFLINE_WRITE_0' for m in tool_messages)
             delta={'role':'assistant'}

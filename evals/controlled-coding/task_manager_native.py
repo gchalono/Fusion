@@ -44,16 +44,19 @@ def persist_checked_outputs(root, report, raw):
  for name in ('stdout','stderr'):(root/('agent-'+name+'.txt')).write_bytes(report[name])
 
 
-def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False,offline_768=False):
+def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,arm="A",expanded_offline=False,script_override=None,expected_requests=2,capture_all=False,offline_768=False,readiness=False,response_override=None):
  if arm not in "ABC" or len(arm)!=1 or (arm!="A" and not expanded_offline):raise ValueError("arm_requires_scoped_offline_revision")
+ if readiness and (arm!='A' or offline_768 or not expanded_offline):raise ValueError('readiness_requires_expanded_A_without_768')
  if offline_768 and not expanded_offline:raise ValueError('profile_requires_expanded_experiment2')
  root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
  prompt=load_arm('/workspace/phase2m-genuine-success','/workspace/phase2n-evaluation/frozen',arm)
  (root/'objective.txt').write_bytes(prompt)
  from task_manager_token_revision import offline_contract
  d=offline_contract() if expanded_offline else experiment_contract()
- from offline_output_profile import ceiling,NAME
+ from offline_output_profile import NAME
+ from readiness_profile import ceiling,NAME as READINESS_NAME
  if offline_768:d['offline_output_profile']=NAME
+ if readiness:d['readiness_profile']=READINESS_NAME
  output_limit=ceiling(d,offline=True)
  (root/'experiment.json').write_bytes(canonical(d));AggregateBudget(root/'experiment.db',experiment_contract=d)
  wires=[]
@@ -64,7 +67,7 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
  # Validate the trusted seed BEFORE untrusted tools can alter Git configuration.
  # Never invoke host Git on the candidate's potentially modified .git afterward.
  if capture_all and subprocess.check_output(['git','ls-tree','--name-only','HEAD'],cwd=workspace).strip():raise ValueError('capture_requires_frozen_empty_seed')
- server,contacts=start_stub(root,script=script_override or (lambda body:script(body,variant)),observe=observe,pause=pause)
+ server,contacts=start_stub(root,script=script_override or (lambda body:script(body,variant)),observe=observe,pause=pause,response=response_override)
  process=None;log=None;watch_stop=threading.Event();abort=threading.Event();report=None
  try:
   process,log=spawn_broker(root,TASK+':'+arm)
@@ -75,7 +78,8 @@ def run(root,runtime,*,timeout=90,variant="coding",pause=None,broker_hook=None,a
   thread=threading.Thread(target=watch,daemon=True);thread.start()
   mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(root/'local-token','/run/local-token'),(root/'objective.txt','/run/objective.txt'),*runtime_mounts(runtime)]
   if offline_768:mounts.append((root/'experiment.json','/run/offline-profile.json'))
-  report=run_command(root/'gateway.sock',workspace,coding_command(runtime,d['model']),mounts=mounts,timeout=min(timeout,300),abort_event=abort,app_alias=offline_768)
+  if readiness:mounts.append((root/'experiment.json','/run/readiness-profile.json'))
+  report=run_command(root/'gateway.sock',workspace,coding_command(runtime,d['model']),mounts=mounts,timeout=min(timeout,300),abort_event=abort,app_alias=offline_768 or readiness)
   candidate=workspace/'application.py';raw=candidate.read_bytes() if candidate.is_file() and not candidate.is_symlink() else b''
   persist_checked_outputs(root,report,raw)
   patch=''.join(difflib.unified_diff([],raw.decode().splitlines(True),fromfile='/dev/null',tofile='b/application.py'))

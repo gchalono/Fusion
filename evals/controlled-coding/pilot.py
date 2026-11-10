@@ -60,7 +60,7 @@ def request_admin(root,action):
 def broker(root,run,action,stub_url,ca,key):
     root=Path(root)
     if not (root/'.offline-test').is_file():raise ValueError('offline_experiment_required')
-    from offline_output_profile import ceiling
+    from readiness_profile import ceiling
     c=Contract();data=json.loads((root/'experiment.json').read_text());output_limit=ceiling(data,offline=True);ledger=AggregateBudget(root/'experiment.db',experiment_contract=data)
     with ledger.connect() as db:old=db.execute('SELECT status FROM run_controls WHERE stage=? AND run=?',('coding',run)).fetchone()
     if old and action=='start':
