@@ -1,0 +1,17 @@
+// Actual browser security controls, not a mock browser or an acceptance substitute.
+import fs from 'node:fs';import http from 'node:http';import net from 'node:net';import{spawnSync}from'node:child_process';
+import{chromium}from'/opt/playwright/index.mjs';
+const denied=[];let browser;const server=http.createServer((req,res)=>{res.end('<title>Browser isolation probe</title>')});await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=`http://127.0.0.1:${server.address().port}`;
+try{
+ browser=await chromium.launch({executablePath:'/usr/lib/chromium/chromium',headless:true,args:['--no-sandbox','--disable-background-networking','--disable-component-update','--single-process','--no-zygote','--no-proxy-server']});
+ const context=await browser.newContext({serviceWorkers:'block'});await context.route('**/*',route=>{const u=route.request().url();if(u.startsWith(origin+'/'))return route.continue();denied.push(u);return route.abort('blockedbyclient')});
+ const page=await context.newPage();await page.goto(origin);
+ const checks={privileged_helper_masked:fs.statSync('/usr/lib/chromium/chrome-sandbox').isCharacterDevice(),real_page:await page.title()==='Browser isolation probe',web_has_no_node_process:await page.evaluate(()=>typeof process==='undefined'),host_workspace_absent:!fs.existsSync('/workspace'),hidden_tests_absent:!fs.existsSync('/checks'),provider_variables_absent:['OPENAI_API_KEY','ANTHROPIC_API_KEY','GH_TOKEN','GITHUB_TOKEN','HTTP_PROXY','HTTPS_PROXY'].every(k=>!(k in process.env))};
+ for(const[name,url]of [['protected_file','file:///workspace/final-browser-host-canary'],['hidden_file','file:///checks/acceptance.mjs'],['outside_network','http://192.0.2.1/forbidden']])checks[name+'_denied']=await page.evaluate(async url=>{try{const r=await fetch(url);await r.text();return false}catch{return true}},url);
+ checks.route_recorded_network_denial=denied.some(u=>u.startsWith('http://192.0.2.1/'));
+ const py="import ctypes,errno,socket,json,os;from pathlib import Path;libc=ctypes.CDLL(None,use_errno=True);h=(ctypes.c_uint*2)(0x20080522,0);d=(ctypes.c_uint*6)();c={'capset_denied':libc.capset(h,d)==-1 and ctypes.get_errno()==errno.EPERM,'unshare_denied':libc.unshare(0x10000000)==-1 and ctypes.get_errno()==errno.EPERM,'uid_nonroot':os.getuid()==65534};s=Path('/proc/self/status').read_text();c['no_new_privs']='NoNewPrivs:\\t1' in s;c['zero_caps']='CapEff:\\t0000000000000000' in s;print(json.dumps(c))";
+ const p=spawnSync('/usr/bin/python3',['-c',py],{encoding:'utf8'});Object.assign(checks,JSON.parse(p.stdout));checks.kernel_probe_exit=p.status===0;
+ checks.kernel_egress_denied=await new Promise(r=>{let s=net.connect({host:'192.0.2.1',port:443});s.on('connect',()=>{s.destroy();r(false)});s.on('error',()=>r(true));s.setTimeout(500,()=>{s.destroy();r(true)})});
+ const cdp=await browser.newBrowserCDPSession();const info=await cdp.send('SystemInfo.getProcessInfo');let statuses=info.processInfo.map(p=>{try{return fs.readFileSync(`/proc/${p.id}/status`,'utf8')}catch{return ''}});checks.actual_browser_processes_filtered=statuses.every(s=>s.includes('NoNewPrivs:\t1')&&s.includes('CapEff:\t0000000000000000')&&s.includes('Seccomp:\t2'))&&statuses.length>0;
+ console.log(JSON.stringify({classification:'REAL_BROWSER_SECURITY_RESULT',checks,denied_requests:denied,browser_version:browser.version(),browser_processes_checked:statuses.length}));if(!Object.values(checks).every(Boolean))process.exitCode=1;
+}finally{await browser?.close();await new Promise(r=>server.close(r))}

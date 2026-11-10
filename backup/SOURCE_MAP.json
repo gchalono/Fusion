@@ -1,5 +1,5 @@
 {
-  "source_commit": "d4c20b5d356e5d0aab8840c383bd1a8bb7db76ef",
+  "source_commit": "d78dda6b2997a344f1527dcdee368e6dc83dc3a8",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "61099cd234beeb4b0858ea16f99f6c114e77a79408a5071ba04ddb11850454af",
-      "source_blob": "f7ac3ed6243f36ec56fb1975285f53e818d292bc",
+      "sha256": "66a81abd89c5740978b7a3bf70fc0ec85b03b971dd2a2508bb0e030d6650fa29",
+      "source_blob": "1a0ff01a7f76cc8c929e41cdc88ff0b1a43473aa",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "9dec64ffa739fc73532d826b17093c76fbca2101e71228014f370b53d950d450",
-      "source_blob": "fb33b715dfed3edc91e8d9b8d2ae96190ac24118",
+      "sha256": "aa36781f602889c8f77e549031990fdcdbf0c657f3b5df44e15d20497bf2c6a5",
+      "source_blob": "0ab9af9db0374342e0e02c01dded64970bb60b3d",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -105,6 +105,20 @@
       "path": "evals/controlled-coding/.gitignore",
       "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
       "source_blob": "7a60b85e148f80966a550e5ab6a762a907c69ca6",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/BROWSER_ACCEPTANCE_FINAL.md",
+      "sha256": "a02a398fd091914ce3756a7e6b96d7f5fb07169d9fc1af5d1e3e0ddaea748aa6",
+      "source_blob": "d24fa5b213bc55afa6e6d61503120da65c118791",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/FIRST_REAL_MODEL_PILOT_PROPOSAL.md",
+      "sha256": "0d6624bc4a6bf7a11b6c34470b0791a3c69f236d7727193f987bacc043e66009",
+      "source_blob": "f3d54ea1b98cbc2059028a3d7a0cb3908d36dd25",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -161,6 +175,13 @@
       "path": "evals/controlled-coding/PRIVATE_RECOVERY_STATUS.md",
       "sha256": "87ac716f3f1de39ed092e484139559f718b8f64b9436b355fd765de9320a1771",
       "source_blob": "6dca60696fcf5320ffb731275331f2523a70cba4",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/PRIVATE_REMOTE_RECOVERY_FINAL.md",
+      "sha256": "b724ad9f3b373147a9743dba9eedc666436c2a3af64cb1c8652f6bd3e57bb388",
+      "source_blob": "96d37c963101e8400d9745553eeecf31a01fbaaf",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -273,6 +294,13 @@
       "path": "evals/controlled-coding/browser_minimal.mjs",
       "sha256": "f26aa151984fa2c9e75c916b425c5ee08c72a31ddea1306bf1355a35fb97186f",
       "source_blob": "6a6baff6fc97dece49b95f2eff1e1d3060e65aae",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/browser_security_probe.mjs",
+      "sha256": "c80725d7a7e5cd10b3273deb98cc4290fecca8cd1cbb7906a449326e0371e42f",
+      "source_blob": "714f5f9b00724fc3a66bdfb7907f5a557515ca4c",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -431,9 +459,16 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/original_browser_runtime.mjs",
+      "sha256": "c3e98e699a628124e31b79dd52dd10867947527a3d9b35684db007f46ef6196c",
+      "source_blob": "5f10e5087c8d2e9f497120f2f9e0b95b12e82f96",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
       "path": "evals/controlled-coding/original_evaluator_adapter.py",
-      "sha256": "f776fa1dfc129277425406c3f5bbc0d76ab55c1be5a2962461041b59a26f5585",
-      "source_blob": "cc1aceae2028e4dfd8fdb5100e191bc298d7d9f0",
+      "sha256": "f73a41f49a0e7f8331bd38ab9948e754e455f548ce30608b34494401bd4988d6",
+      "source_blob": "018d7c19380a9978bd76f2300d0a5de4c26b74e4",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -704,9 +739,23 @@
       "category": "evaluation source/test or reviewed metadata"
     },
     {
+      "path": "evals/controlled-coding/test_verified_browser_runtime.py",
+      "sha256": "ec9ad1914759598d3be3e10e91cebd9096bfef2ced7d65d8a42c379d49d2bb52",
+      "source_blob": "29d56c570ed4e677ccdb031b4cbdd7fe46f1d6f3",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
       "path": "evals/controlled-coding/token_measurements.json",
       "sha256": "ad0d9e777c41c5dc594ee0a948f9644dc5154918b78da14b99c8540a1728109b",
       "source_blob": "0a3a1da1116c8ca381a279d70cf7bcabfa005de9",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/verified_browser_runtime.py",
+      "sha256": "68dd39be63aa8f99d7ad7fc9f453548e7e1beb679a43096d29592d8260571328",
+      "source_blob": "4af45d447253cbe537570bc560f25d7f5087e23b",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

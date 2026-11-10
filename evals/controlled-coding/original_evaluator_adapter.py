@@ -37,7 +37,7 @@ def inside():
  spec=importlib.util.spec_from_file_location('original_assertions','/checks/acceptance.py');original=importlib.util.module_from_spec(spec);spec.loader.exec_module(original)
  def remote_run(argv,**kwargs):
   if argv==['BLOCKED_BROWSER']:
-   return subprocess.CompletedProcess(argv,125,'','BLOCKED: previously verified Chromium/filter incompatibility; no mock browser result')
+   r=rpc('browser');return subprocess.CompletedProcess(argv,r['returncode'],r['stdout'],r['stderr'])
   if argv!=['TRUSTED_TESTS']:raise ValueError('arbitrary_evaluator_command_denied')
   r=rpc('tests');return subprocess.CompletedProcess(argv,r['returncode'],r['stdout'],r['stderr'])
  original.subprocess=types.SimpleNamespace(run=remote_run)
@@ -63,7 +63,7 @@ def secure_argv(arm,argv,policy,*,bridge=False):
  if bridge:extra+=['--bind',str(arm/'runtime'),'/bridge']
  return cmd[:i]+extra+cmd[i:]
 
-def evaluate(native_root,out):
+def evaluate(native_root,out,*,browser_dependency=None):
  from security_filter import export_filter
  from isolation import namespace_command
  verify_original();native_root=Path(native_root);out=Path(out);out.mkdir(mode=0o700,parents=True,exist_ok=False)
@@ -116,6 +116,19 @@ def evaluate(native_root,out):
    try:
     if action=='start':start()
     elif action=='stop':stop()
+    elif action=='browser':
+     if browser_dependency is None:response.update(returncode=125,stdout='',stderr='BLOCKED: no verified browser dependency selected')
+     else:
+      from verified_browser_runtime import mounts
+      browser_mounts,provenance=mounts(browser_dependency)
+      playwright=Path('/workspace/Fusion/node_modules/.pnpm/playwright-core@1.60.0/node_modules/playwright-core')
+      work=out/'browser-work';work.mkdir(exist_ok=True)
+      entries=[*browser_mounts,(ROOT/'original_browser_runtime.mjs','/eval/browser.mjs'),(playwright,'/opt/playwright'),(out/'runtime','/bridge'),(Path('/etc/fonts'),'/etc/fonts')]
+      with tempfile.TemporaryFile() as policy:
+       export_filter(policy);argv=namespace_command(None,work,[],seccomp_fd=policy.fileno(),command_override=[__import__('shutil').which('node'),'/eval/browser.mjs'],readonly_mounts=entries)
+       browser=subprocess.run(argv,env=env,pass_fds=(policy.fileno(),),input=(ORIGINAL/'acceptance.mjs').read_bytes(),capture_output=True,timeout=35)
+      response.update(returncode=browser.returncode,stdout=browser.stdout.decode(),stderr=browser.stderr.decode())
+      (out/'logs/browser-provenance.json').write_text(json.dumps({k:v for k,v in provenance.items() if k!='files'},indent=2)+'\n')
     elif action=='tests':
      with tempfile.TemporaryFile() as policy:
       export_filter(policy);test=subprocess.run(secure_argv(out,['/app/run-tests'],policy),env=env,pass_fds=(policy.fileno(),),capture_output=True,text=True,timeout=45)
@@ -131,7 +144,7 @@ def evaluate(native_root,out):
    if bool((out/'app'/name).stat().st_mode&0o111)!=(captured['candidate_modes'][name]=='100755'):raise ValueError('graded_mode_changed')
   result.update(classification='BYTE-EXACT ORIGINAL ASSERTIONS under current isolated adapter',original_hashes=HASHES,source_patch_sha256=digest(native_root/'candidate.patch'))
   categories=result['result']['categories'];result['non_browser_passed']=all(c['passed'] for c in categories if c['category']!='browser_functionality')
-  result['browser_status']='BLOCKED: known real runtime incompatibility; no substitute execution';result['complete_acceptance']=False
+  result['browser_status']='VERIFIED' if next(c for c in categories if c['category']=='browser_functionality')['passed'] else ('BLOCKED: no browser dependency' if browser_dependency is None else 'FAILED: real browser assertion/runtime; see private logs');result['complete_acceptance']=result['result']['completion']
   (out/'original-acceptance-result.json').write_text(json.dumps(result,indent=2)+'\n');return result
  finally:
   stop()
@@ -141,4 +154,4 @@ if __name__=='__main__':
  if sys.argv[1:]==['--inside']:inside()
  else:
   import argparse
-  p=argparse.ArgumentParser();p.add_argument('--native-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();r=evaluate(a.native_root,a.out);print(json.dumps(r,indent=2))
+  p=argparse.ArgumentParser();p.add_argument('--browser-dependency',type=Path);p.add_argument('--native-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();r=evaluate(a.native_root,a.out,browser_dependency=a.browser_dependency);print(json.dumps(r,indent=2))
