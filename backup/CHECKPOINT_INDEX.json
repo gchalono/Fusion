@@ -68,10 +68,18 @@
     },
     {
       "source_commit": "14074bf1055997897136ba2673d66022f3a2db8b",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "3de4852114792e6e921e46563b03ed05852ae4a1",
       "previous_backup": "4b15d117612602adb7a2e821fd1e6b999e7e380f",
       "event": "stop",
       "milestone": "Original non-browser acceptance verified with native offline 768 implementation",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "d4c20b5d356e5d0aab8840c383bd1a8bb7db76ef",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "3de4852114792e6e921e46563b03ed05852ae4a1",
+      "event": "stop",
+      "milestone": "Final non-browser acceptance evidence and exact browser dependency",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

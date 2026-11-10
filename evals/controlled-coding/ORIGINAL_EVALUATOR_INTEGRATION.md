@@ -59,3 +59,18 @@ wrapper, browser syscall exception, network permission or additional broad host 
 Run:
 `python evals/controlled-coding/original_evaluator_adapter.py --native-root EXISTING_RECORDED_NATIVE_ROOT --out NEW_PRIVATE_EVALUATION_DIR`.
 The adapter applies the captured patch itself; no reference source or direct fix-up.
+
+## Exact remaining browser dependency
+
+BLOCKED: no compatible prepared browser cache was found. Installed public
+Playwright1.60 metadata pins Chrome-for-Testing/headless-shell148.0.7778.96, build1223.
+Official headless-shell archive:
+https://cdn.playwright.dev/builds/cft/148.0.7778.96/linux64/chrome-headless-shell-linux64.zip .
+The previous authorized availability probe returned proxy403; no network permission
+was changed and no failed launch profiles were repeated this phase. This build's
+compatibility/security under the current filter is UNVERIFIED, not guaranteed. A
+maintained approved compatible Chromium binary and its resource directory must be
+available through a trusted source and mapped read-only at the original expected
+/usr/lib/chromium/chromium interface. It must pass real page/UI/security assertions
+with capset denial and all other protections unchanged. Merely installing a browser
+or returning a fake success cannot clear this gate. No live pilot before that proof.
