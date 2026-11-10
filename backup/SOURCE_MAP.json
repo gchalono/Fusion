@@ -1,5 +1,5 @@
 {
-  "source_commit": "616a83e26adb43598e2b2f461861f0b68e0fd190",
+  "source_commit": "e081c8450dc99de66c17ad59b72207e150aa4c10",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "f36d6ce43a3841b8af952e3c2f15e3fe20ae548446d38005709620845572975e",
-      "source_blob": "232db1003801d3ddfe82d3b83c6935891f55f2a8",
+      "sha256": "7d2247c472394b5c7c10309de2602d9c516023380222463404afb7ff7abc54c2",
+      "source_blob": "1bf4359223e9771ee3c0031784e1a79a1df8327d",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "17940ec7e1039096eaae956e05f14c4c3103840e62875642ef615994b43dae55",
-      "source_blob": "54b7423ccbb0890d01e3c12c9b5a7352a1c2fd18",
+      "sha256": "39d898a17050b69bc581e390df96e72659a9dc18d13f0fb3404371193e1989b8",
+      "source_blob": "c4ce280dca2754d10da8cff1219adba0048816c8",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -131,8 +131,8 @@
     },
     {
       "path": "evals/controlled-coding/HISTORY_PRESERVING_LEDGER_ADAPTER.md",
-      "sha256": "8d1f7ddef4ee52ba4b6ccddf54899945c5d94f43c77ba15eccc51edf33553fa1",
-      "source_blob": "2c7a1d27661a174e9f723d3f7cdc3fbf327fd719",
+      "sha256": "83454d0b1975b0ad1179d773aa414ec9062630dd462c2a7a0d3de1f3288a5315",
+      "source_blob": "0faf182e80a0d00526c7cd3490e1d63c899195db",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -334,8 +334,8 @@
     },
     {
       "path": "evals/controlled-coding/budget.py",
-      "sha256": "d79c2e25aa82c16c39bb7c93a30757b3c5b8eec3b1382b1b922d54ed33e09d36",
-      "source_blob": "42c983d3a49173a7df1f278f11729fda69bc0f5e",
+      "sha256": "95c71e5f42f521f6971ddb164a1bb6cb0c2d705cc0b64418de8adc4ada141828",
+      "source_blob": "d11a190de0977401fa65c6144dd3777552fe3621",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -446,8 +446,8 @@
     },
     {
       "path": "evals/controlled-coding/history_budget.py",
-      "sha256": "bef53fac8a22620806109e21b33bc98dad8b29dc10bc915465d46a799c3bdb82",
-      "source_blob": "3f2d0acc1468e1ebce65ce92ae1960f9a937ca1b",
+      "sha256": "b2ffb51afca03d216ddfa977d908d1a1a4032a77ee7330d95f1c1406acdae605",
+      "source_blob": "d74ef80f94bb6702e2db939702c30ce83e2a5fe9",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -761,8 +761,8 @@
     },
     {
       "path": "evals/controlled-coding/test_history_budget.py",
-      "sha256": "837ab7604c12132faec117479432ed9416d34996d35fac64b640aca5964ff9dd",
-      "source_blob": "b407728394da49a053a86b757addbac0ba85a71b",
+      "sha256": "730e42c034797f148b00986bdb8a46659e64b766835a64eb3e49ed8984133a9e",
+      "source_blob": "2804af8292b6df09a6d347e1b466848cde2d5adf",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },

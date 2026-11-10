@@ -124,10 +124,18 @@
     },
     {
       "source_commit": "616a83e26adb43598e2b2f461861f0b68e0fd190",
-      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "snapshot_commit": "1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0",
       "previous_backup": "961c128db722d5b7210eca01bb9d3a28081cdbe1",
       "event": "milestone",
       "milestone": "Phase3C history-preserving ledger gate verified",
+      "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
+    },
+    {
+      "source_commit": "e081c8450dc99de66c17ad59b72207e150aa4c10",
+      "snapshot_commit": "SELF (resolve commit Source-Commit trailer)",
+      "previous_backup": "1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0",
+      "event": "milestone",
+      "milestone": "Phase3C complete ledger gate and bypass rejection",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

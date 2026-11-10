@@ -173,3 +173,8 @@ real continuation. Headroom1500000 after remaining planning488478; max run77416.
 Ledger7dd5b983.../anchor9dd4a684...; private /workspace/phase3c-ledger/. All original
 bytes unchanged. Gate checkpoint next; Step6 may proceed only after remote verification.
 No provider requests/new spend/production/isolation/evaluator changes.
+
+Phase3C gate hardening:21 adapter +15 changed-module tests now pass. Legacy budget
+constructor rejects an anchored continuation; actual gateway error/timeout paths
+retain full exposure. First sanitized milestone616a83e... ->1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0
+independently refetched. Updated gate checkpoint follows before any Step6 work.

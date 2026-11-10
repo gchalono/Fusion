@@ -24,6 +24,9 @@ class AggregateBudget:
     def __init__(self, path, *, experiment_contract=None):
         self.path = str(Path(path).resolve())
         with self.connect() as db:
+            # FNXC:HistoricalLedger 2026-11-10-05:38: Never bypass imported
+            # history by reopening a continuation with the legacy constructor.
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='history_anchor'").fetchone():raise ValueError('anchored_ledger_requires_history_adapter')
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS experiment_contract (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL);
                 CREATE TRIGGER IF NOT EXISTS contract_no_update BEFORE UPDATE ON experiment_contract

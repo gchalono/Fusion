@@ -169,3 +169,9 @@ without resetting/reopening original journal.19 new adapter +15 changed-module t
 pass. Real continuation only bootstrap/anchor,0 new requests. No private DB/raw records
 in outgoing snapshot; source/hash receipts only. Gate permits Step6 only AFTER
 independently re-fetched remote checkpoint. Metadata unverified; no paid authority.
+
+Phase3C first gate source616a83e26adb43598e2b2f461861f0b68e0fd190 independently
+refetched as1b2fdcfd241da8f2f3dbfb2f3ae90d4d4ad485b0. Public isolated recovery tests
+pass; original objects/private data absent. Additional legacy-open bypass rejection,
+deterministic SQLite close and gateway timeout/failure checks expand gate to21+15
+focused passes. No Step6 execution before updated checkpoint is independently fetched.

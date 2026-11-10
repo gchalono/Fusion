@@ -203,3 +203,22 @@ g.handle(canonical({'model':policy.model,'messages':[{'role':'user','content':'L
     except ValueError:return None
    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:results=list(pool.map(attempt,range(12)))
    self.assertEqual(sum(x is not None for x in results),4);self.assertEqual(b.snapshot()['exposure_micro_usd'],88938);b.close()
+ def test_legacy_constructor_cannot_erase_anchored_history(self):
+  from budget import AggregateBudget
+  with tempfile.TemporaryDirectory() as t:
+   p,w,r=fixture(t)
+   with self.assertRaisesRegex(ValueError,'requires_history_adapter'):AggregateBudget(p)
+   b=open_(p,w,r);self.assertEqual(b.snapshot()['exposure_micro_usd'],11522);b.close()
+ def test_actual_gateway_failure_and_timeout_are_full_reservations(self):
+  from history_budget import bind_anchored_gateway
+  from gateway import Gateway,Policy,Artifacts,canonical
+  for case in ('http500','timeout'):
+   with self.subTest(case=case),tempfile.TemporaryDirectory() as t:
+    p,w,r=fixture(t);b,run=start(p,w,r);e=Path(t)/'wire';e.mkdir();(e/'.offline-test').touch()
+    policy=Policy('OpenAI',b.contract['model'],'https://offline.invalid/v1/chat/completions',('offline.invalid',),4,120000,400000,1600000,32000,4096,4096)
+    def upstream(*args):
+     if case=='timeout':raise TimeoutError('LOCAL synthetic timeout')
+     return 500,'application/json',b'{"error":"LOCAL failure"}'
+    g=bind_anchored_gateway(Gateway(policy,Artifacts(e,offline=True),upstream),b,run,synthetic=True)
+    status,_,_=g.handle(canonical({'model':policy.model,'messages':[{'role':'user','content':'LOCAL'}],'max_tokens':4096}))
+    self.assertEqual(status,502 if case=='timeout' else 500);self.assertEqual(b.snapshot()['exposure_micro_usd'],30876);self.assertEqual(b.snapshot()['requests'],1);b.close()

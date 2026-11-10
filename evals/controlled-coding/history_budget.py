@@ -24,6 +24,11 @@ def continuation_contract():
  d=experiment_contract();d['frozen_coding_token_limit']=144384
  return d
 
+class _ClosingConnection(sqlite3.Connection):
+ def __exit__(self,*args):
+  try:return super().__exit__(*args)
+  finally:self.close()
+
 class HistoryBudget(AggregateBudget):
  @classmethod
  def initialize(cls,path,witness,*,reader=None,test_key=None):
@@ -55,6 +60,7 @@ class HistoryBudget(AggregateBudget):
    identity={'schema_version':1,'ledger_id':secrets.token_hex(32),'anchor_sha256':sha(canonical(anchor)),'domain':'TEST' if test_key is not None else 'LIVE','witness_path':str(witness.resolve())}
    db.execute('INSERT INTO continuation_identity VALUES (1,?)',(canonical(identity).decode(),))
    cls._chain(db,'BOOTSTRAP')
+  db.close()
   obj=object.__new__(cls);obj.path=str(path.resolve());obj.witness=witness;obj.identity=identity
   obj._write_witness()
   return identity
@@ -90,11 +96,13 @@ class HistoryBudget(AggregateBudget):
      self._recover_rows(db);self._chain(db,'RECOVERY_RETAIN_AND_TERMINALIZE')
     elif recover:self._chain(db,'EXPLICIT_RECOVERY_VALIDATED')
    if recover:self._write_witness()
+  except (sqlite3.DatabaseError,json.JSONDecodeError,KeyError,TypeError,UnicodeError):
+   self._unlock();raise ValueError('continuation_or_witness_corrupt; restore verified files, never reset') from None
   except BaseException:
    self._unlock();raise
 
  def connect(self):
-  db=sqlite3.connect('file:'+self.path+'?mode=rw',uri=True,timeout=10)
+  db=sqlite3.connect('file:'+self.path+'?mode=rw',uri=True,timeout=10,factory=_ClosingConnection)
   db.execute('PRAGMA foreign_keys=ON');db.execute('PRAGMA synchronous=FULL')
   if db.execute('PRAGMA journal_mode').fetchone()[0].lower()!='wal':db.close();raise ValueError('WAL_required')
   return db
@@ -281,6 +289,6 @@ def bind_anchored_gateway(gateway,ledger,run,*,synthetic=False):
  if ledger.identity['domain']=='TEST':
   if not synthetic or u.hostname not in ('offline.invalid','localhost','127.0.0.1'):raise ValueError('test_domain_unavailable_live')
  elif synthetic or p.upstream_url!='https://api.openai.com/v1/chat/completions':raise ValueError('live_endpoint_required')
- if p.ceiling_micro_usd!=120000 or p.input_price_micro_per_million!=400000 or p.output_price_micro_per_million!=1600000 or p.approved_hosts!=(u.hostname,):raise ValueError('gateway_budget_or_host_mismatch')
+ if p.provider!='OpenAI' or p.ceiling_micro_usd!=120000 or p.input_price_micro_per_million!=400000 or p.output_price_micro_per_million!=1600000 or p.approved_hosts!=(u.hostname,):raise ValueError('gateway_budget_or_host_mismatch')
  if p.model!=ledger.contract['model'] or p.max_model_calls!=4 or p.input_token_bound!=32000 or p.output_token_bound!=4096 or p.output_ceiling!=4096:raise ValueError('gateway_model_or_limits_mismatch')
  return guard_gateway(gateway,ledger,'coding',run,cost_bound=lambda _:request_worst_case(ledger.contract),estimator=Contract().estimate,token_bound=lambda _:(32000,4096))

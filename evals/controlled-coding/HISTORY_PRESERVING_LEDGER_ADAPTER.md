@@ -74,7 +74,7 @@ an event, terminalizes ACTIVE runs and retains every outstanding amount/slot. No
 conversation restart/replay or second authorization is allowed. A previously committed
 valid settlement survives crash without becoming an additional charge.
 
-19 new test methods (table-driven cases) pass, plus10 existing budget and5 lifecycle
+21 new test methods (table-driven cases) pass, plus10 existing budget and5 lifecycle
 regressions. Cases:47-record real replay/11522; original bytes unchanged; exact import
 and reopening without re-import; reserve/settle replacement; missing/invalid usage,
 interruption/failure/timeout retained; SIGKILL after reserve commit/before dispatch/
@@ -98,3 +98,9 @@ and signing trust together. Both DB and witness are still local-only. A lost boo
 witness or inconsistent state blocks; no silent repair. Operator signing trust and
 full live-supervisor/native rehearsal remain separate Step6 work. Current model access
 and official current prices remain UNVERIFIED; no provider requests or inference.
+
+Final gate hardening: the legacy AggregateBudget constructor rejects an anchored DB,
+so a caller cannot silently omit history by using the old class. SQLite connections
+close deterministically; corruption errors give fixed recovery guidance. Gateway
+failure/timeout accounting is also tested through its real wrapper, not only by
+manually marking uncertainty. All21 adapter +15 changed-module regressions pass.
