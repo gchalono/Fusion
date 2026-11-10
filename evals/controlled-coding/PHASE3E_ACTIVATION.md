@@ -1,8 +1,8 @@
-# Phase 3E activation — AWAITING_OPERATOR_SETUP
+# Phase 3F activation — AWAITING_OPERATOR_SETUP
 
 No inference is authorized or performed. This package is for ONE Arm A run only.
-VERIFIED baseline: development dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427,
-sanitized backup 82428dc397d088264e03b04c7bc0f40abbb3f00c. Current source is the
+VERIFIED restored baseline: development 8459ba5c995901f131d0cb3fae1c5ff8284e8a37,
+sanitized backup a4603010e465051bc28fd1bd60a1d3a6fc2c95ba. Current source is the
 clean final activation commit recorded in CHECKPOINTS and the backup SOURCE_MAP.
 Always derive a fresh spec AFTER final publication. Do not sign the old baseline.
 
@@ -16,11 +16,13 @@ The existing native isolation probe passes all seven checks: provider environmen
 proc and descriptors absent; protected host paths/hidden evaluator absent;
 only public runtime mounted; direct egress denied. No isolation code changed.
 A first nested executor probe could not run; outer-executor retry passed.
-Private receipts: /workspace/phase3e-evidence/ (not public backup contents).
+Private receipts: /workspace/phase3f-evidence/ (not public backup contents).
 
 Unchanged task phase2m-personal-task-manager:A, source objective/seed/evaluator,
-Ed25519 supervisor, gateway, native Pi, seccomp, original historical evidence.
-The only additive runtime utility is activation_preflight.py: read-only approval
+Ed25519 authorization, local gateway budgets, native Pi, seccomp, original historical
+evidence. Phase3F changes only operator_auth, supervisor metadata/transport-permit
+checks and transport admission to replace the cap assertion with signed risk acceptance.
+Phase3E added activation_preflight.py: read-only approval
 inspection, no reservation, nonce consumption, authorization row or transport.
 Execution still repeats all original gates; preflight grants no execution right.
 
@@ -55,30 +57,52 @@ ceil((32000*400000 + 4096*1600000)/1000000) = 19,354 micro-USD per attempt;
 2,000,000 - 11,522 - 500,000 - 77,416 = 1,411,062 micro-USD >= 0.
 These are conditional cost bounds at configured rates, not measured API spending.
 
-## Provider spending controls (read-only assessment)
+## Signed no-provider-cap acknowledgment — operator approved policy
 
-No permitted non-admin interface available here establishes a provider hard cap.
-No admin credentials, provider management calls or billing changes were used.
-- Local ledger: VERIFIED hard admission/reservation control for this gateway only;
-  $0.12/run/$2 aggregate, 4 underlying requests including retries and compaction.
-- Provider project budget/notifications: UNKNOWN here; treat any unverified budget
-  as a soft alert, never a hard cap. Cannot sign a hard-cap attestation from it.
-- Project key/model allowlist: UNKNOWN; isolation/allowlist is not a money cap.
-- Provider hard cap: UNVERIFIED. No attestation has been fabricated.
+No provider-enforced hard cap is required, asserted or verified. No prepaid credits,
+provider budget configuration, admin credential or billing change is required.
+The operator must explicitly sign this exact transport acknowledgment:
 
-Smallest operator choices (not activated; no numeric balance invented):
-(a) small prepaid balance B with auto-recharge OFF: nominal funding B; delayed
-billing/overage behavior unverified, therefore NO proven hard maximum B.
-(b) dedicated project + project-scoped key + exact-model allowlist: reduces scope;
-without provider-enforced cap, maximum project monetary exposure is UNKNOWN.
-(c) both: tighter isolation/funding exposure, but no proven provider dollar maximum
-until documented provider enforcement/overage behavior is independently confirmed.
-If a provider-enforced project ceiling H is actually evidenced, exposure <=H under
-those provider guarantees; record H/evidence before signing. The local single-run
-bound remains $0.077416 at assumed rates. It is not a provider-side guarantee.
-Existing transport REQUIRES truthful provider_side_cap_confirmed=true. None of
-(a)-(c) alone waives it. If it cannot be evidenced, STOP for operator review; do
-not change the supervisor, hard limits or meaning of that attestation.
+```json
+{"provider_hard_cap_verified":false,"accepts_provider_billing_above_local_estimate":true,"local_controls_only_verified_spending_enforcement":true,"authorized_runs":1}
+```
+
+It is stored under payload.transport.no_provider_cap_acknowledgment, alongside
+metadata_sha256. The existing Ed25519 signature covers the ENTIRE payload (spec +
+transport); missing, unsigned or changed acknowledgment fails closed. Old cap
+attestations alone are insufficient. The trusted supervisor propagates only the
+verified acknowledgment to its private transport permit. No provider cap is invented.
+Only one approved run; no automatic successor, whole-run retry or model fallback.
+Local budgets remain the only VERIFIED spending enforcement, limited to this gateway.
+Provider billing can exceed local estimates. The operator explicitly accepts this risk.
+All original reservation, accounting, exclusive ownership, uncertainty retention,
+credential, model/endpoint and authorization gates remain active.
+
+## Operator-side pricing procedure if cloud documentation is inaccessible
+
+On an operator-controlled machine with official documentation access, independently
+review BOTH URLs above for this snapshot's current STANDARD pricing and API shape.
+Retain the official pages, URLs, UTC retrieval dates and SHA256 hashes as evidence.
+Run the reviewed existing gateway_metadata.py with the funded project's provider key
+configured privately on that machine (never put a value on the command line):
+
+```sh
+PYTHONPATH=evals/controlled-coding python -B - <<'PYCODE'
+from pathlib import Path
+from gateway_metadata import collect
+r=collect(Path('fresh-model-metadata.json'))
+print({k:r[k] for k in ('model_access','http_status','pricing_verified','provider_metadata_requests','inference_requests')})
+PYCODE
+```
+
+This supported procedure fetches the official model page, parses the expected rates,
+and performs one NON-INFERENCE snapshot GET; it sets its own verification flag.
+It does not change billing. Require pricing_verified=true, model_access=VERIFIED,
+HTTP200 and exact snapshot. Return the unedited receipt plus official source evidence;
+no provider or signing private key. Receipt's hash is signed in the approval. If the
+parser cannot establish the current rates, STOP; never edit a flag. A changed rate
+requires separate review, not silently signing the configured old rates. Metadata
+must remain <24h old at execution; this procedure has NOT been run in Phase3F.
 
 ## Enrollment — operator machine / administrator ONLY
 
@@ -130,9 +154,10 @@ Do not sign any undocumented difference or expired spec.
 
 2. SIGN (OPERATOR MACHINE ONLY, after separate explicit paid authorization):
 ```sh
-python -B evals/controlled-coding/operator_auth.py sign --spec arm-a-spec.json --metadata fresh-model-metadata.json --private operator-private/operator.key --public operator.pub --confirm-provider-side-cap --out operator-approval.json
+python -B evals/controlled-coding/operator_auth.py sign --spec arm-a-spec.json --metadata fresh-model-metadata.json --private operator-private/operator.key --public operator.pub --acknowledge-no-provider-cap --out operator-approval.json
 ```
-Use --confirm-provider-side-cap ONLY with verified provider enforcement evidence.
+This required flag explicitly accepts the exact no-provider-cap risk statement above.
+It does not attest that a provider cap exists.
 Return only approval and bound public metadata. Never transfer private key.
 Independent detached-signature verification on operator machine:
 ```sh
@@ -170,7 +195,7 @@ No missions, tasks, autopilot, resolver, fallback or further interview authorize
 300s coding, 60s/request, $0.12 run/$2 cumulative including retained history;
 planning allocation $0.50 unchanged. Old 512/768-token profiles cannot enter LIVE.
 Stop: ledger/anchor/witness mismatch, incorrect model/endpoint/source/config,
-unverified pricing/provider cap/trust, expired/consumed approval, budget exhaustion,
+unverified pricing, absent risk acknowledgment/trust, expired/consumed approval, budget exhaustion,
 300s deadline, process cleanup failure. Never replay or restart a native session.
 
 Expected private outputs: result.json, approval/spec, request/transport/response
@@ -185,11 +210,13 @@ shows initial functionality, not reliability. No new ability claim from scripted
 
 ## Validation / activation boundary
 
-5 new focused TEST-domain tests pass, plus all 10 existing operator_auth/capture
-tests. Valid/expired/replayed/wrong-digest/unenrolled/TEST-in-LIVE cases verified.
+30 focused TEST-domain methods pass:4 risk/transport admission,5 preflight,10
+operator_auth/capture,1 local TLS transport,10 selected budget/recovery regressions.
+Valid/expired/replayed/wrong-digest/unenrolled/TEST-in-LIVE cases verified.
 Repeated read-only inspection leaves TEST DB/witness byte-identical. Live ledger
 and witness also unchanged. No full-suite, browser or native coding rerun.
-The existing operator suite first hit nested local-socket EPERM; outer retry passes.
-No live trust currently installed. Pricing and provider hard-cap evidence unavailable.
+Local socket/TLS and namespace checks used the outer executor; all pass.
+No live trust currently installed. Current official pricing remains unavailable.
+Provider cap is NOT required; signed risk acceptance replaces that gate.
 Final status AWAITING_OPERATOR_SETUP. No signing, live preflight success or paid
-execution claimed. Phase3E provider inference requests 0; new spending $0.00.
+execution claimed. Phase3F provider inference requests 0; new spending $0.00.

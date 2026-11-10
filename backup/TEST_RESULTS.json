@@ -1,9 +1,12 @@
 {
-  "classification": "PHASE3E_TARGETED_ONLY",
-  "source_commit": "8459ba5c995901f131d0cb3fae1c5ff8284e8a37",
+  "classification": "PHASE3F_TARGETED_ONLY",
+  "source_commit": "7b87544f573fcc1c29f799efd03e35ae0f87be1e",
   "private_original_environment": {
     "activation_tests": 5,
     "operator_auth_and_capture_tests": 10,
+    "risk_ack_tests": 4,
+    "local_tls_transport_tests": 1,
+    "selected_budget_tests": 10,
     "failed": 0
   },
   "full_suite_rerun": false,

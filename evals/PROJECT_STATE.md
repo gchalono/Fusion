@@ -228,3 +228,17 @@ pricing unverified, live trust absent, provider hard cap unverified. No attestat
 fabricated. Conditional worst77416, post-history/planning/run headroom1411062.
 Operator procedure: evals/controlled-coding/PHASE3E_ACTIVATION.md. No paid inference,
 no new provider API calls, $0 new spend. Private evidence remains local-only.
+
+## Phase3F — signed risk acceptance, AWAITING_OPERATOR_SETUP
+
+Restored development8459ba5c995901f131d0cb3fae1c5ff8284e8a37 / sanitized
+backupa4603010e465051bc28fd1bd60a1d3a6fc2c95ba.35 frozen hashes,8 approvals,
+47 historical records/11522 micro-USD/0 unresolved verified;ledger+witness unchanged.
+Operator-authorized removal of provider hard-cap attestation; exact signed acknowledgment
+of no verified provider cap and potential billing beyond local estimate is required.
+All original local limits/accounting/credential/isolation/authorization retained.
+30 focused tests plus7 native isolation checks pass;no benchmark/browser rerun.
+Official docs unreachable,current pricing unverified,external live trust absent.
+No live signing key/approval created,provider API/inference0,new spend$0.00.
+Current procedure PHASE3E_ACTIVATION.md;final source/backup mapping in sanitized
+SOURCE_MAP and private phase3f-evidence receipt. Stop at operator setup/signing boundary.

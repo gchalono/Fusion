@@ -9,7 +9,7 @@ sys.path.insert(0,str(ROOT.parent/'planning-collector'))
 from contract import Contract,canonical
 from gateway import Gateway,Policy,Artifacts
 from history_budget import HistoryBudget,bind_anchored_gateway,sha
-from operator_auth import ApprovalVerifier,strict,clean_env,LIVE_TRUST,TEST_DOMAIN,LIVE_DOMAIN
+from operator_auth import ApprovalVerifier,strict,clean_env,LIVE_TRUST,TEST_DOMAIN,LIVE_DOMAIN,require_risk_ack
 from execution import run_command,runtime_mounts,coding_command
 from pilot import make_inference_server
 from real_transport import RealTransport,sealed_credential
@@ -69,7 +69,7 @@ def approved_metadata(path,payload):
  if sha(raw)!=payload['transport'].get('metadata_sha256'):raise ValueError('metadata_not_bound_to_approval')
  m=strict(raw)
  if m.get('model_access')!='VERIFIED' or m.get('http_status')!=200 or m.get('model',{}).get('id')!=MODEL or m.get('pricing_verified') is not True or not 0<=time.time()-m.get('timestamp',0)<=86400:raise ValueError('current_model_access_and_pricing_required')
- if payload['transport'].get('provider_side_cap_confirmed') is not True:raise ValueError('existing_transport_requires_operator_provider_cap_confirmation')
+ require_risk_ack(payload['transport'])
  return m
 
 def terminal_provider_error(status,body):
@@ -107,7 +107,7 @@ def run(approval,out,*,trust=LIVE_TRUST,test_state=None,synthetic_transport=None
    credential_fd=sealed_credential(provider_key)
    cfg=dict(ledger.contract);cfg.update(provider_spend_authorized_usd='0.12',model_availability='VERIFIED')
    cfgpath=credentials/'transport-contract.json';cfgpath.write_bytes(canonical(cfg));c=Contract(cfgpath)
-   permit={'live_authorized':True,'model':MODEL,'contract_sha256':c.sha256,'approved_hosts':['api.openai.com'],'expires_at':spec['expires_at'],'provider_side_cap_confirmed':True,'authorized_spend_usd':.12,'credential_fd':credential_fd,'model_availability_verified':True,'model_availability_evidence':envelope['payload']['transport']['metadata_sha256']}
+   permit={'live_authorized':True,'model':MODEL,'contract_sha256':c.sha256,'approved_hosts':['api.openai.com'],'expires_at':spec['expires_at'],'no_provider_cap_acknowledgment':dict(envelope['payload']['transport']['no_provider_cap_acknowledgment']),'authorized_spend_usd':.12,'credential_fd':credential_fd,'model_availability_verified':True,'model_availability_evidence':envelope['payload']['transport']['metadata_sha256']}
    permitpath=credentials/'transport-permit.json';permitpath.write_bytes(canonical(permit));permitpath.chmod(0o600)
    transport=RealTransport(live=True,authorization_file=permitpath,contract_path=cfgpath,credential_fd=credential_fd)
   isolation_preflight(root,secret_values)

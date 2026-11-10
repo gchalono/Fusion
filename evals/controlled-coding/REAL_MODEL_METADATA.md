@@ -31,3 +31,17 @@ configured-rate reservation 19,354 micro-USD/request, four attempts 77,416.
 Headroom after history, $0.50 planning and this run: 1,411,062 micro-USD.
 These rate-based bounds remain conditional on official pricing verification.
 See PHASE3E_ACTIVATION.md for supported procedure and operator-only prerequisites.
+
+## Phase3F (2026-11-10)
+
+Credential-free official model/pricing URL retries remain unreachable, including
+outer-executor retry. pricing_verified remains false, no receipt edited or new
+provider GET performed. Use the operator-side existing collect procedure documented
+in PHASE3E_ACTIVATION.md on a network that can reach official documentation; return
+unedited verified receipt and source pages/URLs/date/hashes. Failure to parse is a
+stop condition. No pricing bypass, substitution or rate change is authorized.
+Default service_tier explicitly injected by strict broker; alternatives rejected.
+Configured rates0.40/0.10/1.60 USD/M remain supplied,unverified assumptions.
+Per-request ceil19354 micro-USD,four77416,remaining headroom1411062.
+Provider cap attestation is removed by operator authorization; signed risk acceptance
+is required instead. No provider billing change or prepaid requirement.

@@ -172,18 +172,18 @@
     },
     {
       "source_commit": "dc67ebdcaafdbeb6c2b460cf92dc0d0b5c617427",
-      "snapshot_commit": "82428dc397d088264e03b04c7bc0f40abbb3f00c",
+      "snapshot_commit": "a4603010e465051bc28fd1bd60a1d3a6fc2c95ba",
       "previous_backup": "4c6a61a9978cf70e051964dc543d93097201e4e4",
       "event": "stop",
       "milestone": "Phase3D tested executable live command; operator enrollment and pricing pending",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     },
     {
-      "source_commit": "8459ba5c995901f131d0cb3fae1c5ff8284e8a37",
+      "source_commit": "7b87544f573fcc1c29f799efd03e35ae0f87be1e",
       "snapshot_commit": "SELF (Source-Commit trailer)",
-      "previous_backup": "82428dc397d088264e03b04c7bc0f40abbb3f00c",
+      "previous_backup": "a4603010e465051bc28fd1bd60a1d3a6fc2c95ba",
       "event": "milestone",
-      "milestone": "Phase3E activation package; targeted tests only",
+      "milestone": "Phase3F signed risk acceptance; targeted tests only",
       "remote_status": "PENDING_INDEPENDENT_VERIFICATION"
     }
   ],

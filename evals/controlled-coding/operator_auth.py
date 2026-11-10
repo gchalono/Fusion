@@ -7,6 +7,11 @@ from pathlib import Path
 from contract import canonical
 LIVE_TRUST=Path('/etc/fusion-eval/operator-trust.json')
 LIVE_DOMAIN='FUSION_PHASE3C_LIVE';TEST_DOMAIN='FUSION_PHASE3C_TEST'
+# FNXC:Activation 2026-11-10-22:01: Operator explicitly accepts no provider cap;
+# exact acknowledgment is part of the Ed25519-signed transport payload.
+NO_PROVIDER_CAP_ACK={'provider_hard_cap_verified':False,'accepts_provider_billing_above_local_estimate':True,'local_controls_only_verified_spending_enforcement':True,'authorized_runs':1}
+def require_risk_ack(transport):
+ if canonical(transport.get('no_provider_cap_acknowledgment'))!=canonical(NO_PROVIDER_CAP_ACK):raise ValueError('signed_no_provider_cap_acknowledgment_required')
 def clean_env():return {'PATH':os.environ.get('PATH',os.defpath),'PYTHONDONTWRITEBYTECODE':'1'}
 def command(args,**kw):return subprocess.run(args,env=clean_env(),check=True,capture_output=True,**kw)
 def public_fingerprint(public):
@@ -28,6 +33,7 @@ class ApprovalVerifier:
   self.payload=envelope['payload'];self.spec=self.payload['spec'];domain=TEST_DOMAIN if test_only else LIVE_DOMAIN
   if self.spec.get('domain')!=domain:raise ValueError('approval_domain_unavailable')
   if not test_only:
+   require_risk_ack(self.payload['transport'])
    if self.trust!=LIVE_TRUST:raise ValueError('operator_trust_path_fixed')
    for p in (self.trust,self.trust.parent):
     if p.is_symlink() or p.stat().st_uid!=0 or p.stat().st_mode&0o022:raise ValueError('operator_trust_requires_root_ownership_and_no_dev_write')
@@ -64,11 +70,11 @@ def make_test_trust(root):
 def main():
  p=argparse.ArgumentParser();s=p.add_subparsers(dest='action',required=True)
  a=s.add_parser('trust-config');a.add_argument('--public',type=Path,required=True);a.add_argument('--out',type=Path,required=True)
- a=s.add_parser('sign');a.add_argument('--spec',type=Path,required=True);a.add_argument('--private',type=Path,required=True);a.add_argument('--public',type=Path,required=True);a.add_argument('--metadata',type=Path,required=True);a.add_argument('--confirm-provider-side-cap',action='store_true');a.add_argument('--out',type=Path,required=True)
+ a=s.add_parser('sign');a.add_argument('--spec',type=Path,required=True);a.add_argument('--private',type=Path,required=True);a.add_argument('--public',type=Path,required=True);a.add_argument('--metadata',type=Path,required=True);a.add_argument('--acknowledge-no-provider-cap',action='store_true',required=True);a.add_argument('--out',type=Path,required=True)
  args=p.parse_args()
  if args.action=='trust-config':data={'domain':LIVE_DOMAIN,'algorithm':'Ed25519','key_id':public_fingerprint(args.public)}
  else:
-  spec=strict(args.spec.read_bytes());transport={'metadata_sha256':hashlib.sha256(args.metadata.read_bytes()).hexdigest(),'provider_side_cap_confirmed':args.confirm_provider_side_cap};data=sign_payload({'spec':spec,'transport':transport},args.private,args.public)
+  spec=strict(args.spec.read_bytes());transport={'metadata_sha256':hashlib.sha256(args.metadata.read_bytes()).hexdigest(),'no_provider_cap_acknowledgment':dict(NO_PROVIDER_CAP_ACK)};data=sign_payload({'spec':spec,'transport':transport},args.private,args.public)
  with args.out.open('xb') as f:f.write(canonical(data))
  print(json.dumps({'status':'WRITTEN','path':str(args.out),'private_key_displayed':False}))
 if __name__=='__main__':main()

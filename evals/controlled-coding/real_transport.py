@@ -64,7 +64,11 @@ def validate(config):
     errors=[e for e in c.arming_errors() if e!='NO_PAID_AUTHORIZATION']
     if a.get('model_availability_verified') and a.get('model_availability_evidence'):errors=[e for e in errors if e!='MODEL_AVAILABILITY_UNVERIFIED']
     if errors:raise ValueError(','.join(errors))
-    if not a.get('provider_side_cap_confirmed') or not 0<a.get('authorized_spend_usd',0)<=2:raise ValueError('dedicated_key_cap_required')
+    # FNXC:Activation 2026-11-10-22:01: No provider hard-cap attestation; retain
+    # exact signed risk acknowledgment propagated by the trusted supervisor.
+    from operator_auth import require_risk_ack
+    require_risk_ack(a)
+    if not 0<a.get('authorized_spend_usd',0)<=2:raise ValueError('local_authorized_spend_required')
     if 'credential_fd' in config:
         if a.get('credential_fd')!=config['credential_fd']:raise ValueError('credential_descriptor_authorization_mismatch')
         return c,'https://api.openai.com/v1/chat/completions'

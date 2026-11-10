@@ -1,5 +1,5 @@
 {
-  "source_commit": "8459ba5c995901f131d0cb3fae1c5ff8284e8a37",
+  "source_commit": "7b87544f573fcc1c29f799efd03e35ae0f87be1e",
   "source_repository": "gchalono/Fusion",
   "history_included": false,
   "files": [
@@ -82,15 +82,15 @@
     },
     {
       "path": "evals/CHECKPOINTS.md",
-      "sha256": "e616e77101cfebe0c641a96fb55b734e3f74045db19baa2937139f8f6b80b40a",
-      "source_blob": "806bd6d968f982422e14ae8a33e2df60dc4a7041",
+      "sha256": "277e26439c5e2794b6f6c981f94f9fc7fd6089db3f90b328f02640769560c0d3",
+      "source_blob": "81ccad8994128b3470d2caa53edefeb57cc5932a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
     {
       "path": "evals/PROJECT_STATE.md",
-      "sha256": "d8ab0a5b74878cd7efe12556b51fdd224cc43f79604a83963e48fd054d25ff0d",
-      "source_blob": "0f67a3f09832d8bc9b74a8fca2f63a975adf8355",
+      "sha256": "548037c30f1a6d93b98e8d929fc05e84ebba776ca57ecd11fda3bee2f0b48c6a",
+      "source_blob": "cfabce489e38d1e3c24fee845550450fd061fa34",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -124,8 +124,8 @@
     },
     {
       "path": "evals/controlled-coding/FIRST_REAL_MODEL_RUN.md",
-      "sha256": "9daa15d67d2fe082bca9851b8e1aad6797042467af4e2d6ce46dd22e61bc69c6",
-      "source_blob": "8b3b684949e65c7f318c8c5affbe3b2c909572be",
+      "sha256": "cd0394e4e1a6fabeea144eab7c547c05445cb9f799aae51cbc9b6fd76d2b7b57",
+      "source_blob": "387beabd755549e48a22107cc736333a74f73fbc",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -180,8 +180,8 @@
     },
     {
       "path": "evals/controlled-coding/PHASE3E_ACTIVATION.md",
-      "sha256": "44e0134e06a0a5b01c195c67aa081ee21b3309cd37bb21c9007bcfcfaa103cbd",
-      "source_blob": "8cb74e5a39e833559dcb47d564455c29d82bcba9",
+      "sha256": "e42697a8e2de795d30cf2157c33489bdb3e4cce73e4cbb7909218e61c8a9b689",
+      "source_blob": "7ab4f8f8fa90e8c2c214b709ab6864be9609869a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -250,8 +250,8 @@
     },
     {
       "path": "evals/controlled-coding/REAL_MODEL_METADATA.md",
-      "sha256": "338ee40ad3df5b1ea5ad463d2f296ccfaaca8fd58e30c1cae504837ca01dc816",
-      "source_blob": "36a307832da1961244d37297fed5d924e7166a82",
+      "sha256": "2f939d5449345258861ab1f892ba5566b5198412aa68d0f268e022e60509903a",
+      "source_blob": "c001506b440a336a1102ba51267ab07b44677726",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -551,8 +551,8 @@
     },
     {
       "path": "evals/controlled-coding/live_supervisor.py",
-      "sha256": "502153f4785784ff6a8af9f5703a3394ea42a391ca3b4c68ba699996a4a12ddf",
-      "source_blob": "dc5489ef6e31f5a5c5ef6777a5e465f86e335d97",
+      "sha256": "ba061d7a4118281cc3c374cc6612e26acfdb7554e0f976801140c83ba1109e5d",
+      "source_blob": "aed5ccb5451657d3a7ae75eb90ddde6d2949da3f",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -579,8 +579,8 @@
     },
     {
       "path": "evals/controlled-coding/operator_auth.py",
-      "sha256": "e505915b9652acf794b6b7c616230960a1dfc9f537296d6c5e5e95f26e4a8c3f",
-      "source_blob": "6a99191cb44584809de16d0abe4f539548427494",
+      "sha256": "b59c846193f350e03b46b49718130da628d41be00bc1f34a6081e33163bb7d5e",
+      "source_blob": "ec1f0af0a31868abe71a364129bd87e2afcec05a",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -656,8 +656,8 @@
     },
     {
       "path": "evals/controlled-coding/real_transport.py",
-      "sha256": "a5d81b9d6ff0f649f8f3af169f2477c98177df4dfbfc29fad33e66f34f55735f",
-      "source_blob": "b0314cebc2a320d3891348f6e425abd52b8a3142",
+      "sha256": "f327bd4a7aadeb0259c961f5d120b00a65c61a8d9733c912d1b6d1a776476acb",
+      "source_blob": "35b544db40fa4bc60776e5abbb4d3509202d9186",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
@@ -889,6 +889,13 @@
       "path": "evals/controlled-coding/test_positive_completion.py",
       "sha256": "b37341e43a423c6a477d5de603a868eed79701d3d12e2dc3baeb699bfff0bd45",
       "source_blob": "92569a697bff43d3ef9b44b17b407c03602837f8",
+      "mode": "100644",
+      "category": "evaluation source/test or reviewed metadata"
+    },
+    {
+      "path": "evals/controlled-coding/test_provider_risk_ack.py",
+      "sha256": "a3a769148a24c5a908031eb3463da53034702a80bf3e7fd99873802350620315",
+      "source_blob": "296ddceb5f91bf2f36145b9e49501780d434e4c4",
       "mode": "100644",
       "category": "evaluation source/test or reviewed metadata"
     },
