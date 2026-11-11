@@ -33,28 +33,22 @@ def validate(config):
             if not Path(config[name]).resolve().is_relative_to(Path(config['test_root']).resolve()):raise ValueError('test_material_outside_root')
         return c,url
     if not config.get('live'):raise ValueError('real_transport_disabled')
-    a_path=Path(config['authorization_file'])
-    if a_path.is_symlink() or a_path.stat().st_mode & 0o077:raise ValueError('authorization_permissions')
-    a=json.loads(a_path.read_text())
-    if a.get('test_double') or a.get('live_authorized') is not True or a.get('model')!=c.data['model'] or a.get('contract_sha256')!=c.sha256:raise ValueError('authorization_mismatch')
-    if a.get('approved_hosts')!=['api.openai.com'] or a.get('expires_at',0)<=time.time():raise ValueError('exact_host_authorization_required')
-    errors=[e for e in c.arming_errors() if e!='NO_PAID_AUTHORIZATION']
-    if a.get('model_availability_verified') and a.get('model_availability_evidence'):errors=[e for e in errors if e!='MODEL_AVAILABILITY_UNVERIFIED']
-    if errors:raise ValueError(','.join(errors))
-    if not a.get('provider_side_cap_confirmed') or not 0<a.get('authorized_spend_usd',0)<=2:raise ValueError('dedicated_key_cap_required')
-    key=Path(a['key_file'])
-    if key.is_symlink() or not key.is_file() or key.stat().st_mode & 0o077:raise ValueError('gateway_key_permissions')
+    from live_authorization import verify_authority
+    verify_authority(config,c)
     return c,'https://api.openai.com/v1/chat/completions'
 
 
 class RealTransport:
-    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60):
+    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60, operator_public_key=None, aggregate_authorization_file=None, run_id=None, ledger_path=None):
         self.config={k:str(v) if isinstance(v,Path) else v for k,v in locals().copy().items() if k not in ('self',) and v is not None}
         self.contract,self.url=validate(self.config)
         self.timeout=min(timeout,self.contract.data['request_seconds']);self.active=set()
 
     def __call__(self, _ignored_policy_url, raw):
         validate(self.config)
+        if self.config.get('live'):
+            from live_authorization import paid_gate
+            paid_gate(self.config,self.contract)
         if _ignored_policy_url not in (self.url,'https://api.openai.com/v1/chat/completions'):raise ValueError('destination_mismatch')
         normalized,_=self.contract.prepare(raw)
         if normalized!=raw:raise ValueError('unprepared_request')
@@ -92,7 +86,9 @@ def worker():
             context=ssl.create_default_context(cafile=config['test_ca'])
             opener=build_opener(ProxyHandler({}),HTTPSHandler(context=context))
         else:
-            approval=json.loads(Path(config['authorization_file']).read_text());key=Path(approval['key_file']).read_text().strip();opener=None
+            from live_authorization import paid_gate
+            approval=paid_gate(config,c);key=Path(approval['key_file']).read_text().strip();opener=None
+            if not key:raise ValueError('missing_gateway_credential')
         # FNXC:OfflineFinal 2026-11-09-05:40: Reuse the existing destination,
         # redirect and response-size boundary; external worker supplies deadline.
         sys.path.insert(0,str(Path(__file__).parent.parent/'planning-collector'))

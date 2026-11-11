@@ -70,7 +70,7 @@ class UnixServer(socketserver.ThreadingMixIn,socketserver.UnixStreamServer):
     daemon_threads=True
 
 
-def inference_socket(path, gateway, token):
+def inference_socket(path, gateway, token, *, normalize_request=None):
     """Trusted, run-bound HTTP adapter; no admin paths and no transport retry."""
     lock=threading.Lock()
     events=[]
@@ -87,7 +87,9 @@ def inference_socket(path, gateway, token):
                 if self.headers.get('Transfer-Encoding'):raise ValueError('encoding')
                 lengths=self.headers.get_all('Content-Length',[])
                 if len(lengths)!=1 or not lengths[0].isdigit() or not 0<int(lengths[0])<=1000000:raise ValueError('length')
-                body=json.loads(self.rfile.read(int(lengths[0])))
+                raw=self.rfile.read(int(lengths[0]))
+                if normalize_request is not None:raw=normalize_request(raw)
+                body=json.loads(raw)
                 cap=gateway.policy.output_ceiling or gateway.policy.output_token_bound
                 requested=body.get('max_tokens',cap)
                 if type(requested) is not int or requested<=0 or 'max_completion_tokens' in body:raise ValueError('limit')
