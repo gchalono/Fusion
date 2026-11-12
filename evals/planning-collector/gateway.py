@@ -25,6 +25,41 @@ class Blocked(Exception):
     """Only stable, non-sensitive codes may leave the boundary."""
 
 
+SAFE_FAILURE_CODES = frozenset({
+    'call_cap', 'spend_ceiling', 'run_deadline_or_inactive', 'frozen_coding_token_limit',
+    'experiment_request_cap', 'stage_allocation_cap', 'aggregate_spend_cap',
+    'provider_http_error', 'provider_output_truncated', 'provider_usage_missing_or_ambiguous',
+    'incomplete_live_stream', 'incomplete_live_response', 'usage_exceeds_reserved_bound',
+    'invalid_usage', 'response_model_mismatch', 'unsupported_response', 'response_too_large',
+    'unprepared_request', 'whole_request_deadline', 'transport_worker_failed',
+    'transport_authorization_failed', 'transport_request_rejected', 'provider_transport_failed',
+    'redirect_forbidden', 'destination_mismatch', 'credential_in_request', 'credential_reflected',
+    'forward_failed', 'gateway_failure',
+    'coding_run_cap', 'under_reserved_request', 'request_token_limit',
+    'unknown_model_or_unpriced_feature', 'store_not_authorized', 'messages_required',
+    'unpriced_modality', 'unpriced_tool', 'ambiguous_output_limit', 'invalid_output_limit',
+    'input_byte_bound_exceeded', 'unsupported_request_shape', 'invalid_transport_response',
+})
+
+
+def safe_failure_code(error, default='forward_failed'):
+    tag = getattr(error, 'gateway_safe_code', None)
+    if isinstance(tag, str) and tag in SAFE_FAILURE_CODES:
+        return tag
+    code = str(error)
+    return code if code in SAFE_FAILURE_CODES else default
+
+
+def safe_failure_details(error):
+    details = getattr(error, 'safe_details', {})
+    if not isinstance(details, dict):
+        return {}
+    return {key: value for key, value in details.items()
+            if key in ('http_status', 'usage_records', 'prompt_tokens', 'completion_tokens',
+                       'input_token_upper_bound', 'output_token_upper_bound')
+            and type(value) is int and 0 <= value <= 100000000}
+
+
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
@@ -248,6 +283,7 @@ class Gateway:
         self.budget = Budget(policy, artifacts)
         self.serial = threading.Lock()
         self.blocked_attempts = []
+        self.last_failure_code = None
 
     def handle(self, raw):
         with self.serial:
@@ -258,10 +294,13 @@ class Gateway:
                 request_artifact = self.artifacts.write(f"request-{attempt:04}.json", raw)
                 try:
                     status, content_type, response = self.transport(self.policy.upstream_url, canonical(body))
-                except OSError:
+                except OSError as error:
                     # Native retry policy stays enabled. This boundary does not
                     # retry; a later native attempt needs another reservation.
-                    status, content_type, response = 502, "application/json", b'{"error":"upstream_transport_failed"}'
+                    self.last_failure_code = safe_failure_code(error, 'provider_transport_failed')
+                    status, content_type, response = 502, "application/json", canonical({
+                        'error': {'message': 'fusion_gateway_failure:'+self.last_failure_code,
+                                  'type': 'gateway_failure', 'code': self.last_failure_code}})
                 if type(status) is not int or not 100 <= status <= 599 or len(response) > MAX_RESPONSE_BYTES:
                     raise Blocked("invalid_transport_response")
                 usage = validate_response(response, content_type, self.policy.model) if status == 200 else []
@@ -276,11 +315,16 @@ class Gateway:
                     "length_truncated": length_truncated(response, content_type) if status == 200 else None,
                 }))
                 return status, content_type, response
-            except Exception:
+            except Exception as error:
                 self.budget.failed = True
                 # No exception text, upstream body, headers, or credentials in logs.
-                self.artifacts.write(f"failure-{attempt:04}.json", canonical({"code": "forward_failed"}))
-                raise Blocked("forward_failed") from None
+                code = safe_failure_code(error)
+                self.last_failure_code = code
+                details = safe_failure_details(error)
+                self.artifacts.write(f"failure-{attempt:04}.json", canonical({"code": code, **details}))
+                failure = Blocked(code)
+                failure.safe_details = details
+                raise failure from None
 
 
 class HTTPSForwarder:

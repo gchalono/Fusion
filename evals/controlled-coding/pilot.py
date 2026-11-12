@@ -36,16 +36,17 @@ from real_transport import RealTransport
 ROOT=Path(__file__).resolve().parent
 
 
-def fixture_binding():
+def fixture_binding(task=None):
     frozen=verify();names=sorted({Path(p).parts[1] for p in frozen['files']})
-    selected=names[0]
+    selected=names[0] if task is None else task
+    if selected not in names:raise ValueError('unknown_frozen_task')
     entries={k:v for k,v in frozen['files'].items() if k.startswith('fixtures/'+selected+'/')}
     return {'task_id':selected,'stored_file_sha256':entries,'derived_fixture_sha256':hashlib.sha256(canonical(entries)).hexdigest(),'frozen_manifest_sha256':hashlib.sha256((ROOT/'frozen.json').read_bytes()).hexdigest(),'canonical_order':names}
 
 
-def initialize(root):
+def initialize(root, task=None):
     root=Path(root);root.mkdir(parents=True,exist_ok=False);root.chmod(0o700);(root/'.offline-test').touch()
-    contract=Contract();data=copy.deepcopy(contract.data);binding=fixture_binding()
+    contract=Contract();data=copy.deepcopy(contract.data);binding=fixture_binding(task)
     data.update(planning_run_ids=binding['canonical_order'],coding_run_ids=[t+':'+a for t in binding['canonical_order'] for a in 'ABC'],frozen_coding_token_limit=verify()['settings']['coding_token_limit'],fixture_manifest_sha256=binding['frozen_manifest_sha256'])
     (root/'experiment.json').write_bytes(canonical(data));(root/'fixture-binding.json').write_bytes(canonical(binding))
     AggregateBudget(root/'experiment.db',experiment_contract=data)
@@ -153,7 +154,7 @@ def execute_agent(root,runtime,run,*,resume=False, broker_hook=None):
     threading.Thread(target=watch,daemon=True).start()
     if broker_hook:broker_hook(process)
     try:
-        mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(root/'local-token','/run/local-token'),(objective,'/run/objective.txt'),*runtime_mounts(runtime)]
+        mounts=[(ROOT/'coding-agent.mts','/eval/coding-agent.mts'),(ROOT/'self-test-session.mjs','/eval/self-test-session.mjs'),(root/'local-token','/run/local-token'),(objective,'/run/objective.txt'),*runtime_mounts(runtime)]
         report=run_command(root/'gateway.sock',workspace,coding_command(runtime,c.data['model']),mounts=mounts,timeout=min(300,ledger.remaining_seconds('coding',run)),abort_event=abort_event)
         token=(root/'local-token').read_text().strip().encode();secret=(root/'upstream-key').read_text().strip().encode()
         if any(s and s in report[k] for s in (token,secret) for k in ('stdout','stderr')):raise ValueError('credential_in_collected_output')

@@ -1,5 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { getCurrentSystemPrompt, getCurrentTools } from "@earendil-works/pi-ai/utils/transcript";
+import { getCurrentSystemPrompt, getCurrentTools } from "@earendil-works/pi-ai/compat";
 import {
   streamViaCli,
   discoverDroidModels,

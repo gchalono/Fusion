@@ -15,7 +15,7 @@
  * version and the ExtensionAPI stream types stay compatible.
  */
 import { getBuiltinModels } from "@earendil-works/pi-ai/providers/all";
-import { getCurrentSystemPrompt, getCurrentTools } from "@earendil-works/pi-ai/utils/transcript";
+import { getCurrentSystemPrompt, getCurrentTools } from "@earendil-works/pi-ai/compat";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { streamViaCli } from "./src/provider.js";
 import { streamViaAcp } from "./src/acp-driver.js";

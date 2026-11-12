@@ -14,8 +14,9 @@ public verification key must not be writable by other users. The operator must
 independently trust that public key; an approval cannot select its own signer.
 The runner never generates approvals or reads the signing private key.
 
-Before signing, verify model availability, current conservative prices and a
-dedicated provider-side spending limit. The existing contract has operator-supplied
+Before signing, verify model availability, current conservative prices and the
+spending-risk declaration below. A provider hard cap is not required when both
+signed documents explicitly accept its absence. The existing contract has operator-supplied
 prices and unverified availability; its presence supplies no spending authority.
 An operator may provide a separately reviewed contract with `--contract`; both
 signatures must bind its canonical SHA-256. Do not edit historical evidence or
@@ -50,6 +51,12 @@ Both payloads require:
 | `contract_sha256` | SHA-256 of canonical contract JSON |
 | `ledger_path` | Exact absolute resolved durable ledger path |
 
+For this experiment both payloads also require `accept_no_provider_hard_cap: true`.
+The run must explicitly set `provider_side_cap_confirmed: false`. Missing,
+nonboolean or contradictory declarations fail verification at setup and each
+paid dispatch, including the transport worker. Confirmed provider caps remain
+supported separately; they cannot be combined with acceptance of an absent cap.
+
 Aggregate payload additionally requires `kind: "aggregate-spending"` and
 `authorized_spend_usd: "2.00"`.
 
@@ -65,7 +72,8 @@ Run payload additionally requires:
 | `live_authorized` | `true` |
 | `model` | Exact model from the signed contract |
 | `approved_hosts` | `["api.openai.com"]` |
-| `provider_side_cap_confirmed` | `true`, after operator verification |
+| `provider_side_cap_confirmed` | `false` for this experiment; no provider hard cap is claimed |
+| `accept_no_provider_hard_cap` | `true` in **both** signed payloads, accepting that internal reservations cannot enforce provider billing |
 | `model_availability_verified` | `true`, after operator verification |
 | `model_availability_evidence` | Nonempty reference to operator's verification |
 | `pricing_verified` | `true`, after operator verification of signed prices |
@@ -80,6 +88,10 @@ unknown billable features, absent/invalid usage, truncated output and transport
 failures terminate the run; worst-case exposure remains charged against limits.
 The aggregate cap covers reservations, not merely reported usage.
 
+See [the operator runbook](LIVE_OPERATOR_RUNBOOK.md) for exact private-key,
+canonical signing and read-only first-run preflight commands. No provider-enforced
+cap is claimed; the internal $2 aggregate and $0.12 run reservation caps remain.
+
 ## Launch command — operator only, after separate authorization
 
 Dependencies must already be installed in this checkout with pinned pnpm 10.33.0
@@ -87,10 +99,10 @@ and `pnpm --filter @fusion/core build` completed. Use system Python: the PATH
 Python installation may not run inside the existing namespace mounts.
 
 ```sh
-cd /workspaces/Fusion-fresh-pilot
+cd /workspaces/Fusion-controlled-live-independent
 /usr/bin/python3 -B evals/controlled-coding/live.py \
   --arm-live --task merge-intervals --run merge-intervals:A \
-  --runtime /workspaces/Fusion-fresh-pilot \
+  --runtime /workspaces/Fusion-controlled-live-independent \
   --output "$HOME/fusion-first-live/run-001" \
   --ledger "$HOME/fusion-live-authority/experiment.db" \
   --authorization "$HOME/fusion-live-authority/run.json" \
@@ -120,3 +132,25 @@ The integration test replaces only paid HTTPS transport with a local TLS stub.
 It exercises signed authorization, durable reservations, the real Pi coding
 session, Bubblewrap/seccomp and independent grading. All signing/credential
 material in these tests is disposable synthetic data. No paid call is needed.
+
+## Separately authorized objective-only follow-up
+
+The operator-authorized follow-up uses the existing registered accounting ID
+`merge-intervals:B` while explicitly declaring that it is **not** historical
+Phase 2N Arm B. It receives the original objective only. The signed design is
+`controlled-live-objective-only-followup-v1`; the frozen native-plan Arm B design
+is unchanged. See [the B follow-up runbook](LIVE_B_FOLLOWUP_RUNBOOK.md) for exact
+operator-only signing and read-only `--followup-preflight` commands.
+
+This mode requires the original existing ledger/contract/aggregate authority,
+consumed INCOMPLETE A and unused B. It retains all prior reservations. It cannot
+bootstrap a ledger or reuse A. The original `--preflight` remains first-run-only
+and rejects the existing ledger; combining it with `--followup` is rejected.
+No new genuine approval or paid request is produced by preparation or preflight.
+
+If the original aggregate has expired, it remains invalid. The separate
+[aggregate renewal runbook](LIVE_AGGREGATE_RENEWAL_RUNBOOK.md) describes the
+explicit signed B-only successor, its non-overlapping validity and original-root
+digest binding. The same ledger and cumulative $2 ceiling persist. Renewal adds
+an immutable receipt with B's claim only on an authorized launch; preflight never
+records or consumes a renewal. Original approvals and earlier reports stay intact.

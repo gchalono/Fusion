@@ -19,6 +19,8 @@ import time
 from urllib.parse import urlsplit
 from urllib.request import build_opener,ProxyHandler,HTTPSHandler
 from contract import Contract,micro
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent/'planning-collector'))
+from gateway import safe_failure_code
 
 
 def validate(config):
@@ -39,16 +41,20 @@ def validate(config):
 
 
 class RealTransport:
-    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60, operator_public_key=None, aggregate_authorization_file=None, run_id=None, ledger_path=None):
+    def __init__(self, *, live=False, authorization_file=None, contract_path=None, test_mode=False, test_root=None, test_url=None, test_ca=None, test_key_file=None, timeout=60, operator_public_key=None, aggregate_authorization_file=None, run_id=None, ledger_path=None, followup=False, previous_aggregate_authorization_file=None, reliability=False, original_aggregate_authorization_file=None, previous_reliability_aggregate_authorization_file=None, previous_run_authorization_file=None, run3_reliability_aggregate_authorization_file=None, run3_run_authorization_file=None):
         self.config={k:str(v) if isinstance(v,Path) else v for k,v in locals().copy().items() if k not in ('self',) and v is not None}
         self.contract,self.url=validate(self.config)
         self.timeout=min(timeout,self.contract.data['request_seconds']);self.active=set()
 
     def __call__(self, _ignored_policy_url, raw):
-        validate(self.config)
-        if self.config.get('live'):
-            from live_authorization import paid_gate
-            paid_gate(self.config,self.contract)
+        try:
+            validate(self.config)
+            if self.config.get('live'):
+                from live_authorization import paid_gate
+                paid_gate(self.config,self.contract)
+        except Exception as error:
+            error.gateway_safe_code = safe_failure_code(error, 'transport_authorization_failed')
+            raise
         if _ignored_policy_url not in (self.url,'https://api.openai.com/v1/chat/completions'):raise ValueError('destination_mismatch')
         normalized,_=self.contract.prepare(raw)
         if normalized!=raw:raise ValueError('unprepared_request')
@@ -62,7 +68,7 @@ class RealTransport:
             output,_=child.communicate(json.dumps(request).encode(),timeout=self.timeout)
             if child.returncode:raise OSError('transport_worker_failed')
             result=json.loads(output)
-            if 'error' in result:raise OSError('transport_failed')
+            if 'error' in result:raise OSError(safe_failure_code(result.get('code', ''), 'provider_transport_failed'))
             return result['status'],result['content_type'],base64.b64decode(result['body'])
         except subprocess.TimeoutExpired:
             child.kill();child.communicate();raise OSError('whole_request_deadline') from None
@@ -74,10 +80,12 @@ class RealTransport:
 
 
 def worker():
+    stage = 'transport_authorization_failed'
     try:
         request=json.loads(sys.stdin.buffer.read(2000000));config=request['config']
         if ctypes.CDLL(None).prctl(1,signal.SIGKILL)!=0 or os.getppid()!=request['parent_pid']:raise ValueError('parent_gone')
         c,url=validate(config)
+        stage = 'transport_request_rejected'
         raw=base64.b64decode(request['raw'])
         normalized,_=c.prepare(raw)
         if normalized!=raw:raise ValueError('unprepared_request')
@@ -86,9 +94,11 @@ def worker():
             context=ssl.create_default_context(cafile=config['test_ca'])
             opener=build_opener(ProxyHandler({}),HTTPSHandler(context=context))
         else:
+            stage = 'transport_authorization_failed'
             from live_authorization import paid_gate
             approval=paid_gate(config,c);key=Path(approval['key_file']).read_text().strip();opener=None
             if not key:raise ValueError('missing_gateway_credential')
+        stage = 'provider_transport_failed'
         # FNXC:OfflineFinal 2026-11-09-05:40: Reuse the existing destination,
         # redirect and response-size boundary; external worker supplies deadline.
         sys.path.insert(0,str(Path(__file__).parent.parent/'planning-collector'))
@@ -103,7 +113,7 @@ def worker():
         status,content_type,body=HTTPSForwarder(policy,'Bearer '+key,opener=opener)(url,raw)
         if key and key.encode() in body:raise ValueError('credential_reflected')
         print(json.dumps({'status':status,'content_type':content_type,'body':base64.b64encode(body).decode()}))
-    except Exception:print(json.dumps({'error':'transport_failure'}))
+    except Exception as error:print(json.dumps({'error':'transport_failure', 'code':safe_failure_code(error, stage)}))
 
 
 if __name__=='__main__':

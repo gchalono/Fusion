@@ -17,10 +17,15 @@ ROOT=Path(__file__).resolve().parent
 
 
 def run_command(socket_path, workspace, command, *, mounts=(), timeout=300, stdin=None, abort_event=None):
+    # Mounts contain the real interpreter installation, not host-only aliases.
+    python = str(Path(sys.executable).resolve())
+    command = list(command)
+    if command and command[0] == sys.executable:
+        command[0] = python
     with tempfile.TemporaryFile() as policy:
         export_filter(policy)
         entries=[(ROOT/'sandbox_entry.py','/eval/sandbox_entry.py'),*mounts]
-        actual=[sys.executable,'-B','/eval/sandbox_entry.py',*command] if socket_path else command
+        actual=[python,'-B','/eval/sandbox_entry.py',*command] if socket_path else command
         argv=namespace_command(socket_path,Path(workspace),[],seccomp_fd=policy.fileno(),command_override=actual,readonly_mounts=entries)
         env={'PATH':os.environ['PATH'],'HOME':tempfile.gettempdir()}
         process=subprocess.Popen(argv,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True,pass_fds=(policy.fileno(),),start_new_session=True)
@@ -52,5 +57,5 @@ def runtime_mounts(runtime):
 
 def coding_command(runtime, model):
     runtime=Path(runtime).resolve()
-    node=__import__('shutil').which('node')
+    node=str(Path(__import__('shutil').which('node')).resolve())
     return [node,'--import',str(runtime/'node_modules/tsx/dist/loader.mjs'),'/eval/coding-agent.mts',str(runtime),model,'/run/objective.txt']

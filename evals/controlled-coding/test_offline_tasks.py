@@ -56,6 +56,21 @@ class OfflineTaskTests(unittest.TestCase):
                 self.assertEqual(record['task'], task)
                 self.assertEqual(record['classification'], 'SYNTHETIC_TEST_DOUBLE_PLUMBING_NOT_CODING_PERFORMANCE')
 
+    def test_failed_or_incomplete_session_never_reaches_frozen_grader(self):
+        for report in ({'exit_code': 1, 'timed_out': False},
+                       {'exit_code': 0, 'timed_out': True},
+                       {'exit_code': 0, 'timed_out': False, 'aborted': True}):
+            with self.subTest(report=report), tempfile.TemporaryDirectory(prefix='synthetic-no-grade-') as tmp:
+                root = Path(tmp)/'synthetic-only'
+                with patch('sys.argv', ['offline_eval.py', '--runtime', tmp, '--output', str(root)]), \
+                     patch.object(offline_eval, 'start_stub') as stub, \
+                     patch.object(offline_eval, 'execute_agent', return_value=(report, b'partial', root/'workspace')), \
+                     patch.object(independent, 'evaluate_patch') as grader:
+                    stub.return_value = (unittest.mock.Mock(), [])
+                    with contextlib.redirect_stdout(io.StringIO()), self.assertRaisesRegex(RuntimeError, 'coding_adapter_failed'):
+                        offline_eval.main()
+                    grader.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

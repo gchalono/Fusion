@@ -57,8 +57,9 @@ class Relay(socketserver.BaseRequestHandler):
                 upstream.connect('/run/gateway.sock')
                 pair=(self.request,upstream)
                 while True:
-                    ready,_,_=select.select(pair,[],[],3)
-                    if not ready:return
+                    # The supervisor owns the run deadline. A buffered provider
+                    # response may legitimately be silent between request/response.
+                    ready,_,_=select.select(pair,[],[])
                     for source in ready:
                         data=source.recv(65536)
                         if not data:return
@@ -72,6 +73,9 @@ class UnixServer(socketserver.ThreadingMixIn,socketserver.UnixStreamServer):
 
 def inference_socket(path, gateway, token, *, normalize_request=None):
     """Trusted, run-bound HTTP adapter; no admin paths and no transport retry."""
+    # Host-only diagnostics; Relay remains importable in the minimal namespace.
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent/'planning-collector'))
+    from gateway import safe_failure_code
     lock=threading.Lock()
     events=[]
     revoked=threading.Event()
@@ -96,12 +100,17 @@ def inference_socket(path, gateway, token, *, normalize_request=None):
                 body['max_tokens']=min(requested,cap)
                 with lock:events.append({'requested_max_tokens':requested,'forwarded_max_tokens':body['max_tokens']})
                 status,content_type,response=gateway.handle(json.dumps(body).encode())
-            except Exception:
-                pass  # No exception/body/header values escape the trust boundary.
-            self.send_response(status);self.send_header('Content-Type',content_type)
-            self.send_header('Content-Length',str(len(response)));self.end_headers()
-            try:self.wfile.write(response)
-            except OSError:pass
+            except Exception as error:
+                code = safe_failure_code(getattr(gateway, 'failure_code', None) or error, 'gateway_failure')
+                response = json.dumps({'error': {'message': 'fusion_gateway_failure:'+code,
+                                                'type': 'gateway_failure', 'code': code}}).encode()
+            try:
+                self.send_response(status);self.send_header('Content-Type',content_type)
+                self.send_header('Content-Length',str(len(response)));self.end_headers()
+                self.wfile.write(response)
+            except (BrokenPipeError, ConnectionResetError):
+                # A disconnected client cannot undo an already-accounted request.
+                pass
     server=UnixServer(str(path),Handler)
     server.events=events;server.revoked=revoked
     return server
